@@ -1,0 +1,18 @@
+set(LIB_SRC 
+		error.c 
+		wrapsock.c 
+		wrapunix.c 
+		str_echo.c
+		#str_cli.c
+		#str_cli11.c
+		../select/strcliselect01.c
+		writen.c
+		wraplib.c
+		wrapstdio.c
+		readline.c
+		signal.c
+	)
+add_library(unp ${LIB_SRC})
+
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/lib)
+

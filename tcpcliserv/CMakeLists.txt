@@ -1,0 +1,5 @@
+add_subdirectory(tcpserv01)
+add_subdirectory(tcpcli)
+add_subdirectory(tcpserv02)
+add_subdirectory(tcpcli04)
+add_subdirectory(tcpserv04)
