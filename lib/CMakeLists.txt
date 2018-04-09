@@ -5,7 +5,8 @@ set(LIB_SRC
 		str_echo.c
 		#str_cli.c
 		#str_cli11.c
-		../select/strcliselect01.c
+		#../select/strcliselect01.c
+		../select/strcliselect02.c
 		writen.c
 		wraplib.c
 		wrapstdio.c

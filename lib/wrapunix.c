@@ -6,6 +6,14 @@ void Close(int fd)
 		err_sys("close error");
 }
 
+ssize_t Read(int fd, void *ptr, size_t maxline)
+{
+	ssize_t n;
+	if((n = read(fd, ptr, maxline)) < 0)
+		err_sys("read error");
+	return(n);
+}
+
 void Write(int fd, void *ptr, size_t nbytes)
 {
 	if(write(fd, ptr, nbytes) != nbytes)
