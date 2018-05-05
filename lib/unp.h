@@ -1,6 +1,10 @@
 #ifndef __UNP_H
 #define __UNP_H
 
+#ifndef HAVE_POLL
+#define HAVE_POLL				// 定义HAVE_POLL启用unp.h中的Poll函数
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -19,9 +23,22 @@
 #include <sys/wait.h>
 #include <sys/un.h>
 #include <stdarg.h>
+#include <stdlib.h>
+
+#include <limits.h>				// for OPEN_MAX
+#include <poll.h>
+#include <sys/stropts.h>
 
 #ifndef SYMBOL
 #define SYMBOL value
+#endif
+
+#ifndef INFTIM
+#define INFTIM -1				// <poll.h>和<sys/stropts.h>中没有定义，自己定义
+#endif
+
+#ifndef OPEN_MAX
+#define OPEN_MAX 1024			// <limits.h>中没有定义，自己定义
 #endif
 
 /* Following could be derived from SOMAXCONN in <sys/socket.h>, but many
@@ -104,5 +121,8 @@ Sigfunc *Signal_intr(int, Sigfunc *);
 
 
 pid_t Fork(void);
+
+
+#define UNUSED(var)	(void)((var)=(var))
 
 #endif
