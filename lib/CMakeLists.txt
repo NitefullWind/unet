@@ -13,6 +13,9 @@ set(LIB_SRC
 		wrapstdio.c
 		readline.c
 		signal.c
+
+		dg_echo.c
+		dg_cli.c
 	)
 add_library(unp ${LIB_SRC})
 

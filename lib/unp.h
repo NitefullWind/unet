@@ -104,6 +104,9 @@ void Close(int);
 void		str_echo(int);
 void		str_cli(FILE *, int);
 
+void		dg_echo(int, SA*, socklen_t);
+void		dg_cli(FILE*, int , const SA*, socklen_t);
+
 /* prototypes for out stdio wrapper functions: see {Sec errors} */
 void	Fclose(FILE *);
 FILE	*Fdopen(int, const char *);

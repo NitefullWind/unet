@@ -5,6 +5,7 @@ add_subdirectory(lib)
 add_subdirectory(GetTime)
 add_subdirectory(tcpcliserv)
 add_subdirectory(sockopt)
+add_subdirectory(udpcliserv)
 
 set(APP_SRC main.c)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
