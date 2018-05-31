@@ -2,6 +2,7 @@
 #define __UNP_H
 
 #ifndef HAVE_POLL
+#define HAVE_POLL_H
 #define HAVE_POLL				// 定义HAVE_POLL启用unp.h中的Poll函数
 #endif
 
@@ -114,6 +115,11 @@ void err_ret(const char *, ...);
 void err_sys(const char *, ...);
 
 
+#define FILE_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+					// default file access permissions for new files
+#define DIR_MODE	(FILE_MODE | S_IXUSR | S_IXGRP | S_IXOTH)
+					// default permissions for new directories
+
 #define	min(a,b)	((a) < (b) ? (a) : (b))
 #define	max(a,b)	((a) > (b) ? (a) : (b))
 
@@ -155,6 +161,8 @@ void		str_cli(FILE *, int);
 void		dg_echo(int, SA*, socklen_t);
 void		dg_cli(FILE*, int , const SA*, socklen_t);
 
+char		*gf_time(void);
+
 /* prototypes for out own library wrapper functions */
 const char *Inet_ntop(int, const void *, char *, size_t);
 void		Inet_pton(int, const char *, void *);
@@ -169,12 +177,13 @@ void Close(int);
 void Dup2(int, int);
 int Fcntl(int, int, int);
 void Gettimeofday(struct timeval *, void *);
-int Ioctl(int, int);
+int Ioctl(int, int, void *);
 pid_t Fork(void);
 void *Malloc(size_t);
 int Mkstemp(char *);
-void *Mmap(void *, size_t, int, int, off_t);
-int Open(int *fds);
+void *Mmap(void *, size_t, int, int, int, off_t);
+int Open(const char *, int, mode_t);
+void Pipe(int *fds);
 ssize_t Read(int, void *, size_t);
 void Sigaddset(sigset_t *, int);
 void Sigdelset(sigset_t *, int);
@@ -186,7 +195,7 @@ void Sigprocmask(int, const sigset_t *, sigset_t *);
 char *Strdup(const char *);
 long Sysconf(int);
 void Sysctl(int *, u_int, void *, size_t *, void *, size_t);
-void Unlink(int *);
+void Unlink(const char *);
 pid_t Wait(int *);
 pid_t Waitpid(pid_t, int *, int);
 void Write(int, void *, size_t);

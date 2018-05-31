@@ -7,7 +7,8 @@ set(LIB_SRC
 		#str_cli11.c
 		#../select/strcliselect01.c
 		#../select/strcliselect02.c
-		../elect/strclielect02.c
+		#../elect/strclielect02.c
+		../nonblock/strclinonb.c
 		writen.c
 		wraplib.c
 		wrapstdio.c
@@ -16,6 +17,7 @@ set(LIB_SRC
 
 		dg_echo.c
 		dg_cli.c
+		gf_time.c
 	)
 add_library(unp ${LIB_SRC})
 
