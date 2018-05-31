@@ -8,7 +8,8 @@ set(LIB_SRC
 		#../select/strcliselect01.c
 		#../select/strcliselect02.c
 		#../elect/strclielect02.c
-		../nonblock/strclinonb.c
+		#../nonblock/strclinonb.c
+		../nonblock/strclifork.c
 		writen.c
 		wraplib.c
 		wrapstdio.c
