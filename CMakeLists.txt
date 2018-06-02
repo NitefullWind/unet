@@ -7,6 +7,7 @@ add_subdirectory(tcpcliserv)
 add_subdirectory(sockopt)
 add_subdirectory(udpcliserv)
 add_subdirectory(names)
+add_subdirectory(nonblock)
 
 set(APP_SRC main.c)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
