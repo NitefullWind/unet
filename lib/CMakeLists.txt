@@ -19,6 +19,11 @@ set(LIB_SRC
 		dg_echo.c
 		dg_cli.c
 		gf_time.c
+		host_serv.c
+		sock_ntop.c
+		sock_ntop_host.c
+		tcp_connect.c
+		tcp_listen.c
 	)
 add_library(unp ${LIB_SRC})
 

@@ -1,0 +1,2 @@
+add_subdirectory(daytimetcpcli)
+add_subdirectory(daytimetcpsrv1)
