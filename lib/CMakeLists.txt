@@ -17,7 +17,8 @@ set(LIB_SRC
 		signal.c
 
 		dg_echo.c
-		dg_cli.c
+		#dg_cli.c
+		../bcast/dgclibcast.c
 		gf_time.c
 		host_serv.c
 		sock_ntop.c

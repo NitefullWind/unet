@@ -6,6 +6,10 @@
 #define HAVE_POLL				// 定义HAVE_POLL启用unp.h中的Poll函数
 #endif
 
+#ifndef HAVE_MKSTEMP
+#define HAVE_MKSTEMP
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
