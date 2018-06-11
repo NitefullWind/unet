@@ -127,6 +127,12 @@ void err_sys(const char *, ...);
 #define	min(a,b)	((a) < (b) ? (a) : (b))
 #define	max(a,b)	((a) > (b) ? (a) : (b))
 
+/* The structure returned by recvfrom_flags */
+struct unp_in_pkinfo {
+	struct in_addr	ipi_addr;		// dst IPv4 address
+	int				ipi_ifindex;	// received interface index
+};
+
 /* prototypes for out socket wrapper functions: see {Sec errors} */
 int		Accept(int, SA *, socklen_t *);
 void	Bind(int, const SA *, socklen_t);
