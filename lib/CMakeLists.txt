@@ -16,7 +16,8 @@ set(LIB_SRC
 		readline.c
 		signal.c
 
-		dg_echo.c
+		#dg_echo.c
+		../sigio/dgecho01.c
 		#dg_cli.c
 		../bcast/dgclibcast.c
 		gf_time.c

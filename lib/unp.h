@@ -10,6 +10,10 @@
 #define HAVE_MKSTEMP
 #endif
 
+#ifndef HAVE_SYS_IOCTL_H
+#define HAVE_SYS_IOCTL_H
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
