@@ -10,6 +10,7 @@ set(LIB_SRC
 		#../elect/strclielect02.c
 		#../nonblock/strclinonb.c
 		../nonblock/strclifork.c
+		readn.c
 		writen.c
 		wraplib.c
 		wrapstdio.c
