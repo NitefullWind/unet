@@ -18,6 +18,10 @@
 #define HAVE_PTHREAD_H
 #endif
 
+#ifndef HAVE_MSGHDR_MSG_CONTROL
+#define HAVE_MSGHDR_MSG_CONTROL
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -177,18 +181,21 @@ void		dg_cli(FILE*, int , const SA*, socklen_t);
 void		dg_echo(int, SA*, socklen_t);
 char		*gf_time(void);
 struct		addrinfo *host_serv(const char *, const char *, int, int);
+ssize_t		read_fd(int, void *, size_t, int *);
 char		*sock_ntop(const SA *, socklen_t);
 char		*sock_ntop_host(const SA *, socklen_t);
 void		str_echo(int);
 void		str_cli(FILE *, int);
 int			tcp_connect(const char *, const char *);
 int			tcp_listen(const char *, const char *, socklen_t *);
+ssize_t		write_fd(int, void *, size_t, int);
 
 
 /* prototypes for out own library wrapper functions */
 struct addrinfo *Host_serv(const char *, const char *, int, int);
 const char *Inet_ntop(int, const void *, char *, size_t);
 void		Inet_pton(int, const char *, void *);
+ssize_t		Read_fd(int, void *, size_t, int *);
 
 typedef	void	Sigfunc(int);	/* for signal handlers */
 Sigfunc *Signal(int, Sigfunc *);
@@ -197,6 +204,7 @@ char	*Sock_ntop(const SA *, socklen_t);
 char	*Sock_ntop_host(const SA *, socklen_t);
 int		Tcp_connect(const char *, const char *);
 int		Tcp_listen(const char *, const char *, socklen_t *);
+ssize_t Write_fd(int, void *, size_t, int);
 
 /* prototypes for out Unix wrapper functions see {Sec errors} */
 void *Calloc(size_t, size_t);

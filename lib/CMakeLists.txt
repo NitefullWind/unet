@@ -27,6 +27,8 @@ set(LIB_SRC
 		sock_ntop_host.c
 		tcp_connect.c
 		tcp_listen.c
+		read_fd.c
+		write_fd.c
 	)
 add_library(unp ${LIB_SRC})
 
