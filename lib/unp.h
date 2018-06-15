@@ -14,6 +14,10 @@
 #define HAVE_SYS_IOCTL_H
 #endif
 
+#ifndef HAVE_PTHREAD_H
+#define HAVE_PTHREAD_H
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -37,35 +41,35 @@
 #include <limits.h>				// for OPEN_MAX
 #include <sys/stropts.h>
 
-#ifdef	HAVE_SYS_SELECT_H
+//#ifdef	HAVE_SYS_SELECT_H
 # include	<sys/select.h>	/* for convenience */
-#endif
+//#endif
 
-#ifdef	HAVE_SYS_SYSCTL_H
-#ifdef	HAVE_SYS_PARAM_H
+//#ifdef	HAVE_SYS_SYSCTL_H
+//#ifdef	HAVE_SYS_PARAM_H
 # include	<sys/param.h>	/* OpenBSD prereq for sysctl.h */
-#endif
+//#endif
 # include	<sys/sysctl.h>
-#endif
+//#endif
 
-#ifdef	HAVE_POLL_H
+//#ifdef	HAVE_POLL_H
 # include	<poll.h>		/* for convenience */
-#endif
+//#endif
 
 #ifdef	HAVE_SYS_EVENT_H
 # include	<sys/event.h>	/* for kqueue */
 #endif
 
-#ifdef	HAVE_STRINGS_H
+//#ifdef	HAVE_STRINGS_H
 # include	<strings.h>		/* for convenience */
-#endif
+//#endif
 
 /* Three headers are normally needed for socket/file ioctl's:
  *  * <sys/ioctl.h>, <sys/filio.h>, and <sys/sockio.h>.
  *   */
-#ifdef	HAVE_SYS_IOCTL_H
+//#ifdef	HAVE_SYS_IOCTL_H
 # include	<sys/ioctl.h>
-#endif
+//#endif
 #ifdef	HAVE_SYS_FILIO_H
 # include	<sys/filio.h>
 #endif
@@ -73,9 +77,9 @@
 # include	<sys/sockio.h>
 #endif
 
-#ifdef	HAVE_PTHREAD_H
+//#ifdef	HAVE_PTHREAD_H
 # include	<pthread.h>
-#endif
+//#endif
 
 #ifdef HAVE_NET_IF_DL_H
 # include	<net/if_dl.h>

@@ -1,3 +1,4 @@
 add_subdirectory(client)
 add_subdirectory(serv01)
 add_subdirectory(serv02)
+add_subdirectory(serv04)

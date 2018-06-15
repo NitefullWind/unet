@@ -177,7 +177,7 @@ Pthread_key_create(pthread_key_t *key, void (*func)(void *))
 }
 
 void
-Pthread_setspecific(pthread_key_t key, const void *value)
+Pthread_setspecific(pthread_key_t *key, const void *value)
 {
 	int		n;
 
