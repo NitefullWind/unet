@@ -1,7 +1,11 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include <map>
+#include <memory>
 #include "../../../include/unpthread.h"
+
+class Connection;
 
 typedef struct {
 	pthread_t thread_tid;
@@ -24,11 +28,19 @@ public:
 
 	const ServerInfo *getServerInfo() const;
 	pthread_mutex_t *getLock();
+
+	std::shared_ptr<Connection> addConnection(int connfd);
+	void addConnection(std::shared_ptr<Connection> connPtr);
+	// 返回当前connections的拷贝
+	std::map<int, std::shared_ptr<Connection> > getConnections();
+	void removeConnection(int connfd);
 private:
 	ServerInfo _servInfo;
 	int _nthreads;
 	Thread *_tptr;
 	pthread_mutex_t _mlock;
+
+	std::map<int, std::shared_ptr<Connection> > _conntions;
 };
 
 void *thread_main(void *arg);

@@ -16,6 +16,7 @@ set_source_files_properties(${all_c_files} PROPERTIES LANGUAGE CXX)		# 设置C�
 set(APP_SRC 
 		src/main.cpp
 		src/control.cpp
+		src/connection.cpp
 		)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/)
 

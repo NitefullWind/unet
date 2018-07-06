@@ -1,4 +1,6 @@
 #include "control.h"
+#include "connection.h"
+#include <memory>
 
 Control::Control(int argc, char **argv) :
 		_servInfo(ServerInfo()),
@@ -19,6 +21,7 @@ Control::~Control()
 	if(!_tptr) {
 		free(_tptr);
 	}
+	this->_conntions.clear();
 }
 
 int Control::exec()
@@ -49,6 +52,38 @@ pthread_mutex_t *Control::getLock()
 	return &(this->_mlock);
 }
 
+std::shared_ptr<Connection> Control::addConnection(int connfd)
+{
+	std::shared_ptr<Connection> connPtr = std::make_shared<Connection>(connfd);
+	connPtr->setControl(this);
+	addConnection(connPtr);
+	return connPtr;
+}
+
+void Control::addConnection(std::shared_ptr<Connection> connPtr)
+{	
+//	Pthread_mutex_lock(&this->_mlock);
+	this->_conntions[connPtr->getConnfd()] = connPtr;
+//	Pthread_mutex_unlock(&this->_mlock);
+
+	printf("=====add connection: %d\n", connPtr->getConnfd());
+}
+
+std::map<int, std::shared_ptr<Connection> > Control::getConnections()
+{	
+	return _conntions;
+}
+
+void Control::removeConnection(int connfd)
+{
+//	Pthread_mutex_lock(&this->_mlock);
+	this->_conntions.erase(connfd);
+//	Pthread_mutex_unlock(&this->_mlock);
+
+	Close(connfd);
+	printf("=====remove connection: %d\n", connfd);
+}
+
 void *thread_main(void *arg)
 {
 	Control *ctrl = (Control *)arg;
@@ -61,10 +96,9 @@ void *thread_main(void *arg)
 		Pthread_mutex_lock(ctrl->getLock());
 		connfd = Accept(ctrl->getServerInfo()->listenfd, cliaddr, &clilen);
 		Pthread_mutex_unlock(ctrl->getLock());
-
-		printf("==== connected: %d\n", connfd);
-		sleep(1);
-		Close(connfd);
+		
+		std::shared_ptr<Connection> connPtr = ctrl->addConnection(connfd);
+		connPtr->run();
 	}
 	
 	return NULL;
