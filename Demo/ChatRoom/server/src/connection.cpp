@@ -27,7 +27,7 @@ void Connection::run()
 	ssize_t nread = 0;
 	char line[MAXLINE];
 	while(true) {
-		if((nread = Readline(this->_connfd, line, MAXLINE)) > 0) {
+		if((nread = Read(this->_connfd, line, MAXLINE)) > 0) {
 			Writen(this->_connfd, line, nread);
 		}
 
