@@ -27,7 +27,7 @@ public:
 	int exec();
 
 	const ServerInfo *getServerInfo() const;
-	pthread_mutex_t *getLock();
+	pthread_mutex_t *getListenfdMutex();
 
 	std::shared_ptr<Connection> addConnection(int connfd);
 	void addConnection(std::shared_ptr<Connection> connPtr);
@@ -38,7 +38,7 @@ private:
 	ServerInfo _servInfo;
 	int _nthreads;
 	Thread *_tptr;
-	pthread_mutex_t _mlock;
+	pthread_mutex_t _listenfdMutex, _connectionsMutex;
 
 	std::map<int, std::shared_ptr<Connection> > _conntions;
 };

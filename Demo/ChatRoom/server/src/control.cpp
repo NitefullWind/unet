@@ -6,7 +6,8 @@ Control::Control(int argc, char **argv) :
 		_servInfo(ServerInfo()),
 		_nthreads(100),
 		_tptr(nullptr),
-		_mlock(PTHREAD_MUTEX_INITIALIZER)
+		_listenfdMutex(PTHREAD_MUTEX_INITIALIZER),
+		_connectionsMutex(PTHREAD_MUTEX_INITIALIZER)
 {
 	if(argc == 2) {
 		memcpy(_servInfo.port, argv[1], strlen(argv[1]));
@@ -47,9 +48,9 @@ const ServerInfo *Control::getServerInfo() const
 	return &(this->_servInfo);
 }
 
-pthread_mutex_t *Control::getLock()
+pthread_mutex_t *Control::getListenfdMutex()
 {
-	return &(this->_mlock);
+	return &(this->_listenfdMutex);
 }
 
 std::shared_ptr<Connection> Control::addConnection(int connfd)
@@ -62,9 +63,9 @@ std::shared_ptr<Connection> Control::addConnection(int connfd)
 
 void Control::addConnection(std::shared_ptr<Connection> connPtr)
 {	
-//	Pthread_mutex_lock(&this->_mlock);
+	Pthread_mutex_lock(&this->_connectionsMutex);
 	this->_conntions[connPtr->getConnfd()] = connPtr;
-//	Pthread_mutex_unlock(&this->_mlock);
+	Pthread_mutex_unlock(&this->_connectionsMutex);
 
 	printf("=====add connection: %d\n", connPtr->getConnfd());
 }
@@ -76,9 +77,9 @@ std::map<int, std::shared_ptr<Connection> > Control::getConnections()
 
 void Control::removeConnection(int connfd)
 {
-//	Pthread_mutex_lock(&this->_mlock);
+	Pthread_mutex_lock(&this->_connectionsMutex);
 	this->_conntions.erase(connfd);
-//	Pthread_mutex_unlock(&this->_mlock);
+	Pthread_mutex_unlock(&this->_connectionsMutex);
 
 	Close(connfd);
 	printf("=====remove connection: %d\n", connfd);
@@ -93,9 +94,9 @@ void *thread_main(void *arg)
 	struct sockaddr *cliaddr = NULL;
 
 	while(true) {
-		Pthread_mutex_lock(ctrl->getLock());
+		Pthread_mutex_lock(ctrl->getListenfdMutex());
 		connfd = Accept(ctrl->getServerInfo()->listenfd, cliaddr, &clilen);
-		Pthread_mutex_unlock(ctrl->getLock());
+		Pthread_mutex_unlock(ctrl->getListenfdMutex());
 		
 		std::shared_ptr<Connection> connPtr = ctrl->addConnection(connfd);
 		connPtr->run();
