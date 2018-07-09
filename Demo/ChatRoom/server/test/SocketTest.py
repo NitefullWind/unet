@@ -7,9 +7,15 @@ import time
 import threading
 import getopt
 import sys
+import datetime
 
 needProgress = False
 debug = False
+numberOfString = 1
+
+def getTime():
+	t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+	return t
 
 '''
 参数：主机，端口，随机发送数据最小长度(*32)，随机发送数据最大长度(*32)
@@ -21,38 +27,52 @@ def sendAndRecvData(host, port, minDataLen, maxDataLen):
 		sk.connect((host, port))
 	except Exception as e:
 		if debug == True:
-			print("Excetion connect: ", e)
+			print(getTime(), "Excetion connect: ", e)
 		return False, "", "", -1
 
-	sendStr = ''
-	for i in range(random.randint(minDataLen, maxDataLen+1)):
-		sendStr = sendStr + ''.join(random.sample(string.ascii_letters + string.digits, 32))
-	sendStr = sendStr + '\n'
+	isOk = True
+	cost = 0
+	for i in range(0, numberOfString):
+		sendStr = ''
+		for i in range(random.randint(minDataLen, maxDataLen)):
+			sendStr = sendStr + ''.join(random.sample(string.ascii_letters + string.digits, 32))
+		sendStr = sendStr + '\n'
+
+		try:
+			sk.sendall((sendStr).encode("utf8"))
+			# sk.shutdown(socket.SHUT_WR)
+		except Exception as e:
+			if debug == True:
+				print(getTime(), "Excetion send: ", e)
+			return False, sendStr, "", -2
+
+		time_start=time.time()
+		recvLen = 0
+		recvStr = ''
+		try:
+			while recvLen < len(sendStr):
+				tmpStr = sk.recv(4096).decode('UTF-8')
+				recvLen += len(tmpStr)
+				recvStr = recvStr + tmpStr
+		except Exception as e:
+			if debug == True:
+				print(getTime(), "Excetion recv: ", e)
+			return False, sendStr, recvStr, -3
+		time_end=time.time()
+
+		cost = cost + (time_end-time_start)
+		isOk = recvStr==sendStr
+		if isOk == False:
+			break
 
 	try:
-		sk.sendall((sendStr).encode("utf8"))
-		sk.shutdown(socket.SHUT_WR)
+		sk.close()
 	except Exception as e:
 		if debug == True:
-			print("Excetion send: ", e)
-		return False, sendStr, "", -2
+			print(getTime(), "Excetion close: ", e)
+		return False, sendStr, recvStr, -4
 
-	time_start=time.time()
-	recvLen = 0
-	recvStr = ''
-	try:
-		while recvLen < len(sendStr):
-			tmpStr = sk.recv(4096).decode('UTF-8')
-			recvLen += len(tmpStr)
-			recvStr = recvStr + tmpStr
-		sk.shutdown(socket.SHUT_RD)
-	except Exception as e:
-		if debug == True:
-			print("Excetion recv: ", e)
-		return False, sendStr, recvStr, -3
-	time_end=time.time()
-
-	return recvStr==sendStr, sendStr, recvStr, time_end-time_start
+	return isOk, sendStr, recvStr, cost
 
 class testThread(threading.Thread):
 	"""测试线程 参数为子线程号，线程中的循环次数"""
@@ -70,7 +90,7 @@ class testThread(threading.Thread):
 		global needProgress
 		for i in range(1, self.repeatCount+1):
 			if needProgress:
-				print("Child number: ", self.threadNum, "\t Repeat time: ", i)
+				print(getTime(), "Child number: ", self.threadNum, "\t Repeat time: ", i)
 			testResult, sendStr, recvStr, cost = sendAndRecvData(self.host, self.port, self.minDataLen, self.maxDataLen);
 			# print("Child number: ", self.threadNum, '\t Result: ', testResult, " Cost: ", cost)
 
@@ -118,7 +138,7 @@ def doTest(host, port, chlidNum, repeatCount, minDataLen, maxDataLen):
 def usage():
 	print('''
 usage: python3 SocketTest.py
-		[-p(progress)] [-d(debug)]
+		[-p(progress)] [-d(debug)] [-n(number of string)]
 		<host> <port>
 		<thread count> <repeat count>
 		<min data len> [<max data len>]
@@ -127,8 +147,9 @@ usage: python3 SocketTest.py
 def main():
 	global needProgress
 	global debug
+	global numberOfString
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "phd", ["progress","help","debug"])
+		opts, args = getopt.getopt(sys.argv[1:], "phdn:", ["progress","help","debug", "number"])
 	except Exception as e:
 		print(e)
 		usage()
@@ -142,6 +163,8 @@ def main():
 			needProgress = True
 		elif o in ("-d", "--debug"):
 			debug = True
+		elif o in ("-n", "--number"):
+			numberOfString = int(a)
 		else:
 			assert False, "unhandled option"
 
