@@ -36,8 +36,6 @@ void Connection::run()
 		}
 
 		if(nread == 0) {
-			printf("=====[%d] sign out.\n", this->_connfd);
-			this->_control->removeConnection(this->_connfd);
 			return;
 		}
 	}
