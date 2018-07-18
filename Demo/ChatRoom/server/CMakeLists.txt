@@ -3,7 +3,9 @@ project(ChatRoom)
 cmake_minimum_required(VERSION 3.0)
 
 include_directories(${PROJECT_SOURCE_DIR}/../../include/)
+include_directories(/usr/local/log4cxx/include/)
 link_directories(${PROJECT_SOURCE_DIR}/../../lib/)
+link_directories(/usr/local/log4cxx/lib/)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
 
@@ -22,4 +24,4 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/)
 
 add_executable(ChatRoom_server ${APP_SRC})
 
-target_link_libraries(ChatRoom_server unp pthread)
+target_link_libraries(ChatRoom_server unp pthread log4cxx)

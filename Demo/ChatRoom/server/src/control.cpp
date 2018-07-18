@@ -1,3 +1,4 @@
+#include "log.h"
 #include "control.h"
 #include "connection.h"
 #include <memory>
@@ -29,7 +30,7 @@ Control::~Control()
 
 int Control::exec()
 {
-	printf("===== host:%s, port:%s=====\n", _servInfo.host, _servInfo.port);
+	LOG_INFO("host: " <<  _servInfo.host << ", port: "<<  _servInfo.port);
 	_servInfo.listenfd = Tcp_listen(_servInfo.host, _servInfo.port, &_servInfo.addrlen);
 
 	autoAdjustThreadPool();
@@ -49,13 +50,14 @@ void Control::autoAdjustThreadPool()
 	
 	Pthread_mutex_lock(&this->_threadsMutex);
 	if(this->_threads.size() - connSize <= this->_nthreads) {
+		LOG_DEBUG("increase threads begin");
 		for(size_t i=0; i<this->_nthreads; i++) {
 			auto pthr = std::make_shared<Thread>(this);
 			this->_threads.push_back(pthr);
 			pthread_t tid;
 			Pthread_create(&tid, NULL, &thread_main, (void *)(pthr.get()));
 		}
-		printf("===== threads size: %lu\n", this->_threads.size());
+		LOG_INFO("threads size: " << this->_threads.size());
 	}
 	Pthread_mutex_unlock(&this->_threadsMutex);
 }
@@ -85,7 +87,7 @@ void Control::addConnection(std::shared_ptr<Connection> connPtr)
 	this->_conntions[connPtr->getConnfd()] = connPtr;
 	Pthread_mutex_unlock(&this->_connectionsMutex);
 
-	printf("=====add connection: %d\n", connPtr->getConnfd());
+	LOG_DEBUG("add connection: " << connPtr->getConnfd());
 }
 
 std::map<int, std::shared_ptr<Connection> > Control::getConnections()
@@ -100,7 +102,7 @@ void Control::removeConnection(int connfd)
 	Pthread_mutex_unlock(&this->_connectionsMutex);
 
 	Close(connfd);
-	printf("=====remove connection: %d\n", connfd);
+	LOG_DEBUG("remove connection: " << connfd);
 
 	Pthread_mutex_lock(&this->_connectionsMutex);
 	size_t connSize = this->_conntions.size();
@@ -109,6 +111,7 @@ void Control::removeConnection(int connfd)
 	Pthread_mutex_lock(&this->_threadsMutex);
 	if(this->_threads.size() - connSize > 2*this->_nthreads) {
 		size_t count = 0;
+		LOG_DEBUG("decrease threads begin");
 		for(auto rit=this->_threads.crbegin(); rit!=this->_threads.crend() 
 						&& count<this->_nthreads; rit++) {
 			if(!(*rit)->isWorking()) {
@@ -120,7 +123,7 @@ void Control::removeConnection(int connfd)
 				continue;
 			}
 		}
-		printf("===== threads size: %lu\n", this->_threads.size());
+		LOG_INFO("threads size: " << this->_threads.size());
 	}
 	Pthread_mutex_unlock(&this->_threadsMutex);
 }
