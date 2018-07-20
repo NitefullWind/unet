@@ -28,6 +28,7 @@ void Connection::run()
 {
 	ssize_t nread = 0;
 	char line[MAXLINE];
+	
 	while(true) {
 		LOG_DEBUG("read data begin, confd: " << this->getConnfd());
 		if((nread = Read(this->_connfd, line, MAXLINE)) > 0) {
@@ -41,6 +42,7 @@ void Connection::run()
 		}
 
 		if(nread == 0) {
+			LOG_DEBUG("connection closed: " << this->getConnfd());
 			return;
 		}
 	}
