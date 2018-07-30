@@ -9,6 +9,7 @@ EchoServer::EchoServer(EventLoop* loop, const InetAddress &listenAddr) :
 {
 	server_.setConnectionCallback(boost::bind(&EchoServer::onConnection, this, _1));
 	server_.setMessageCallback(boost::bind(&EchoServer::onMessage, this, _1, _2, _3));
+	server_.setThreadNum(100);
 }
 
 void EchoServer::start()
