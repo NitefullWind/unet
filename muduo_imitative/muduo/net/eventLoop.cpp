@@ -1,16 +1,20 @@
 #include <muduo/net/eventLoop.h>
+#include <muduo/net/channel.h>
+#include <muduo/net/poller.h>
 #include <muduo/base/logger.h>
 #include <assert.h>
-#include <poll.h>
 
 using namespace muduo;
 using namespace muduo::net;
 
 __thread EventLoop* t_loopInThisThread = 0;
+const int kPollTimeMs = 10000;
 
 EventLoop::EventLoop() :
 	_looping(false),
-	_tid(std::this_thread::get_id())
+	_quit(false),
+	_tid(std::this_thread::get_id()),
+	_poller(std::unique_ptr<Poller>(new Poller(this)))
 {
 	LOG_TRACE("EventLoop created " << this << " in thread " << _tid);
 	if(t_loopInThisThread) {
@@ -33,10 +37,29 @@ void EventLoop::loop()
 	assertInLoopThread();
 	_looping = true;
 
-	::poll(NULL, 0, 5*1000);
+	while(!_quit) {
+		_activeChannels.clear();
+		_poller->poll(kPollTimeMs, &_activeChannels);
+		for(ChannelList::iterator it = _activeChannels.begin();
+				it!=_activeChannels.end(); ++it) {
+			(*it)->handleEvent();
+		}
+	}
 
 	LOG_TRACE("EventLoop " << this << " stop looping");
 	_looping = false;
+}
+
+void EventLoop::quit()
+{
+	_quit = true;
+}
+
+void EventLoop::updateChannel(Channel *channel)
+{
+	assert(channel->ownerLoop() == this);
+	assertInLoopThread();
+	_poller->updateChannel(channel);
 }
 
 void EventLoop::assertInLoopThread()
