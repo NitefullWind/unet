@@ -4,6 +4,8 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <muduo/net/muduo.h>
+#include <muduo/base/timestamp.h>
 
 namespace muduo
 {
@@ -12,6 +14,7 @@ namespace net
 
 class Channel;
 class Poller;
+class TimerQueue;
 
 class EventLoop
 {
@@ -22,6 +25,10 @@ public:
 	void loop();
 
 	void quit();
+
+	void runAt(const Timestamp& time, const TimerCallback& cb);
+	void runAfter(double delay, const TimerCallback& cb);
+	void runEvery(double interval, const TimerCallback& cb);
 
 	void updateChannel(Channel *channel);
 
@@ -37,6 +44,7 @@ private:
 	bool _quit;
 	const std::thread::id _tid;
 	std::unique_ptr<Poller> _poller;
+	std::unique_ptr<TimerQueue> _timerQueue;
 	ChannelList _activeChannels;
 };
 

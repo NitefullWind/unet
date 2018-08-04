@@ -1,5 +1,6 @@
 set(base_SRC
 	logger.cpp
+	timestamp.cpp
 	)
 
 add_library(muduo_base ${base_SRC})
