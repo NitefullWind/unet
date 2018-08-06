@@ -57,21 +57,21 @@ void EventLoop::quit()
 	_quit = true;
 }
 
-void EventLoop::runAt(const Timestamp& time, const TimerCallback& cb)
+TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb)
 {
-	_timerQueue->addTimer(cb, time, 0.0);
+	return _timerQueue->addTimer(cb, time, 0.0);
 }
 
-void EventLoop::runAfter(double delay, const TimerCallback& cb)
+TimerId EventLoop::runAfter(double delay, const TimerCallback& cb)
 {
 	Timestamp time(addTime(Timestamp::now(), delay));
 	return runAt(time, cb);
 }
 
-void EventLoop::runEvery(double interval, const TimerCallback& cb)
+TimerId EventLoop::runEvery(double interval, const TimerCallback& cb)
 {
 	Timestamp time(addTime(Timestamp::now(), interval));
-	_timerQueue->addTimer(cb, time, interval);
+	return _timerQueue->addTimer(cb, time, interval);
 }
 
 void EventLoop::updateChannel(Channel *channel)

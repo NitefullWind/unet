@@ -6,6 +6,7 @@
 #include <sys/timerfd.h>
 #include <strings.h>				// bzero()
 #include <unistd.h>					// read()
+#include <assert.h>
 
 namespace muduo
 {
@@ -61,7 +62,6 @@ void resetTimerfd(int timerfd, Timestamp expiration)
 	}
 }
 
-
 }
 }
 }
@@ -86,20 +86,86 @@ TimerQueue::~TimerQueue()
 	// _timerfdChannel.remove();
 	::close(_timerfd);
 	// do not remove channel, since we're in EventLoop::dtor();
+	for(TimerList::iterator it=_timers.begin();
+			it!=_timers.end(); ++it) {
+		delete it->second;
+	}
 }
 
-void TimerQueue::addTimer(const TimerCallback& cb, Timestamp when, double interval)
+TimerId TimerQueue::addTimer(const TimerCallback& cb, Timestamp when, double interval)
 {
-	// std::unique_ptr<Timer> timer(new Timer(cb, when, interval));
-	// _loop->assertInLoopThread();
-	// bool earliestChanged = insert(timer);
+	Timer *timer = new Timer(cb, when, interval);
+	_loop->assertInLoopThread();
+	bool earliestChanged = insert(timer);
 
-	// if(earliestChanged) {
-		// resetTimerfd(_timerfd, timer->expiration());
-	// }
-	// return TimerId(timer);
+	if(earliestChanged) {
+		resetTimerfd(_timerfd, timer->expiration());
+	}
+	return TimerId(timer, timer->sequence());
 }
 
 void TimerQueue::handleRead()
 {
+	_loop->assertInLoopThread();
+	Timestamp now(Timestamp::now());
+	readTimerfd(_timerfd, now);
+
+	std::vector<Entry> expired = getExpired(now);
+
+	for(std::vector<Entry>::iterator it=expired.begin();
+			it!=expired.end(); ++it) {
+		it->second->run();
+	}
+	reset(expired, now);
+}
+
+std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timestamp now)
+{
+	std::vector<Entry> expired;
+	Entry sentry = std::make_pair(now, reinterpret_cast<Timer*>(UINTPTR_MAX));
+	// 找到第一个过期时间晚于当前时间的(now < it->first)定时器的迭代器.
+	// 此迭代器之前的元素都是已过期的，之后的元素都是未过期的
+	TimerList::iterator it = _timers.lower_bound(sentry);
+	assert(it == _timers.end() || now < it->first);
+	std::copy(_timers.begin(), it, back_inserter(expired));
+	_timers.erase(_timers.begin(), it);
+
+	return expired;
+}
+
+void TimerQueue::reset(std::vector<Entry>& expired, Timestamp now)
+{
+	Timestamp nextExpire;
+	for(std::vector<Entry>::iterator it = expired.begin();
+			it!=expired.end(); ++it) {
+		if(it->second->repeat()) {
+			it->second->restart(now);
+			insert(std::move(it->second));
+		} else {
+			// FIXME move to a free list
+			delete it->second;
+		}
+	}
+	if(!_timers.empty()) {
+		nextExpire = _timers.begin()->second->expiration();
+	}
+
+	if(nextExpire.valid()) {
+		resetTimerfd(_timerfd, nextExpire);
+	}
+}
+
+bool TimerQueue::insert(Timer *timer)
+{
+	bool earliestChanged = false;
+	Timestamp when = timer->expiration();
+	TimerList::iterator it = _timers.begin();
+	if(it==_timers.end() || when < it->first) {
+		earliestChanged = true;
+	}
+	// insert into _timers, items auto sorted by when
+	std::pair<TimerList::iterator, bool> result = 
+		_timers.insert(std::make_pair(when, timer));
+	assert(result.second);
+	return earliestChanged;
 }

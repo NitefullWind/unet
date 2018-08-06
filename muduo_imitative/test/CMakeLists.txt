@@ -5,6 +5,8 @@ set(muduo_net_SRC
 	../muduo/net/eventLoop.cpp
 	../muduo/net/channel.cpp
 	../muduo/net/poller.cpp
+	../muduo/net/timerQueue.cpp
+	../muduo/net/timer.cpp
 	)
 
 # for debug
@@ -16,3 +18,6 @@ target_link_libraries(test1 muduo_net pthread)
 
 add_executable(test2 test2.cpp)
 target_link_libraries(test2 muduo_net)
+
+add_executable(test3 test3.cpp)
+target_link_libraries(test3 muduo_net)

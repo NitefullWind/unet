@@ -4,7 +4,6 @@
 #include <muduo/base/timestamp.h>
 #include <muduo/net/muduo.h>
 #include <muduo/net/channel.h>
-#include <memory>
 #include <vector>
 #include <set>
 
@@ -23,9 +22,9 @@ public:
 	TimerQueue(EventLoop *loop);
 	~TimerQueue();
 
-	void addTimer(const TimerCallback& cb, Timestamp when, double interval);
+	TimerId addTimer(const TimerCallback& cb, Timestamp when, double interval);
 private:
-	typedef std::pair<Timestamp, std::unique_ptr<Timer> > Entry;
+	typedef std::pair<Timestamp, Timer*> Entry;
 	typedef std::set<Entry> TimerList;
 
 	// called when expired timers
@@ -33,7 +32,7 @@ private:
 
 	// move out all expired timers
 	std::vector<Entry> getExpired(Timestamp now);
-	void reset(const std::vector<Entry>& expired, Timestamp now);
+	void reset(std::vector<Entry>& expired, Timestamp now);
 
 	bool insert(Timer *timer);
 

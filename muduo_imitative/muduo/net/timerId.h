@@ -1,6 +1,9 @@
 #ifndef MUDUO_NET_TIMERID_H
 #define MUDUO_NET_TIMERID_H
 
+#include <cstdint>
+#include <stdio.h>
+
 namespace muduo
 {
 namespace net

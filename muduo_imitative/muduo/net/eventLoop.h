@@ -6,6 +6,7 @@
 #include <memory>
 #include <muduo/net/muduo.h>
 #include <muduo/base/timestamp.h>
+#include <muduo/net/timerId.h>
 
 namespace muduo
 {
@@ -26,9 +27,9 @@ public:
 
 	void quit();
 
-	void runAt(const Timestamp& time, const TimerCallback& cb);
-	void runAfter(double delay, const TimerCallback& cb);
-	void runEvery(double interval, const TimerCallback& cb);
+	TimerId runAt(const Timestamp& time, const TimerCallback& cb);
+	TimerId runAfter(double delay, const TimerCallback& cb);
+	TimerId runEvery(double interval, const TimerCallback& cb);
 
 	void updateChannel(Channel *channel);
 
