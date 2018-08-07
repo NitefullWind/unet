@@ -5,6 +5,7 @@ set(net_SRCS
 		timerQueue.cpp
 		timer.cpp
 		eventLoopThread.cpp
+		socketsOps.cpp
 		)
 
 add_library(muduo_net ${net_SRCS})
