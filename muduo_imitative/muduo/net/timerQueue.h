@@ -27,6 +27,7 @@ private:
 	typedef std::pair<Timestamp, Timer*> Entry;
 	typedef std::set<Entry> TimerList;
 
+	void addTimerInLoop(Timer *timer);
 	// called when expired timers
 	void handleRead();
 

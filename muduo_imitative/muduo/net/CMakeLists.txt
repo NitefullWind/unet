@@ -4,6 +4,7 @@ set(net_SRCS
 		poller.cpp
 		timerQueue.cpp
 		timer.cpp
+		eventLoopThread.cpp
 		)
 
 add_library(muduo_net ${net_SRCS})
@@ -15,6 +16,8 @@ set(HEADERS
 		eventLoop.h
 		channel.h
 		poller.h
+		timerId.h
+		eventLoopThread.h
 		)
 
 install(FILES ${HEADERS} DESTINATION include/muduo/net)
