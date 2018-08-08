@@ -27,3 +27,6 @@ target_link_libraries(test4 muduo_net)
 
 add_executable(test5 test5.cpp)
 target_link_libraries(test5 muduo_net pthread)
+
+add_executable(test6 test6.cpp)
+target_link_libraries(test6 muduo_net pthread)
