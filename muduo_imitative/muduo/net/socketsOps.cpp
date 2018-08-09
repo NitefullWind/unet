@@ -147,3 +147,14 @@ void sockets::fromHostPort(const char *ip, uint16_t port, struct sockaddr_in *ad
 		LOG_FATAL("sockets::fromHostPort");
 	}
 }
+
+struct sockaddr_in sockets::getLocalAddr(int sockfd)
+{
+	struct sockaddr_in localAddr;
+	bzero(&localAddr, sizeof(localAddr));
+	socklen_t addrlen = sizeof(localAddr);
+	if(::getsockname(sockfd, sockaddr_cast(&localAddr), &addrlen) < 0) {
+		LOG_FATAL("sockets::getLocalAddr");
+	}
+	return localAddr;
+}
