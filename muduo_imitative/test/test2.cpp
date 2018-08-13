@@ -7,9 +7,9 @@
 
 muduo::net::EventLoop *g_loop;
 
-void timeout()
+void timeout(muduo::Timestamp receiveTime)
 {
-	LOG_DEBUG("Timeout!");
+	LOG_DEBUG("Timeout! " << receiveTime.toFormattedString());
 	g_loop->quit();
 }
 

@@ -2,6 +2,7 @@
 #include <muduo/net/tcpServer.h>
 #include <muduo/net/eventLoop.h>
 #include <muduo/net/inetAddress.h>
+#include <muduo/net/buffer.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -19,10 +20,12 @@ void onConnection(const TcpConnectionPtr& conn)
 	}
 }
 
-void onMessage(const TcpConnectionPtr& conn, const char *data, ssize_t len)
+void onMessage(const TcpConnectionPtr& conn, Buffer *buf, Timestamp receiveTime)
 {
-	std::cout << "onMessage(): receive " << len << " bytes from connection " << conn->peerAddress().toHostPort() << std::endl;
-	std::cout << "onMessage(): receive data: " << data << std::endl;
+	std::cout << "onMessage(): receive " << buf->readableBytes() 
+			<< " bytes from connection " << conn->peerAddress().toHostPort() 
+			<< " at " << receiveTime.toFormattedString() << std::endl;
+	std::cout << "onMessage(): receive data: " << buf->retrieveAsString() << std::endl;
 }
 
 int main()

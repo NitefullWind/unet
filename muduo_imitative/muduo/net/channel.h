@@ -1,6 +1,8 @@
 #ifndef MUDUO_NET_CHANNEL_H
 #define MUDUO_NET_CHANNEL_H
 
+#include <muduo/base/timestamp.h>
+
 #include <functional>
 
 namespace muduo
@@ -14,12 +16,13 @@ class Channel
 {
 public:
 	typedef std::function<void()> EventCallback;
+	typedef std::function<void(Timestamp)> ReadEventCallback;
 
 	Channel(EventLoop *loop, int fd);
 	~Channel();
 
-	void handleEvent();
-	void setReadCallback(const EventCallback& cb) { this->_readCallback = cb; }
+	void handleEvent(Timestamp receiveTime);
+	void setReadCallback(const ReadEventCallback& cb) { this->_readCallback = cb; }
 	void setWriteCallback(const EventCallback& cb) { this->_writeCallback = cb; }
 	void setErrorCallback(const EventCallback& cb) { this->_errorCallback = cb; }
 	void setCloseCallback(const EventCallback& cb) { this->_closeCallback = cb; }
@@ -54,7 +57,7 @@ private:
 	int _index;			// used by poller
 	bool _eventHandling;
 
-	EventCallback _readCallback;
+	ReadEventCallback _readCallback;
 	EventCallback _writeCallback;
 	EventCallback _errorCallback;
 	EventCallback _closeCallback;

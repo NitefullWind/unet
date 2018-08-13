@@ -3,6 +3,7 @@
 #include <muduo/net/eventLoop.h>
 #include <muduo/net/socket.h>
 #include <muduo/net/socketsOps.h>
+#include <muduo/net/buffer.h>
 #include <muduo/base/logger.h>
 
 #include <errno.h>
@@ -25,7 +26,7 @@ TcpConnection::TcpConnection(EventLoop *loop, const std::string& nameArg, int so
 	_peerAddr(peerAddr)
 {
 	LOG_DEBUG("TcpConnection::ctor[" << _name << "] at " << this << " fd = " << sockfd);
-	_channel->setReadCallback(std::bind(&TcpConnection::handleRead, this));
+	_channel->setReadCallback(std::bind(&TcpConnection::handleRead, this, std::placeholders::_1));
 }
 
 TcpConnection::~TcpConnection()
@@ -43,12 +44,14 @@ void TcpConnection::connectEstablished()
 	_connectionCallback(shared_from_this());
 }
 
-void TcpConnection::handleRead()
+void TcpConnection::handleRead(Timestamp receiveTime)
 {
 	char buf[65536];
 	ssize_t n = ::read(_channel->fd(), buf, sizeof(buf));
 	if ( n > 0) {
-		_messageCallback(shared_from_this(), buf, n);
+		Buffer buffer;
+		buffer.append(buf, n);
+		_messageCallback(shared_from_this(), &buffer, receiveTime);
 	} else if (n == 0) {
 		handleClose();
 	} else {

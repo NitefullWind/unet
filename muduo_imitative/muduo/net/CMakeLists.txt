@@ -11,6 +11,7 @@ set(net_SRCS
 		acceptor.cpp
 		tcpServer.cpp
 		tcpConnection.cpp
+		buffer.cpp
 		)
 
 add_library(muduo_net ${net_SRCS})
@@ -25,6 +26,7 @@ set(HEADERS
 		timerId.h
 		eventLoopThread.h
 		tcpServer.h
+		buffer.h
 		)
 
 install(FILES ${HEADERS} DESTINATION include/muduo/net)

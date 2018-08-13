@@ -56,6 +56,7 @@ private:
 	bool _quit;
 	bool _callingPendingFunctors;
 	const std::thread::id _tid;
+	Timestamp _pollReturnTime;
 	std::unique_ptr<Poller> _poller;
 	std::unique_ptr<TimerQueue> _timerQueue;
 	int _wakeupFd;

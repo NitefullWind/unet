@@ -1,6 +1,8 @@
 #ifndef MUDUO_NET_POLLER_H
 #define MUDUO_NET_POLLER_H
 
+#include <muduo/base/timestamp.h>
+
 #include <vector>
 #include <map>
 
@@ -22,7 +24,7 @@ public:
 	Poller(EventLoop *loop);
 	~Poller();
 
-	void poll(int timeoutMs, ChannelList* activeChannels);
+	Timestamp poll(int timeoutMs, ChannelList* activeChannels);
 
 	void updateChannel(Channel* channel);
 	void removeChannel(Channel* channel);

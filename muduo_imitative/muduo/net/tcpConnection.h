@@ -48,7 +48,7 @@ private:
 	enum StateE { kConnecting, kConnected, kDisconnected, };
 
 	void setState(StateE s) { _state = s; }
-	void handleRead();
+	void handleRead(Timestamp receiveTime);
 	void handleWrite();
 	void handleClose();
 	void handleError();
