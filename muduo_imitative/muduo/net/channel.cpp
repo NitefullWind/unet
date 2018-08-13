@@ -2,6 +2,7 @@
 #include <muduo/net/eventLoop.h>
 #include <muduo/base/logger.h>
 #include <poll.h>
+#include <assert.h>
 
 using namespace muduo;
 using namespace muduo::net;
@@ -15,18 +16,28 @@ Channel::Channel(EventLoop *loop, int fd):
 	_fd(fd),
 	_events(0),
 	_revents(0),
-	_index(-1)
+	_index(-1),
+	_eventHandling(false)
 {
 }
 
 Channel::~Channel()
 {
+	assert(!_eventHandling);
 }
 
 void Channel::handleEvent()
 {
+	_eventHandling = true;
 	if(_revents & POLLNVAL) {
 		LOG_WARN(__FUNCTION__ << " POLLNVAL");
+	}
+
+	if((_revents & POLLRDHUP) && !(_revents & POLLIN)) {
+		LOG_WARN("Channel::handleEvent() POLLHUP");
+		if(_closeCallback) {
+			_closeCallback();
+		}
 	}
 	
 	if(_revents & (POLLERR | POLLNVAL)) {
@@ -44,6 +55,7 @@ void Channel::handleEvent()
 			_writeCallback();
 		}
 	}
+	_eventHandling = false;
 }
 
 void Channel::update()

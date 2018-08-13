@@ -22,6 +22,7 @@ public:
 	void setReadCallback(const EventCallback& cb) { this->_readCallback = cb; }
 	void setWriteCallback(const EventCallback& cb) { this->_writeCallback = cb; }
 	void setErrorCallback(const EventCallback& cb) { this->_errorCallback = cb; }
+	void setCloseCallback(const EventCallback& cb) { this->_closeCallback = cb; }
 
 	int fd() const { return _fd; }
 	int events() const { return _events; }
@@ -31,7 +32,7 @@ public:
 	void enableReading() { _events |= kReadEvent; update(); }
 	// void enableWriting() { _events |= kWriteEvent; update(); }
 	// void disableWriting() { _events &= ~kWriteEvent; update(); }
-	// void disable() { _events &= kNoneEvent; update(); }
+	void disableAll() { _events &= kNoneEvent; update(); }
 	
 	// for Poller
 	int index() { return _index; }
@@ -51,10 +52,12 @@ private:
 	int _events;
 	int _revents;
 	int _index;			// used by poller
+	bool _eventHandling;
 
 	EventCallback _readCallback;
 	EventCallback _writeCallback;
 	EventCallback _errorCallback;
+	EventCallback _closeCallback;
 };
 
 }

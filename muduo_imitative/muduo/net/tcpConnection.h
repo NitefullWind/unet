@@ -37,13 +37,21 @@ public:
 		_messageCallback = cb;
 	}
 
+	void setCloseCallback(const CloseCallback& cb) {
+		_closeCallback = cb;
+	}
+
 	void connectEstablished();
+	void connectDestroyed();
 
 private:
-	enum StateE { kConnecting, kConnected, };
+	enum StateE { kConnecting, kConnected, kDisconnected, };
 
 	void setState(StateE s) { _state = s; }
 	void handleRead();
+	void handleWrite();
+	void handleClose();
+	void handleError();
 
 	EventLoop *_loop;
 	std::string _name;
@@ -54,6 +62,7 @@ private:
 	InetAddress _peerAddr;
 	ConnectionCallback _connectionCallback;
 	MessageCallback _messageCallback;
+	CloseCallback _closeCallback;
 };
 
 }

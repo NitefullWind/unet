@@ -6,6 +6,7 @@
 #include <muduo/base/logger.h>
 
 #include <stdio.h>					// snprintf()
+#include <assert.h>
 
 using namespace muduo;
 using namespace muduo::net;
@@ -50,5 +51,18 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
 	_connections[connName] = conn;
 	conn->setConnectionCallback(_connectionCallback);
 	conn->setMessageCallback(_messageCallback);
+	conn->setCloseCallback(
+			std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
 	conn->connectEstablished();
+}
+
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+	_loop->assertInLoopThread();
+	LOG_INFO("TcpServer::removeConnection [" << _name << "] - connection "
+			<<  conn->name());
+	size_t n = _connections.erase(conn->name());
+	assert(n == 1); (void)n;
+	_loop->queueInLoop(
+			std::bind(&TcpConnection::connectDestroyed, conn));
 }

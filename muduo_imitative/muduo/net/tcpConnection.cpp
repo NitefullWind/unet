@@ -2,11 +2,13 @@
 #include <muduo/net/channel.h>
 #include <muduo/net/eventLoop.h>
 #include <muduo/net/socket.h>
+#include <muduo/net/socketsOps.h>
 #include <muduo/base/logger.h>
 
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <assert.h>
 
 using namespace muduo;
@@ -45,5 +47,42 @@ void TcpConnection::handleRead()
 {
 	char buf[65536];
 	ssize_t n = ::read(_channel->fd(), buf, sizeof(buf));
-	_messageCallback(shared_from_this(), buf, n);
+	if ( n > 0) {
+		_messageCallback(shared_from_this(), buf, n);
+	} else if (n == 0) {
+		handleClose();
+	} else {
+		handleError();
+	}
+}
+
+void TcpConnection::handleWrite()
+{
+}
+
+void TcpConnection::handleClose()
+{
+	_loop->assertInLoopThread();
+	LOG_TRACE("TcpConnetion::handleClose state = " << _state);
+	assert(_state == kConnected);
+	_channel->disableAll();
+	_closeCallback(shared_from_this());
+}
+
+void TcpConnection::handleError()
+{
+	int err = sockets::getSocketError(_channel->fd());
+	LOG_ERROR("TcpConnection::handleError [" << _name 
+			<< "] - SO_ERROR = " << err << " " << strerror(err));
+}
+
+void TcpConnection::connectDestroyed()
+{
+	_loop->assertInLoopThread();
+	assert(_state == kConnected);
+	setState(kDisconnected);
+	_channel->disableAll();
+	_connectionCallback(shared_from_this());
+
+	_loop->removeChannel(_channel.get());
 }
