@@ -46,15 +46,15 @@ void TcpConnection::connectEstablished()
 
 void TcpConnection::handleRead(Timestamp receiveTime)
 {
-	char buf[65536];
-	ssize_t n = ::read(_channel->fd(), buf, sizeof(buf));
+	int savedError = 0;
+	ssize_t n = _inputBuffer.readFd(_channel->fd(), &savedError);
 	if ( n > 0) {
-		Buffer buffer;
-		buffer.append(buf, n);
-		_messageCallback(shared_from_this(), &buffer, receiveTime);
+		_messageCallback(shared_from_this(), &_inputBuffer, receiveTime);
 	} else if (n == 0) {
 		handleClose();
 	} else {
+		errno = savedError;
+		LOG_ERROR("TcpConnection::handleRead");
 		handleError();
 	}
 }

@@ -3,6 +3,7 @@
 
 #include <muduo/net/muduo.h>
 #include <muduo/net/inetAddress.h>
+#include <muduo/net/buffer.h>
 
 #include <memory>
 #include <string>
@@ -63,6 +64,7 @@ private:
 	ConnectionCallback _connectionCallback;
 	MessageCallback _messageCallback;
 	CloseCallback _closeCallback;
+	Buffer _inputBuffer;
 };
 
 }
