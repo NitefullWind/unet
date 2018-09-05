@@ -30,6 +30,12 @@ public:
 	const InetAddress& peerAddress() { return _peerAddr; }
 	bool connected() const { return _state == kConnected; }
 
+	//void send(const void *message, size_t len);
+	// Thread safe
+	void send(const std::string& message);
+	// Thread safe
+	void shutdown();
+
 	void setConnectionCallback(const ConnectionCallback& cb) {
 		_connectionCallback = cb;
 	}
@@ -46,13 +52,15 @@ public:
 	void connectDestroyed();
 
 private:
-	enum StateE { kConnecting, kConnected, kDisconnected, };
+	enum StateE { kConnecting, kConnected, kDisconnecting,  kDisconnected, };
 
 	void setState(StateE s) { _state = s; }
 	void handleRead(Timestamp receiveTime);
 	void handleWrite();
 	void handleClose();
 	void handleError();
+	void sendInLoop(const std::string& message);
+	void shutdownInLoop();
 
 	EventLoop *_loop;
 	std::string _name;
@@ -65,6 +73,7 @@ private:
 	MessageCallback _messageCallback;
 	CloseCallback _closeCallback;
 	Buffer _inputBuffer;
+	Buffer _outputBuffer;
 };
 
 }

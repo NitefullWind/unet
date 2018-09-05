@@ -34,6 +34,64 @@ TcpConnection::~TcpConnection()
 	LOG_DEBUG("TcpConnection::dtor[" << _name << "] at " << this << " fd = " << _channel->fd());
 }
 
+void TcpConnection::send(const std::string& message)
+{
+	if(_state == kConnected) {
+		if(_loop->isInLoopThread()) {
+			sendInLoop(message);
+		} else {
+			_loop->runInLoop(std::bind(&TcpConnection::sendInLoop, shared_from_this(), message));
+		}
+	}
+}
+
+void TcpConnection::sendInLoop(const std::string& message)
+{
+	_loop->assertInLoopThread();
+	ssize_t nwrote = 0;
+	// if no thing in output queue, try writing directly
+	if(!_channel->isWriting() && _outputBuffer.readableBytes() == 0) {
+		nwrote = ::write(_channel->fd(), message.data(), message.size());
+		if(nwrote >= 0) {
+			if((size_t)(nwrote) < message.size()) {
+				LOG_TRACE("I am going to write more data");
+			}
+		} else {
+			nwrote = 0;
+			if(errno != EWOULDBLOCK) {
+				LOG_FATAL("TcpConnection::sendInLoop()");
+			}
+		}
+	}
+
+	assert(nwrote >= 0);
+	if((size_t)(nwrote) < message.size()) {
+		_outputBuffer.append(message.data()+nwrote, message.size()-nwrote);
+		if(!_channel->isWriting()) {
+			_channel->enableWriting();
+		}
+	}
+}
+
+void TcpConnection::shutdown()
+{
+	// FIXME: use compare and swap
+	if(_state == kConnected) {
+		setState(kDisconnecting);
+		// FIXME: shared_from_this()
+		_loop->runInLoop(std::bind(&TcpConnection::shutdownInLoop, shared_from_this()));
+	}
+}
+
+void TcpConnection::shutdownInLoop()
+{
+	_loop->assertInLoopThread();
+	if(!_channel->isWriting()) {
+		// we are not writing
+		_socket->shutdownWrite();
+	}
+}
+
 void TcpConnection::connectEstablished()
 {
 	_loop->assertInLoopThread();
@@ -61,13 +119,32 @@ void TcpConnection::handleRead(Timestamp receiveTime)
 
 void TcpConnection::handleWrite()
 {
+	_loop->assertInLoopThread();
+	if(_channel->isWriting()) {
+		ssize_t n = ::write(_channel->fd(), _outputBuffer.peek(), _outputBuffer.readableBytes());
+		if(n > 0) {
+			_outputBuffer.retrieve(n);
+			if(_outputBuffer.readableBytes() == 0) {
+				_channel->disableWriting();
+				if(_state == kDisconnecting) {
+					shutdownInLoop();
+				}
+			} else {
+				LOG_TRACE("I am going to write more data");
+			}
+		} else {
+			LOG_FATAL("TcpConnection::handleWrite");
+		}
+	} else {
+		LOG_TRACE("Connection is down, no more writing");
+	}
 }
 
 void TcpConnection::handleClose()
 {
 	_loop->assertInLoopThread();
 	LOG_TRACE("TcpConnetion::handleClose state = " << _state);
-	assert(_state == kConnected);
+	assert(_state == kConnected || _state == kDisconnecting);
 	_channel->disableAll();
 	_closeCallback(shared_from_this());
 }
@@ -82,7 +159,7 @@ void TcpConnection::handleError()
 void TcpConnection::connectDestroyed()
 {
 	_loop->assertInLoopThread();
-	assert(_state == kConnected);
+	assert(_state == kConnected || _state == kDisconnecting);
 	setState(kDisconnected);
 	_channel->disableAll();
 	_connectionCallback(shared_from_this());

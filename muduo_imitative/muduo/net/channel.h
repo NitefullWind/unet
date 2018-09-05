@@ -33,9 +33,10 @@ public:
 	bool isNoneEvent() const { return this->_events == kNoneEvent; }
 
 	void enableReading() { _events |= kReadEvent; update(); }
-	// void enableWriting() { _events |= kWriteEvent; update(); }
-	// void disableWriting() { _events &= ~kWriteEvent; update(); }
+	void enableWriting() { _events |= kWriteEvent; update(); }
+	void disableWriting() { _events &= ~kWriteEvent; update(); }
 	void disableAll() { _events &= kNoneEvent; update(); }
+	bool isWriting() const { return _events & kWriteEvent; }
 	
 	// for Poller
 	int index() { return _index; }
