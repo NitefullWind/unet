@@ -24,9 +24,10 @@ EventLoop *EventLoopThread::eventLoop()
 {
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		while(_loop == NULL) {
-			_conn.wait(lock);
-		}
+		_conn.wait(lock, [&]{ return _loop != NULL; });
+		// while(_loop == NULL) {
+			// _conn.wait(lock);
+		// }
 	}
 	return _loop;
 }
@@ -35,7 +36,7 @@ void EventLoopThread::threadFunc()
 {
 	EventLoop loop;
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
+		std::lock_guard<std::mutex> lock(_mutex);
 		_loop = &loop;
 		_conn.notify_one();
 	}

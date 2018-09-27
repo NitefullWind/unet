@@ -12,10 +12,11 @@ set(net_SRCS
 		tcpServer.cpp
 		tcpConnection.cpp
 		buffer.cpp
+		eventLoopThreadPool.cpp
 		)
 
 add_library(muduo_net ${net_SRCS})
-target_link_libraries(muduo_net muduo_base log4cxx)
+target_link_libraries(muduo_net muduo_base log4cxx pthread)
 
 install(TARGETS muduo_net DESTINATION lib)
 
@@ -27,6 +28,7 @@ set(HEADERS
 		eventLoopThread.h
 		tcpServer.h
 		buffer.h
+		eventLoopThreadPool.h
 		)
 
 install(FILES ${HEADERS} DESTINATION include/muduo/net)

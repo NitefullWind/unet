@@ -13,7 +13,8 @@ using namespace muduo::net;
 void onConnection(const TcpConnectionPtr& conn)
 {
 	if(conn->connected()) {
-		std::cout << "onConnection(): new connection " << conn->name() 
+		std::cout << "onConnection(): tid = " << std::this_thread::get_id()
+			<< " new connection " << conn->name() 
 			<< " from " << conn->peerAddress().toHostPort() << std::endl;
 	} else {
 		std::cout << "onConnection(): connetion " << conn->name() << " is down\n";
@@ -22,13 +23,14 @@ void onConnection(const TcpConnectionPtr& conn)
 
 void onMessage(const TcpConnectionPtr& conn, Buffer *buf, Timestamp receiveTime)
 {
-	std::cout << "onMessage(): receive " << buf->readableBytes() 
+	std::cout << "onMessage(): tid = " << std::this_thread::get_id() 
+			<< " receive " << buf->readableBytes() 
 			<< " bytes from connection " << conn->peerAddress().toHostPort() 
 			<< " at " << receiveTime.toFormattedString() << std::endl;
 	conn->send(buf->retrieveAsString());
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	std::cout << "main(): pid = " << getpid() << std::endl;
 
@@ -38,6 +40,9 @@ int main()
 	TcpServer server(&loop, listenAddr);
 	server.setConnectionCallback(onConnection);
 	server.setMessageCallback(onMessage);
+	if(argc > 1) {
+		server.setThreadNum(atoi(argv[2]));
+	}
 	server.start();
 
 	loop.loop();

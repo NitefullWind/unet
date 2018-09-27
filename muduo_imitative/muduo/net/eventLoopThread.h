@@ -2,6 +2,7 @@
 #define MUDUO_NET_EVENTLOOPTHREAD_H
 
 #include <thread>
+#include <mutex>
 #include <condition_variable>
 
 namespace muduo
