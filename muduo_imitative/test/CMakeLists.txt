@@ -46,5 +46,8 @@ target_link_libraries(test7 muduo_net)
 add_executable(test8 test8.cpp)
 target_link_libraries(test8 muduo_net)
 
+add_executable(test9 test9.cpp)
+target_link_libraries(test9 muduo_net)
+
 # add_executable(test test.cpp ${muduo_net_SRC})
 # target_link_libraries(test pthread log4cxx muduo_base)
