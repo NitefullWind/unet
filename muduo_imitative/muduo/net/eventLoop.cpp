@@ -1,6 +1,6 @@
 #include <muduo/net/eventLoop.h>
 #include <muduo/net/channel.h>
-#include <muduo/net/poller.h>
+#include <muduo/net/epoller.h>
 #include <muduo/net/timerQueue.h>
 #include <muduo/base/logger.h>
 #include <assert.h>
@@ -27,7 +27,7 @@ EventLoop::EventLoop() :
 	_looping(false),
 	_quit(false),
 	_tid(std::this_thread::get_id()),
-	_poller(std::unique_ptr<Poller>(new Poller(this))),
+	_poller(new EPoller(this)),
 	_timerQueue(new TimerQueue(this)),
 	_wakeupFd(createEventfd()),
 	_wakeupChannel(new Channel(this, _wakeupFd))

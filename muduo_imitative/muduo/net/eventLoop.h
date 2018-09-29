@@ -15,7 +15,7 @@ namespace net
 {
 
 class Channel;
-class Poller;
+class EPoller;
 class TimerQueue;
 
 class EventLoop
@@ -59,7 +59,7 @@ private:
 	bool _callingPendingFunctors;
 	const std::thread::id _tid;
 	Timestamp _pollReturnTime;
-	std::unique_ptr<Poller> _poller;
+	std::unique_ptr<EPoller> _poller;
 	std::unique_ptr<TimerQueue> _timerQueue;
 	int _wakeupFd;
 	std::unique_ptr<Channel> _wakeupChannel;

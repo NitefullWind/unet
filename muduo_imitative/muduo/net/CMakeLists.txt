@@ -14,6 +14,7 @@ set(net_SRCS
 		buffer.cpp
 		eventLoopThreadPool.cpp
 		connector.cpp
+		epoller.cpp
 		)
 
 add_library(muduo_net ${net_SRCS})
