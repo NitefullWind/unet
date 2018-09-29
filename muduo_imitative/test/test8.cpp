@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	server.setConnectionCallback(onConnection);
 	server.setMessageCallback(onMessage);
 	if(argc > 1) {
-		server.setThreadNum(atoi(argv[2]));
+		server.setThreadNum(atoi(argv[1]));
 	}
 	server.start();
 
