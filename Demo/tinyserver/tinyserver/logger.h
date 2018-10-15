@@ -27,7 +27,7 @@ namespace tinyserver
 }
 
 #define LOG_TRACE(message) do {											\
-			LOG4CXX_TRACE(tinyserver::GetLogger(), message);			\
+			LOG4CXX_TRACE(tinyserver::Logger::GetLogger(), message);			\
 		} while(0);
 
 #define LOG_DEBUG(message) do {											\

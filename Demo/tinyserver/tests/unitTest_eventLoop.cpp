@@ -11,5 +11,5 @@ TEST(TestEventLoop, Test1)
 TEST(TestEventLoop, loop)
 {
 	tinyserver::EventLoop loop;
-	EXPECT_TRUE(loop.loop());
+	loop.loop();
 }
