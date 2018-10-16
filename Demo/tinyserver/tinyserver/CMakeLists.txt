@@ -1,5 +1,6 @@
 set(SRCS
 	eventLoop.cpp
+	inetAddress.cpp
 	logger.cpp
 	sockets.cpp
 	)
