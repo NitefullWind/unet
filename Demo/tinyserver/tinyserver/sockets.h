@@ -44,6 +44,8 @@ inline uint32_t NetworkToHost16(uint16_t net16)
 	return ntohs(net16);
 }
 
+int CreateNonblockingSocket();
+
 const char *Inet_ntop(int family, const void *addrptr, char *strptr, size_t len);
 void Inet_pton(int family, const char *strptr, void *addrptr);
 

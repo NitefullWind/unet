@@ -1,6 +1,49 @@
 #include <tinyserver/sockets.h>
 
+#include <fcntl.h>
+#include <unistd.h>
+
 using namespace tinyserver;
+
+namespace
+{
+
+#if VALGRIND || defined (NO_ACCEPT4)
+void SetNonBlockAndCloseOnExec(int sockfd)
+{
+	// non-block
+	int flags = ::fcntl(sockfd, F_GETFL, 0);
+	flags |= O_NONBLOCK;
+	int ret = ::fcntl(sockfd, F_SETFL, flags);
+
+	// close-on-exec
+	flags = ::fcntl(sockfd, F_GETFL, 0);
+	flags |= FD_CLOEXEC;
+	ret = ::fcntl(sockfd, F_SETFL, flags);
+
+	(void)ret;
+}
+#endif
+
+}	// end namespace
+
+int sockets::CreateNonblockingSocket()
+{
+	// socket
+#if VALGRIND
+	int sockfd = Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(sockfd < 0) {
+		LOG_FATAL(__FUNCTION__ << " failed");
+	}
+	SetNonBlockAndCloseOnExec(sockfd);
+#else
+	int sockfd = Socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
+	if(sockfd < 0) {
+		LOG_FATAL(__FUNCTION__ << " failed");
+	}
+#endif
+	return sockfd;
+}
 
 const char *sockets::Inet_ntop(int family, const void *addrptr, char *strptr, size_t len)
 {

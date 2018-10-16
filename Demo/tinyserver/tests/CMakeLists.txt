@@ -5,6 +5,7 @@ set(tinyserver_SRCS
 	../tinyserver/inetAddress.cpp
 	../tinyserver/logger.cpp
 	../tinyserver/sockets.cpp
+	../tinyserver/tcpServer.cpp
 	)
 
 set(unittest_SRCS

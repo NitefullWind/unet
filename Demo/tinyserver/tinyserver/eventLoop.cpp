@@ -15,7 +15,7 @@ EventLoop::EventLoop() :
 
 EventLoop::~EventLoop()
 {
-	delete _fds;
+	delete[] _fds;
 }
 
 void EventLoop::loop()
@@ -44,4 +44,9 @@ void EventLoop::loop()
 void EventLoop::stop()
 {
 	_stop = true;
+}
+
+void EventLoop::addSockets(int sockfd)
+{
+	_sockets.push_back(sockfd);
 }

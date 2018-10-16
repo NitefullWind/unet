@@ -13,6 +13,8 @@ public:
 	InetAddress(const char *ip, uint16_t port);
 	InetAddress(const struct sockaddr_in& addr);
 
+	int family() { return _addr.sin_family; }
+
 private:
 	struct sockaddr_in _addr;
 };

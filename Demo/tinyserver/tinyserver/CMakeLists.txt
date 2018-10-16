@@ -3,6 +3,7 @@ set(SRCS
 	inetAddress.cpp
 	logger.cpp
 	sockets.cpp
+	tcpServer.cpp
 	)
 
 add_library(tinyserver ${SRCS})

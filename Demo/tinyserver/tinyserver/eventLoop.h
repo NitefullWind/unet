@@ -17,6 +17,8 @@ public:
 	void loop();
 	void stop();
 
+	void addSockets(int sockfd);
+
 private:
 	bool _looping;
 	bool _stop;
