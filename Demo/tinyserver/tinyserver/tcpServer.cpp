@@ -19,4 +19,6 @@ void TcpServer::start()
 {
 	_sockfd = sockets::CreateNonblockingSocket();
 	_loop->addSockets(_sockfd);
+	sockets::Bind(_sockfd, _inetAddress.sockAddrInet());
+	sockets::Listen(_sockfd);
 }

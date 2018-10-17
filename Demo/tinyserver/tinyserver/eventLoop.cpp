@@ -1,21 +1,17 @@
 #include <tinyserver/eventLoop.h>
+#include <tinyserver/inetAddress.h>
 #include <tinyserver/logger.h>
-
-#define OPEN_MAX 1024
 
 using namespace tinyserver;
 
 EventLoop::EventLoop() :
 	_looping(false),
-	_stop(false),
-	_fds(new pollfd[OPEN_MAX]),
-	_nfds(0)
+	_stop(false)
 {
 }
 
 EventLoop::~EventLoop()
 {
-	delete[] _fds;
 }
 
 void EventLoop::loop()
@@ -23,19 +19,40 @@ void EventLoop::loop()
 	_looping = true;
 
 	for(int i=0; i<static_cast<int>(_sockets.size()); ++i) {
-		if(i >= OPEN_MAX) {
-			LOG_FATAL("need more fds");
+		int fd = _sockets[i];
+		if(_fdset.find(fd) == _fdset.end()) {
+			struct pollfd pollfd;
+			pollfd.fd = fd;
+			pollfd.events = POLLRDNORM;
+			_fds.push_back(pollfd);
+			_fdset.insert(fd);
 		}
-		_fds[i].fd = _sockets[i];
-		_fds[i].events = POLLRDNORM;
-		_nfds++;
 	}
 
 	while(!_stop) {
-		int n = sockets::Poll(_fds, _nfds, 10 * 1000);
-		LOG_TRACE("poll return: " << n);
-		//! for test
-		_stop = true;
+		int n = sockets::Poll(_fds.data(), _fds.size(), 10 * 1000);
+		if(n > 0) {
+			for(auto fd : _fds) {
+				if(fd.revents & POLLRDNORM) {	// new client connection
+					struct sockaddr_in sockaddr;
+					int clientfd = sockets::Accept(fd.fd, &sockaddr);
+					if(clientfd > 0) {
+						InetAddress clientAddr(sockaddr);
+						LOG_DEBUG("new connection: " << clientfd << " from: " << clientAddr.toHostPort());
+					}
+				} else if (fd.revents & POLLERR) {
+					LOG_ERROR("POLLERR");
+				} else if (fd.revents & POLLHUP) {
+					LOG_ERROR("POLLHUP");
+				} else if (fd.revents & POLLNVAL) {
+					LOG_ERROR("POLLNVAL");
+				}
+			}
+		} else if (n == 0) {
+			LOG_TRACE("poll nothing happend");
+		} else {
+			LOG_ERROR("Poll return error: " << n);
+		}
 	}
 
 	_looping = false;

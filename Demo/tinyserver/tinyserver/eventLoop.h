@@ -4,6 +4,7 @@
 #include <tinyserver/sockets.h>
 
 #include <vector>
+#include <set>
 
 namespace tinyserver
 {
@@ -24,8 +25,8 @@ private:
 	bool _stop;
 
 	std::vector<int> _sockets;
-	struct pollfd *_fds;
-	unsigned long _nfds;
+	std::vector<struct pollfd> _fds;
+	std::set<int> _fdset;
 };
 
 }

@@ -172,3 +172,20 @@ int sockets::Socket(int family, int type, int protocol)
 	}
 	return n;
 }
+
+void sockets::FromHostPort(const char *ip, uint16_t port, struct sockaddr_in *addr)
+{
+	addr->sin_family = AF_INET;
+	addr->sin_port = sockets::HostToNetwork16(port);
+	if(::inet_pton(AF_INET, ip, &addr->sin_addr) <= 0) {
+		LOG_FATAL("inet_pton in FromHostPort error");
+	}
+}
+
+void sockets::ToHostPort(char *buf, size_t size, const struct sockaddr_in& addr)
+{
+	char host[INET_ADDRSTRLEN] = "INVALID";
+	::inet_ntop(AF_INET, &addr.sin_addr, host, sizeof(host));
+	uint16_t port = sockets::NetworkToHost16(addr.sin_port);
+	snprintf(buf, size, "%s:%u", host, port);
+}

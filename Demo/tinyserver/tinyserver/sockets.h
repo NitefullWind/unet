@@ -39,7 +39,7 @@ inline uint32_t NetworkToHost32(uint32_t net32)
 	return ntohl(net32);
 }
 
-inline uint32_t NetworkToHost16(uint16_t net16)
+inline uint16_t NetworkToHost16(uint16_t net16)
 {
 	return ntohs(net16);
 }
@@ -64,6 +64,9 @@ ssize_t Read(int fd, void *buf, size_t nbytes);
 void ShutdownWrite(int sockfd);
 
 int Socket(int family, int type, int protocol);
+
+void FromHostPort(const char *ip, uint16_t port, struct sockaddr_in *addr);
+void ToHostPort(char *buf, size_t size, const struct sockaddr_in& addr);
 
 }
 }
