@@ -44,12 +44,24 @@ inline uint32_t NetworkToHost16(uint16_t net16)
 	return ntohs(net16);
 }
 
+int Accept(int sockfd, struct sockaddr_in *addr);
+
+void Bind(int sockfd, const struct sockaddr_in& addr);
+
+void Close(int sockfd);
+
 int CreateNonblockingSocket();
 
 const char *Inet_ntop(int family, const void *addrptr, char *strptr, size_t len);
 void Inet_pton(int family, const char *strptr, void *addrptr);
 
+void Listen(int sockfd);
+
 int Poll(struct pollfd *fds, unsigned long nfds, int timeout);
+
+ssize_t Read(int fd, void *buf, size_t nbytes);
+
+void ShutdownWrite(int sockfd);
 
 int Socket(int family, int type, int protocol);
 
