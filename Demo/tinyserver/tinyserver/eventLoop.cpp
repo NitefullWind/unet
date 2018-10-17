@@ -1,4 +1,5 @@
 #include <tinyserver/eventLoop.h>
+#include <tinyserver/channel.h>
 #include <tinyserver/inetAddress.h>
 #include <tinyserver/logger.h>
 
@@ -18,8 +19,8 @@ void EventLoop::loop()
 {
 	_looping = true;
 
-	for(int i=0; i<static_cast<int>(_sockets.size()); ++i) {
-		int fd = _sockets[i];
+	for(int i=0; i<static_cast<int>(_channelVector.size()); ++i) {
+		int fd = _channelVector[i]->fd();
 		if(_fdset.find(fd) == _fdset.end()) {
 			struct pollfd pollfd;
 			pollfd.fd = fd;
@@ -63,7 +64,7 @@ void EventLoop::stop()
 	_stop = true;
 }
 
-void EventLoop::addSockets(int sockfd)
+void EventLoop::addChannel(Channel *channel)
 {
-	_sockets.push_back(sockfd);
+	_channelVector.push_back(channel);
 }

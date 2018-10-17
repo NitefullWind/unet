@@ -9,6 +9,8 @@
 namespace tinyserver
 {
 
+class Channel;
+
 class EventLoop
 {
 public:
@@ -18,13 +20,13 @@ public:
 	void loop();
 	void stop();
 
-	void addSockets(int sockfd);
+	void addChannel(Channel *channel);
 
 private:
 	bool _looping;
 	bool _stop;
 
-	std::vector<int> _sockets;
+	std::vector<Channel *> _channelVector;
 	std::vector<struct pollfd> _fds;
 	std::set<int> _fdset;
 };

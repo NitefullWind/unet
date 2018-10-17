@@ -1,4 +1,5 @@
 set(SRCS
+	channel.cpp
 	eventLoop.cpp
 	inetAddress.cpp
 	logger.cpp
