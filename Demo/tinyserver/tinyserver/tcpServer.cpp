@@ -22,3 +22,8 @@ void TcpServer::start()
 	sockets::Bind(_sockfd, _inetAddress.sockAddrInet());
 	sockets::Listen(_sockfd);
 }
+
+void TcpServer::setConnectionCallback(const ConnectionCallback& cb)
+{
+	_connectCallback = cb;
+}

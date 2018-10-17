@@ -3,10 +3,14 @@
 
 #include <tinyserver/inetAddress.h>
 
+#include <functional>
+
 namespace tinyserver
 {
 
 class EventLoop;
+
+typedef std::function<void(const InetAddress& address)> ConnectionCallback;
 
 class TcpServer
 {
@@ -16,10 +20,13 @@ public:
 
 	void start();
 
+	void setConnectionCallback(const ConnectionCallback& cb);
+
 private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
 	int _sockfd;
+	ConnectionCallback _connectCallback;
 };
 
 }
