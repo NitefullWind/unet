@@ -1,6 +1,5 @@
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/channel.h>
-#include <tinyserver/inetAddress.h>
 #include <tinyserver/logger.h>
 #include <tinyserver/poller.h>
 
