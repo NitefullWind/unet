@@ -12,7 +12,7 @@ namespace tinyserver
 class Channel;
 class EventLoop;
 
-typedef std::function<void(const InetAddress& address)> ConnectionCallback;
+typedef std::function<void(const InetAddress& address)> NewConnectionCallback;
 
 class TcpServer
 {
@@ -22,13 +22,15 @@ public:
 
 	void start();
 
-	void setConnectionCallback(const ConnectionCallback& cb);
+	void setConnectionCallback(const NewConnectionCallback& cb);
+
+	void onNewConnection();
 
 private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
 	std::unique_ptr<Channel> _channel;
-	ConnectionCallback _connectCallback;
+	NewConnectionCallback _newConnectionCallback;
 };
 
 }

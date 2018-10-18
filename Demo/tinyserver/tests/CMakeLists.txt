@@ -5,6 +5,7 @@ set(tinyserver_SRCS
 	../tinyserver/eventLoop.cpp
 	../tinyserver/inetAddress.cpp
 	../tinyserver/logger.cpp
+	../tinyserver/poller.cpp
 	../tinyserver/sockets.cpp
 	../tinyserver/tcpServer.cpp
 	)

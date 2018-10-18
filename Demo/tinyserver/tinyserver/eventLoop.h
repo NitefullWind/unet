@@ -1,15 +1,13 @@
 #ifndef TINYSERVER_EVENTLOOP_H
 #define TINYSERVER_EVENTLOOP_H
 
-#include <tinyserver/sockets.h>
-
-#include <vector>
-#include <set>
+#include <memory>
 
 namespace tinyserver
 {
 
 class Channel;
+class Poller;
 
 class EventLoop
 {
@@ -21,14 +19,13 @@ public:
 	void stop();
 
 	void addChannel(Channel *channel);
+	void updateChannel(Channel *channel);
 
 private:
 	bool _looping;
 	bool _stop;
 
-	std::vector<Channel *> _channelVector;
-	std::vector<struct pollfd> _fds;
-	std::set<int> _fdset;
+	std::unique_ptr<Poller> _poller;
 };
 
 }

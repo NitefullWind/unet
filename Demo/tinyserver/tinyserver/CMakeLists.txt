@@ -3,6 +3,7 @@ set(SRCS
 	eventLoop.cpp
 	inetAddress.cpp
 	logger.cpp
+	poller.cpp
 	sockets.cpp
 	tcpServer.cpp
 	)
