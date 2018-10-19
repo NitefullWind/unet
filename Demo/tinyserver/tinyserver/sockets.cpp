@@ -157,6 +157,13 @@ ssize_t sockets::Read(int fd, void *buf, size_t nbytes)
 	return n;
 }
 
+void sockets::Write(int fd, const void *buf, size_t nbytes)
+{
+	if(::write(fd, buf, nbytes) != (ssize_t)nbytes) {
+		LOG_FATAL("write error");
+	}
+}
+
 void sockets::ShutdownWrite(int sockfd)
 {
 	if(::shutdown(sockfd, SHUT_WR) < 0) {

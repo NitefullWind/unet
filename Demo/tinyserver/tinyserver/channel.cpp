@@ -1,8 +1,7 @@
 #include <tinyserver/channel.h>
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/logger.h>
-
-#include <poll.h>
+#include <tinyserver/sockets.h>
 
 using namespace tinyserver;
 
@@ -12,12 +11,16 @@ const short Channel::kWriteEvent = POLLOUT;
 
 Channel::Channel(EventLoop *loop, int fd):
 	_loop(loop),
-	_fd(fd)
+	_fd(fd),
+	_events(0),
+	_revents(0),
+	_index(-1)
 {
 }
 
 Channel::~Channel()
 {
+	sockets::Close(_fd);
 }
 
 void Channel::update()

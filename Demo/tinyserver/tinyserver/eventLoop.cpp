@@ -36,11 +36,6 @@ void EventLoop::stop()
 	_stop = true;
 }
 
-void EventLoop::addChannel(Channel *channel)
-{
-	_poller->updateChannel(channel);
-}
-
 void EventLoop::updateChannel(Channel *channel)
 {
 	_poller->updateChannel(channel);

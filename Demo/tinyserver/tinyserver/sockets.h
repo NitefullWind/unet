@@ -60,6 +60,7 @@ void Listen(int sockfd);
 int Poll(struct pollfd *fds, unsigned long nfds, int timeout);
 
 ssize_t Read(int fd, void *buf, size_t nbytes);
+void Write(int fd, const void *buf, size_t nbytes);
 
 void ShutdownWrite(int sockfd);
 

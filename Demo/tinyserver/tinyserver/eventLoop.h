@@ -18,7 +18,6 @@ public:
 	void loop();
 	void stop();
 
-	void addChannel(Channel *channel);
 	void updateChannel(Channel *channel);
 
 private:

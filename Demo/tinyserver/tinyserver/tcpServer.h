@@ -4,12 +4,14 @@
 #include <tinyserver/inetAddress.h>
 
 #include <functional>
+#include <list>
 #include <memory>
 
 namespace tinyserver
 {
 
 class Channel;
+class TcpConnection;
 class EventLoop;
 
 typedef std::function<void(const InetAddress& address)> NewConnectionCallback;
@@ -31,6 +33,7 @@ private:
 	InetAddress _inetAddress;
 	std::unique_ptr<Channel> _channel;
 	NewConnectionCallback _newConnectionCallback;
+	std::list<std::unique_ptr<TcpConnection> > _connections;
 };
 
 }

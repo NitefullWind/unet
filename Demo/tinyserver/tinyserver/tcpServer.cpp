@@ -1,5 +1,6 @@
 #include <tinyserver/tcpServer.h>
 #include <tinyserver/channel.h>
+#include <tinyserver/tcpConnection.h>
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/sockets.h>
 
@@ -20,7 +21,6 @@ TcpServer::~TcpServer()
 
 void TcpServer::start()
 {
-	_loop->addChannel(_channel.get());
 	_channel->setReadCallback(std::bind(&TcpServer::onNewConnection, this));
 	_channel->enableReading();
 
@@ -38,6 +38,7 @@ void TcpServer::onNewConnection()
 	struct sockaddr_in clientSockaddr;
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd > 0) {
+		_connections.push_back(std::unique_ptr<TcpConnection>(new TcpConnection(_loop, clientfd)));
  		if(_newConnectionCallback) {
 			InetAddress clientAddr(clientSockaddr);
 			_newConnectionCallback(clientAddr);
