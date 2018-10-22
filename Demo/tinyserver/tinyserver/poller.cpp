@@ -62,4 +62,24 @@ void Poller::updateChannel(Channel *channel)
 
 void Poller::removeChannel(Channel *channel)
 {
+	assert(channel != nullptr);
+	channel->disableAll();
+
+	size_t index = channel->index();
+	auto chit = _channelMap.find(channel->fd());
+	
+	assert(_pollfds.size() > index);
+	assert(chit != _channelMap.end());
+
+
+	// remove from pollfds
+	if(_pollfds.size()-1 == index) {
+		_pollfds.pop_back();
+	} else {
+		int lastPollfd = _pollfds.back().fd;
+		std::iter_swap(_pollfds.begin()+index, _pollfds.end()-1);	// swap with the last item to avoid reset other channel's index
+		_pollfds.pop_back();										// remove new last channel
+		_channelMap[lastPollfd]->setIndex(index);					// update old last channel's index
+	}
+	_channelMap.erase(chit);										// remove from map
 }

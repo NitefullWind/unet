@@ -9,7 +9,9 @@
 using namespace tinyserver;
 
 TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
-	_channel(new Channel(loop, sockfd))
+	_loop(loop),
+	_channel(new Channel(loop, sockfd)),
+	_index(-1)
 {
 	_channel->enableReading();
 	// _channel->enableWriting();
@@ -20,21 +22,31 @@ TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 
 TcpConnection::~TcpConnection()
 {
+	LOG_TRACE(__FUNCTION__ << " index: " << _index);
 }
 
 void TcpConnection::onClose()
 {
 	LOG_TRACE("close connection: " << _channel->fd());
-	_channel->disableAll();
-	//! TODO call remove
-	sockets::Close(_channel->fd());
+	_loop->removeChannel(_channel.get());
+	//! FIXME: Should check the state of channel, cann't be writting.
+	if(_closeCallback) {
+		_closeCallback(_index);
+	}
 }
 
 void TcpConnection::onReading()
 {
 	char buf[1024];
-	sockets::Read(_channel->fd(), buf, sizeof(buf));
-	LOG_TRACE(__FUNCTION__ << ": " << buf);
+	size_t n = sockets::Read(_channel->fd(), buf, sizeof(buf));
+	if(n > 0) {
+		LOG_TRACE(__FUNCTION__ << ": " << buf);
+	} else if (n == 0) {
+		onClose();
+	} else {
+		onClose();
+		LOG_ERROR(__FUNCTION__ << " error");
+	}
 }
 
 void TcpConnection::onWriting()

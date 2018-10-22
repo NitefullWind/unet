@@ -4,7 +4,7 @@
 #include <tinyserver/inetAddress.h>
 
 #include <functional>
-#include <list>
+#include <map>
 #include <memory>
 
 namespace tinyserver
@@ -28,12 +28,14 @@ public:
 
 	void onNewConnection();
 
+	void removeConnection(size_t index);
+
 private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
 	std::unique_ptr<Channel> _channel;
 	NewConnectionCallback _newConnectionCallback;
-	std::list<std::unique_ptr<TcpConnection> > _connections;
+	std::map<size_t, std::shared_ptr<TcpConnection> > _connectionMap;
 };
 
 }

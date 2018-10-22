@@ -38,10 +38,19 @@ void TcpServer::onNewConnection()
 	struct sockaddr_in clientSockaddr;
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd > 0) {
-		_connections.push_back(std::unique_ptr<TcpConnection>(new TcpConnection(_loop, clientfd)));
+		std::shared_ptr<TcpConnection> tcpConn(new TcpConnection(_loop, clientfd));
+		tcpConn->setIndex(_connectionMap.size());
+		tcpConn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
+		_connectionMap[tcpConn->index()] = tcpConn;
  		if(_newConnectionCallback) {
 			InetAddress clientAddr(clientSockaddr);
 			_newConnectionCallback(clientAddr);
 		}
 	}
+}
+
+void TcpServer::removeConnection(size_t index)
+{
+	LOG_TRACE(__FUNCTION__);
+	_connectionMap.erase(_connectionMap.find(index));
 }

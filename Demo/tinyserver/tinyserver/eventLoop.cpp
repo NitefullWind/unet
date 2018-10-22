@@ -40,3 +40,8 @@ void EventLoop::updateChannel(Channel *channel)
 {
 	_poller->updateChannel(channel);
 }
+
+void EventLoop::removeChannel(Channel *channel)
+{
+	_poller->removeChannel(channel);
+}

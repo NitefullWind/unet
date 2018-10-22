@@ -19,6 +19,7 @@ public:
 	void stop();
 
 	void updateChannel(Channel *channel);
+	void removeChannel(Channel *channel);
 
 private:
 	bool _looping;
