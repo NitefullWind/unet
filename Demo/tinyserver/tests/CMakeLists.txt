@@ -1,6 +1,7 @@
 set(EXECUTABLE_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/tests/)
 
 set(tinyserver_SRCS
+	../tinyserver/buffer.cpp
 	../tinyserver/channel.cpp
 	../tinyserver/tcpConnection.cpp
 	../tinyserver/eventLoop.cpp

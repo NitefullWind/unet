@@ -1,4 +1,5 @@
 #include <tinyserver/tcpConnection.h>
+#include <tinyserver/buffer.h>
 #include <tinyserver/channel.h>
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/logger.h>
@@ -37,10 +38,10 @@ void TcpConnection::onClose()
 
 void TcpConnection::onReading()
 {
-	char buf[1024];
-	size_t n = sockets::Read(_channel->fd(), buf, sizeof(buf));
+	Buffer buffer;
+	size_t n = buffer.readFd(_channel->fd());
 	if(n > 0) {
-		LOG_TRACE(__FUNCTION__ << ": " << buf);
+		LOG_TRACE(__FUNCTION__ << ": " << buffer.readAll());
 	} else if (n == 0) {
 		onClose();
 	} else {

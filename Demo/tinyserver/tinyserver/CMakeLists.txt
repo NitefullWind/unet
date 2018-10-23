@@ -1,4 +1,5 @@
 set(SRCS
+	buffer.cpp
 	channel.cpp
 	tcpConnection.cpp
 	eventLoop.cpp
