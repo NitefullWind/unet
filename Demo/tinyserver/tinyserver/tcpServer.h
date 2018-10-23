@@ -2,10 +2,9 @@
 #define TINYSERVER_TCPSERVER_H
 
 #include <tinyserver/inetAddress.h>
+#include <tinyserver/types.h>
 
-#include <functional>
 #include <map>
-#include <memory>
 
 namespace tinyserver
 {
@@ -13,8 +12,6 @@ namespace tinyserver
 class Channel;
 class TcpConnection;
 class EventLoop;
-
-typedef std::function<void(const InetAddress& address)> NewConnectionCallback;
 
 class TcpServer
 {
@@ -24,18 +21,25 @@ public:
 
 	void start();
 
-	void setConnectionCallback(const NewConnectionCallback& cb);
-
-	void onNewConnection();
-
-	void removeConnection(size_t index);
+	void setConnectionCallback(const ConnectionCallback& cb) {
+		_newConnectionCallback = cb;
+	}
+	void setMessageCallback(const MessageCallback& cb) {
+		_messageCallback = cb;
+	}
 
 private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
 	std::unique_ptr<Channel> _channel;
-	NewConnectionCallback _newConnectionCallback;
-	std::map<size_t, std::shared_ptr<TcpConnection> > _connectionMap;
+	ConnectionCallback _newConnectionCallback;
+	MessageCallback _messageCallback;
+	std::map<size_t, TcpConnectionPtr> _connectionMap;
+
+	void onNewConnection();
+	void onNewMessage();
+
+	void removeConnection(const TcpConnectionPtr& tcpConnPtr);
 };
 
 }

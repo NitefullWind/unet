@@ -12,7 +12,9 @@ using namespace tinyserver;
 TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 	_loop(loop),
 	_channel(new Channel(loop, sockfd)),
-	_index(-1)
+	_index(-1),
+	_localAddress(sockets::GetLocalAddr(sockfd)),
+	_peerAddress(sockets::GetPeerAddr(sockfd))
 {
 	_channel->enableReading();
 	// _channel->enableWriting();
@@ -32,7 +34,7 @@ void TcpConnection::onClose()
 	_loop->removeChannel(_channel.get());
 	//! FIXME: Should check the state of channel, cann't be writting.
 	if(_closeCallback) {
-		_closeCallback(_index);
+		_closeCallback(shared_from_this());
 	}
 }
 
@@ -41,7 +43,9 @@ void TcpConnection::onReading()
 	Buffer buffer;
 	size_t n = buffer.readFd(_channel->fd());
 	if(n > 0) {
-		LOG_TRACE(__FUNCTION__ << ": " << buffer.readAll());
+		if(_messageCallback) {
+			_messageCallback(shared_from_this(), &buffer);
+		}
 	} else if (n == 0) {
 		onClose();
 	} else {

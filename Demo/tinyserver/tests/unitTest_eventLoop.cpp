@@ -1,15 +1,27 @@
 #include <gtest/gtest.h>
 
+#include <tinyserver/buffer.h>
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/inetAddress.h>
 #include <tinyserver/logger.h>
+#include <tinyserver/tcpConnection.h>
 #include <tinyserver/tcpServer.h>
+#include <tinyserver/types.h>
 
 using namespace tinyserver;
 
-void onNewConnection(const InetAddress& address)
+void onNewMessage(const TcpConnectionPtr& tcpConnPtr, Buffer *buffer)
 {
-	LOG_TRACE("new connection from : " << address.toHostPort());
+	size_t len = buffer->readableBytes();
+	LOG_DEBUG("receive new message from: " << tcpConnPtr->peerAddress().toHostPort()
+			<< ", Size: " << len << ", Content: " << buffer->readAll());
+}
+
+void onNewConnection(const TcpConnectionPtr& tcpConnPtr)
+{
+	LOG_TRACE("new connection, local address: " << tcpConnPtr->localAddress().toHostPort()
+			<< ", peer address: " << tcpConnPtr->peerAddress().toHostPort());
+	tcpConnPtr->setMessageCallback(onNewMessage);
 }
 
 TEST(TestEventLoop, Test1)

@@ -1,8 +1,8 @@
 #ifndef TINYSERVER_TCPCONNECTION_H
 #define TINYSERVER_TCPCONNECTION_H
 
-#include <functional>
-#include <memory>
+#include <tinyserver/inetAddress.h>
+#include <tinyserver/types.h>
 
 namespace tinyserver
 {
@@ -10,19 +10,24 @@ namespace tinyserver
 class Channel;
 class EventLoop;
 
-class TcpConnection
+class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 public:
-	typedef std::function<void(size_t)> CloseCallback;
-
 	explicit TcpConnection(EventLoop *loop, int sockfd);
 	~TcpConnection();
 
 	size_t index() const { return _index; }
 	void setIndex(size_t index) { _index = index; }
 
+	const InetAddress& localAddress() const { return _localAddress; }
+	const InetAddress& peerAddress() const { return _peerAddress; }
+
 	void setCloseCallback(const CloseCallback& cb) {
 		_closeCallback = cb;
+	}
+
+	void setMessageCallback(const MessageCallback& cb) {
+		_messageCallback = cb;
 	}
 
 	void onClose();
@@ -32,8 +37,11 @@ private:
 	EventLoop *_loop;
 	std::unique_ptr<Channel> _channel;
 	size_t _index;
+	InetAddress _localAddress;
+	InetAddress _peerAddress;
 
 	CloseCallback _closeCallback;
+	MessageCallback _messageCallback;
 };
 
 }

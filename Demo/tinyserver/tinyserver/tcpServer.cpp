@@ -28,29 +28,24 @@ void TcpServer::start()
 	sockets::Listen(_channel->fd());
 }
 
-void TcpServer::setConnectionCallback(const NewConnectionCallback& cb)
-{
-	_newConnectionCallback = cb;
-}
-
 void TcpServer::onNewConnection()
 {
 	struct sockaddr_in clientSockaddr;
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
-	if(clientfd > 0) {
-		std::shared_ptr<TcpConnection> tcpConn(new TcpConnection(_loop, clientfd));
-		tcpConn->setIndex(_connectionMap.size());
-		tcpConn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
-		_connectionMap[tcpConn->index()] = tcpConn;
+	if(clientfd >= 0) {
+		TcpConnectionPtr tcpConnPtr(new TcpConnection(_loop, clientfd));
+		tcpConnPtr->setIndex(_connectionMap.size());
+		tcpConnPtr->setMessageCallback(_messageCallback);
+		tcpConnPtr->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
+		_connectionMap[tcpConnPtr->index()] = tcpConnPtr;
  		if(_newConnectionCallback) {
-			InetAddress clientAddr(clientSockaddr);
-			_newConnectionCallback(clientAddr);
+			_newConnectionCallback(tcpConnPtr);
 		}
 	}
 }
 
-void TcpServer::removeConnection(size_t index)
+void TcpServer::removeConnection(const TcpConnectionPtr& tcpConnPtr)
 {
 	LOG_TRACE(__FUNCTION__);
-	_connectionMap.erase(_connectionMap.find(index));
+	_connectionMap.erase(_connectionMap.find(tcpConnPtr->index()));
 }

@@ -1,6 +1,7 @@
 #include <tinyserver/sockets.h>
 
 #include <fcntl.h>
+#include <strings.h>
 #include <unistd.h>
 
 using namespace tinyserver;
@@ -195,4 +196,26 @@ void sockets::ToHostPort(char *buf, size_t size, const struct sockaddr_in& addr)
 	::inet_ntop(AF_INET, &addr.sin_addr, host, sizeof(host));
 	uint16_t port = sockets::NetworkToHost16(addr.sin_port);
 	snprintf(buf, size, "%s:%u", host, port);
+}
+
+sockaddr_in sockets::GetLocalAddr(int sockfd)
+{
+	struct sockaddr_in localAddr;
+	socklen_t addrlen = sizeof(localAddr);
+	bzero(&localAddr, addrlen);
+	if(::getsockname(sockfd, SockaddrCast(&localAddr), &addrlen) < 0) {
+		LOG_FATAL("getsockname error");
+	}
+	return localAddr;
+}
+
+sockaddr_in sockets::GetPeerAddr(int sockfd)
+{
+	struct sockaddr_in peerAddr;
+	socklen_t addrlen = sizeof(peerAddr);
+	bzero(&peerAddr, addrlen);
+	if(::getpeername(sockfd, SockaddrCast(&peerAddr), &addrlen) < 0) {
+		LOG_FATAL("getpeername error");
+	}
+	return peerAddr;
 }
