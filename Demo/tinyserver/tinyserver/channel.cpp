@@ -21,7 +21,6 @@ Channel::Channel(EventLoop *loop, int fd):
 Channel::~Channel()
 {
 	LOG_TRACE(__FUNCTION__ << " index:" << _index);
-	sockets::Close(_fd);
 }
 
 void Channel::update()

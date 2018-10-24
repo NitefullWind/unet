@@ -158,11 +158,28 @@ ssize_t sockets::Read(int fd, void *buf, size_t nbytes)
 	return n;
 }
 
-void sockets::Write(int fd, const void *buf, size_t nbytes)
+ssize_t sockets::Write(int fd, const void *buf, size_t nbytes)
 {
-	if(::write(fd, buf, nbytes) != (ssize_t)nbytes) {
+	ssize_t n;
+	if((n = ::write(fd, buf, nbytes)) != (ssize_t)nbytes) {
 		LOG_FATAL("write error");
 	}
+	return n;
+}
+
+ssize_t sockets::Writen(int fd, const void *buf, size_t nbytes)
+{
+	ssize_t nwritten = 0;
+	while((size_t)nwritten < nbytes) {
+		ssize_t n = ::write(fd, buf, nbytes);
+		if(n > 0) {
+			nwritten += n;
+		} else if (n < 0 && errno != EINTR) {		// ignore error(s): EINTR
+			LOG_FATAL("write error");
+			return -1;
+		}
+	}
+	return nwritten;
 }
 
 void sockets::ShutdownWrite(int sockfd)
@@ -219,3 +236,4 @@ sockaddr_in sockets::GetPeerAddr(int sockfd)
 	}
 	return peerAddr;
 }
+

@@ -14,7 +14,8 @@ void onNewMessage(const TcpConnectionPtr& tcpConnPtr, Buffer *buffer)
 {
 	size_t len = buffer->readableBytes();
 	LOG_DEBUG("receive new message from: " << tcpConnPtr->peerAddress().toHostPort()
-			<< ", Size: " << len << ", Content: " << buffer->readAll());
+			<< ", Size: " << len);
+	tcpConnPtr->send(buffer);
 }
 
 void onNewConnection(const TcpConnectionPtr& tcpConnPtr)

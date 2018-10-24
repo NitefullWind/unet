@@ -30,9 +30,10 @@ public:
 		_messageCallback = cb;
 	}
 
-	void onClose();
-	void onReading();
-	void onWriting();
+	void send(Buffer *buffer);
+	void send(const std::string& str);
+	void send(const char *data, size_t len);
+	void send(const void *data, size_t len);
 private:
 	EventLoop *_loop;
 	std::unique_ptr<Channel> _channel;
@@ -42,6 +43,10 @@ private:
 
 	CloseCallback _closeCallback;
 	MessageCallback _messageCallback;
+
+	void onClose();
+	void onReading();
+	void onWriting();
 };
 
 }

@@ -18,6 +18,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress& inetAddress) :
 
 TcpServer::~TcpServer()
 {
+	sockets::Close(_channel->fd());
 }
 
 void TcpServer::start()

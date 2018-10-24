@@ -4,6 +4,7 @@
 #include <log4cxx/logger.h>
 #include <cstdlib>		// abort()
 #include <atomic>		// atomic_bool
+#include <string.h>
 
 namespace tinyserver
 {
@@ -27,27 +28,27 @@ namespace tinyserver
 }
 
 #define LOG_TRACE(message) do {											\
-			LOG4CXX_TRACE(tinyserver::Logger::GetLogger(), message);			\
+			LOG4CXX_TRACE(tinyserver::Logger::GetLogger(), message);	\
 		} while(0);
 
 #define LOG_DEBUG(message) do {											\
-			LOG4CXX_DEBUG(tinyserver::Logger::GetLogger(), message);			\
+			LOG4CXX_DEBUG(tinyserver::Logger::GetLogger(), message);	\
 		} while(0);
 
 #define LOG_INFO(message) do {											\
-			LOG4CXX_INFO(tinyserver::Logger::GetLogger(), message);			\
+			LOG4CXX_INFO(tinyserver::Logger::GetLogger(), message);		\
 		} while(0);
 
 #define LOG_WARN(message) do {											\
-			LOG4CXX_WARN(tinyserver::Logger::GetLogger(), message);			\
+			LOG4CXX_WARN(tinyserver::Logger::GetLogger(), message);		\
 		} while(0);
 
 #define LOG_ERROR(message) do {											\
-			LOG4CXX_ERROR(tinyserver::Logger::GetLogger(), message);			\
+			LOG4CXX_ERROR(tinyserver::Logger::GetLogger(), message);	\
 		} while(0);
 
 #define LOG_FATAL(message) do {											\
-			LOG4CXX_FATAL(tinyserver::Logger::GetLogger(), message);			\
-			std::abort();												\
+			LOG4CXX_FATAL(tinyserver::Logger::GetLogger(), message		\
+					<< "[errno = " << errno << ", error string: " << strerror(errno) << "]");		\
 		} while(0);
 #endif	// TINYSERVER_LOGGER_H

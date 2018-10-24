@@ -28,9 +28,31 @@ TcpConnection::~TcpConnection()
 	LOG_TRACE(__FUNCTION__ << " index: " << _index);
 }
 
+void TcpConnection::send(Buffer *buffer)
+{
+	std::string str = buffer->readAll();
+	send(str);
+}
+
+void TcpConnection::send(const std::string& str)
+{
+	send(str.data(), str.length());
+}
+
+void TcpConnection::send(const char *data, size_t len)
+{
+	send((void*)data, len);
+}
+
+void TcpConnection::send(const void *data, size_t len)
+{
+	sockets::Writen(_channel->fd(), data, len);
+}
+
 void TcpConnection::onClose()
 {
 	LOG_TRACE("close connection: " << _channel->fd());
+	sockets::ShutdownWrite(_channel->fd());
 	_loop->removeChannel(_channel.get());
 	//! FIXME: Should check the state of channel, cann't be writting.
 	if(_closeCallback) {

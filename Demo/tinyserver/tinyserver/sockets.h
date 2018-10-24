@@ -60,7 +60,8 @@ void Listen(int sockfd);
 int Poll(struct pollfd *fds, unsigned long nfds, int timeout);
 
 ssize_t Read(int fd, void *buf, size_t nbytes);
-void Write(int fd, const void *buf, size_t nbytes);
+ssize_t Write(int fd, const void *buf, size_t nbytes);
+ssize_t Writen(int sockfd, const void *buf, size_t nbytes);
 
 void ShutdownWrite(int sockfd);
 
@@ -71,7 +72,6 @@ void ToHostPort(char *buf, size_t size, const struct sockaddr_in& addr);
 
 struct sockaddr_in GetLocalAddr(int sockfd);
 struct sockaddr_in GetPeerAddr(int sockfd);
-
 }
 }
 
