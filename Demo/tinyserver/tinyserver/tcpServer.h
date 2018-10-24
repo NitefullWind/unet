@@ -32,6 +32,7 @@ private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
 	std::unique_ptr<Channel> _channel;
+	uint64_t _connectionCounter;
 	ConnectionCallback _newConnectionCallback;
 	MessageCallback _messageCallback;
 	std::map<size_t, TcpConnectionPtr> _connectionMap;

@@ -11,7 +11,8 @@ using namespace tinyserver;
 TcpServer::TcpServer(EventLoop *loop, const InetAddress& inetAddress) :
 	_loop(loop),
 	_inetAddress(inetAddress),
-	_channel(new Channel(loop, sockets::CreateNonblockingSocket()))
+	_channel(new Channel(loop, sockets::CreateNonblockingSocket())),
+	_connectionCounter(0)
 {
 }
 
@@ -34,7 +35,8 @@ void TcpServer::onNewConnection()
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd >= 0) {
 		TcpConnectionPtr tcpConnPtr(new TcpConnection(_loop, clientfd));
-		tcpConnPtr->setIndex(_connectionMap.size());
+		tcpConnPtr->setIndex(_connectionCounter);
+		++_connectionCounter;
 		tcpConnPtr->setMessageCallback(_messageCallback);
 		tcpConnPtr->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
 		_connectionMap[tcpConnPtr->index()] = tcpConnPtr;
