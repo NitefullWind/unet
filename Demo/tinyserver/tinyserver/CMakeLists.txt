@@ -3,6 +3,8 @@ set(SRCS
 	channel.cpp
 	tcpConnection.cpp
 	eventLoop.cpp
+	eventLoopThread.cpp
+	eventLoopThreadPool.cpp
 	inetAddress.cpp
 	logger.cpp
 	poller.cpp

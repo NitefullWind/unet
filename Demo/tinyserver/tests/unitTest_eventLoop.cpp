@@ -2,6 +2,7 @@
 
 #include <tinyserver/buffer.h>
 #include <tinyserver/eventLoop.h>
+#include <tinyserver/eventLoopThreadPool.h>
 #include <tinyserver/inetAddress.h>
 #include <tinyserver/logger.h>
 #include <tinyserver/tcpConnection.h>
@@ -25,13 +26,9 @@ void onNewConnection(const TcpConnectionPtr& tcpConnPtr)
 	tcpConnPtr->setMessageCallback(onNewMessage);
 }
 
-TEST(TestEventLoop, Test1)
-{
-	EXPECT_EQ(1, 1);
-}
-
 TEST(TestEventLoop, loop)
 {
+	Logger::InitByFile("log.props");
 	InetAddress address(8888);
 	EventLoop loop;
 	TcpServer server(&loop, address);

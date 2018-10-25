@@ -5,6 +5,8 @@ set(tinyserver_SRCS
 	../tinyserver/channel.cpp
 	../tinyserver/tcpConnection.cpp
 	../tinyserver/eventLoop.cpp
+	../tinyserver/eventLoopThread.cpp
+	../tinyserver/eventLoopThreadPool.cpp
 	../tinyserver/inetAddress.cpp
 	../tinyserver/logger.cpp
 	../tinyserver/poller.cpp

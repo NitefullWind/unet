@@ -3,6 +3,8 @@
 #include <tinyserver/logger.h>
 #include <tinyserver/poller.h>
 
+#include <assert.h>
+
 using namespace tinyserver;
 
 EventLoop::EventLoop() :
@@ -18,6 +20,7 @@ EventLoop::~EventLoop()
 
 void EventLoop::loop()
 {
+	assert(_looping == false);
 	_looping = true;
 
 	while(!_stop) {
