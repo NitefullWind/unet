@@ -12,6 +12,7 @@ namespace tinyserver
 class Channel;
 class TcpConnection;
 class EventLoop;
+class EventLoopThreadPool;
 
 class TcpServer
 {
@@ -28,6 +29,8 @@ public:
 		_messageCallback = cb;
 	}
 
+	void setIOThreadNum(size_t numThreads);
+
 private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
@@ -36,6 +39,7 @@ private:
 	ConnectionCallback _newConnectionCallback;
 	MessageCallback _messageCallback;
 	std::map<size_t, TcpConnectionPtr> _connectionMap;
+	std::shared_ptr<EventLoopThreadPool> _IOThreadPool;
 
 	void onNewConnection();
 	void onNewMessage();

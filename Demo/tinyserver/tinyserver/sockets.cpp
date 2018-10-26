@@ -86,6 +86,7 @@ void sockets::Bind(int sockfd, const struct sockaddr_in& addr)
 {
 	if(::bind(sockfd, SockaddrCast(&addr), sizeof(addr)) < 0) {
 		LOG_FATAL("bind error");
+		abort();
 	}
 }
 

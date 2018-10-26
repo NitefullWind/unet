@@ -1,6 +1,8 @@
 #ifndef TINYSERVER_EVENTLOOPTHREAD_H
 #define TINYSERVER_EVENTLOOPTHREAD_H
 
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 
 namespace tinyserver
@@ -18,7 +20,9 @@ public:
 private:
 	EventLoop *_loop;
 	std::thread _thread;
-	bool _looping;
+	bool _started;
+	std::mutex _mutex;
+	std::condition_variable _cv;
 
 	void threadFunc();
 };

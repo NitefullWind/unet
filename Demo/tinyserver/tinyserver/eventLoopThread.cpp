@@ -8,7 +8,7 @@ using namespace tinyserver;
 
 EventLoopThread::EventLoopThread() :
 	_loop(nullptr),
-	_looping(false)
+	_started(false)
 {
 }
 
@@ -20,9 +20,13 @@ EventLoopThread::~EventLoopThread()
 EventLoop *EventLoopThread::startLoop()
 {
 	LOG_TRACE(__FUNCTION__);
-	assert(_looping == false);
-	_looping = true;
+	assert(_started == false);
+	_started = true;
 	_thread = std::thread(std::bind(&EventLoopThread::threadFunc, this));
+	{
+		std::unique_lock<std::mutex> lk(_mutex);
+		_cv.wait(lk, [&]{ return _loop != nullptr; });		// if loop == nullptr then wait
+	}
 	return _loop;
 }
 
@@ -30,6 +34,10 @@ void EventLoopThread::threadFunc()
 {
 	LOG_TRACE(__FUNCTION__ << " looping");
 	EventLoop loop;
-	_loop = &loop;
+	{
+		std::lock_guard<std::mutex> lk(_mutex);
+		_loop = &loop;
+		_cv.notify_one();
+	}
 	loop.loop();
 }

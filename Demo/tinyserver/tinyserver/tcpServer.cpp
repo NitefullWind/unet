@@ -2,6 +2,7 @@
 #include <tinyserver/channel.h>
 #include <tinyserver/tcpConnection.h>
 #include <tinyserver/eventLoop.h>
+#include <tinyserver/eventLoopThreadPool.h>
 #include <tinyserver/sockets.h>
 
 #include <iostream>
@@ -12,17 +13,20 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress& inetAddress) :
 	_loop(loop),
 	_inetAddress(inetAddress),
 	_channel(new Channel(loop, sockets::CreateNonblockingSocket())),
-	_connectionCounter(0)
+	_connectionCounter(0),
+	_IOThreadPool(new EventLoopThreadPool(loop))
 {
 }
 
 TcpServer::~TcpServer()
 {
+	LOG_TRACE(__FUNCTION__);
 	sockets::Close(_channel->fd());
 }
 
 void TcpServer::start()
 {
+	_IOThreadPool->start();
 	_channel->setReadCallback(std::bind(&TcpServer::onNewConnection, this));
 	_channel->enableReading();
 
@@ -32,10 +36,11 @@ void TcpServer::start()
 
 void TcpServer::onNewConnection()
 {
+	LOG_TRACE(__FUNCTION__);
 	struct sockaddr_in clientSockaddr;
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd >= 0) {
-		TcpConnectionPtr tcpConnPtr(new TcpConnection(_loop, clientfd));
+		TcpConnectionPtr tcpConnPtr(new TcpConnection(_IOThreadPool->getNextLoop(), clientfd));
 		tcpConnPtr->setIndex(_connectionCounter);
 		++_connectionCounter;
 		tcpConnPtr->setMessageCallback(_messageCallback);
@@ -51,4 +56,9 @@ void TcpServer::removeConnection(const TcpConnectionPtr& tcpConnPtr)
 {
 	LOG_TRACE(__FUNCTION__);
 	_connectionMap.erase(_connectionMap.find(tcpConnPtr->index()));
+}
+
+void TcpServer::setIOThreadNum(size_t numThreads)
+{
+	_IOThreadPool->setThreadNum(numThreads);
 }

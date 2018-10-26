@@ -16,6 +16,7 @@ EventLoop::EventLoop() :
 
 EventLoop::~EventLoop()
 {
+	LOG_TRACE(__FUNCTION__);
 }
 
 void EventLoop::loop()
