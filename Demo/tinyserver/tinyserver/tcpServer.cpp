@@ -40,7 +40,8 @@ void TcpServer::onNewConnection()
 	struct sockaddr_in clientSockaddr;
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd >= 0) {
-		TcpConnectionPtr tcpConnPtr(new TcpConnection(_IOThreadPool->getNextLoop(), clientfd));
+		EventLoop *ioLoop = _IOThreadPool->getNextLoop();
+		TcpConnectionPtr tcpConnPtr(new TcpConnection(ioLoop, clientfd));
 		tcpConnPtr->setIndex(_connectionCounter);
 		++_connectionCounter;
 		tcpConnPtr->setMessageCallback(_messageCallback);
@@ -49,6 +50,7 @@ void TcpServer::onNewConnection()
  		if(_newConnectionCallback) {
 			_newConnectionCallback(tcpConnPtr);
 		}
+		ioLoop->wakeUp();
 	}
 }
 

@@ -1,6 +1,7 @@
 #ifndef TINYSERVER_TCPCONNECTION_H
 #define TINYSERVER_TCPCONNECTION_H
 
+#include <tinyserver/buffer.h>
 #include <tinyserver/inetAddress.h>
 #include <tinyserver/types.h>
 
@@ -40,6 +41,9 @@ private:
 	size_t _index;
 	InetAddress _localAddress;
 	InetAddress _peerAddress;
+
+	Buffer _inputBuffer;
+	Buffer _outputBuffer;
 
 	CloseCallback _closeCallback;
 	MessageCallback _messageCallback;

@@ -1,5 +1,4 @@
 #include <tinyserver/tcpConnection.h>
-#include <tinyserver/buffer.h>
 #include <tinyserver/channel.h>
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/logger.h>
@@ -16,11 +15,11 @@ TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 	_localAddress(sockets::GetLocalAddr(sockfd)),
 	_peerAddress(sockets::GetPeerAddr(sockfd))
 {
-	_channel->enableReading();
 	// _channel->enableWriting();
 	_channel->setCloseCallback(std::bind(&TcpConnection::onClose, this));
 	_channel->setReadCallback(std::bind(&TcpConnection::onReading, this));
 	_channel->setWriteCallback(std::bind(&TcpConnection::onWriting, this));
+	_channel->enableReading();
 }
 
 TcpConnection::~TcpConnection()
@@ -62,11 +61,10 @@ void TcpConnection::onClose()
 
 void TcpConnection::onReading()
 {
-	Buffer buffer;
-	size_t n = buffer.readFd(_channel->fd());
+	size_t n = _inputBuffer.readFd(_channel->fd());
 	if(n > 0) {
 		if(_messageCallback) {
-			_messageCallback(shared_from_this(), &buffer);
+			_messageCallback(shared_from_this(), &_inputBuffer);
 		}
 	} else if (n == 0) {
 		onClose();
