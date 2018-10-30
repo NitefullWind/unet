@@ -38,6 +38,7 @@ void Poller::poll(ChannelVector *activeChannels, int timeoutMs)
 
 void Poller::updateChannel(Channel *channel)
 {
+	_loop->assertInLoopThread();
 	assert(channel != nullptr);
 
 	int fd = channel->fd();
@@ -58,10 +59,16 @@ void Poller::updateChannel(Channel *channel)
 			pfd.events = channel->events();
 		}
 	}
+
+	LOG_TRACE("========update pollfds=======");
+	for(auto pfd : _pollfds) {
+		LOG_TRACE("**[fd]=" << pfd.fd << "[events]=" << pfd.events << "[revents]=" << pfd.revents);
+	}
 }
 
 void Poller::removeChannel(Channel *channel)
 {
+	_loop->assertInLoopThread();
 	assert(channel != nullptr);
 	channel->disableAll();
 
@@ -82,4 +89,9 @@ void Poller::removeChannel(Channel *channel)
 		_channelMap[lastPollfd]->setIndex(index);					// update old last channel's index
 	}
 	_channelMap.erase(chit);										// remove from map
+
+	LOG_TRACE("========remove pollfds=======");
+	for(auto pfd : _pollfds) {
+		LOG_TRACE("**[fd]=" << pfd.fd << "[events]=" << pfd.events << "[revents]=" << pfd.revents);
+	}
 }

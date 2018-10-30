@@ -34,6 +34,11 @@ void TcpServer::start()
 	sockets::Listen(_channel->fd());
 }
 
+void TcpServer::setIOThreadNum(size_t numThreads)
+{
+	_IOThreadPool->setThreadNum(numThreads);
+}
+
 void TcpServer::onNewConnection()
 {
 	LOG_TRACE(__FUNCTION__);
@@ -50,17 +55,19 @@ void TcpServer::onNewConnection()
  		if(_newConnectionCallback) {
 			_newConnectionCallback(tcpConnPtr);
 		}
-		ioLoop->wakeUp();
+		ioLoop->runInLoop(std::bind(&TcpConnection::connectionEstablished, tcpConnPtr));
 	}
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& tcpConnPtr)
 {
-	LOG_TRACE(__FUNCTION__);
-	_connectionMap.erase(_connectionMap.find(tcpConnPtr->index()));
+	_loop->runInLoop(std::bind(&TcpServer::removeConnectionInLoop, this, tcpConnPtr));
 }
 
-void TcpServer::setIOThreadNum(size_t numThreads)
+void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& tcpConnPtr)
 {
-	_IOThreadPool->setThreadNum(numThreads);
+	_loop->assertInLoopThread();
+	_connectionMap.erase(_connectionMap.find(tcpConnPtr->index()));
+	EventLoop *ioLoop = tcpConnPtr->ownerLoop();
+	ioLoop->queueInLoop(std::bind(&TcpConnection::connectionDestroyed, tcpConnPtr));
 }

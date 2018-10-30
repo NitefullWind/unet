@@ -45,6 +45,7 @@ private:
 	void onNewMessage();
 
 	void removeConnection(const TcpConnectionPtr& tcpConnPtr);
+	void removeConnectionInLoop(const TcpConnectionPtr& tcpConnPtr);
 };
 
 }

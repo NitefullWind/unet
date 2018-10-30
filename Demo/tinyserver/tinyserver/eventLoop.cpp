@@ -5,6 +5,7 @@
 #include <tinyserver/sockets.h>
 
 #include <assert.h>
+// #include <signal.h>
 #include <sys/eventfd.h>
 
 using namespace tinyserver;
@@ -22,13 +23,26 @@ int createEventFd()
 	return fd;
 }
 
+// #pragma GCC diagnostic ignored "-Wold-style-cast"
+// class IgnoreSigPipe
+// {
+// public:
+	// IgnoreSigPipe()
+	// {
+		// ::signal(SIGPIPE, SIG_IGN);
+	// }
+// };
+// #pragma GCC diagnostic error "-Wold-style-cast"
+
 }
 
 EventLoop::EventLoop() :
 	_looping(false),
 	_stop(false),
+	_threadId(std::this_thread::get_id()),
 	_poller(new Poller(this)),
-	_wakeupChannel(new Channel(this, createEventFd()))
+	_wakeupChannel(new Channel(this, createEventFd())),
+	_callingPendingFunctors(false)
 {
 	_wakeupChannel->setReadCallback(std::bind(&EventLoop::onWakeupChannelReading, this));
 	_wakeupChannel->enableReading();
@@ -54,6 +68,7 @@ void EventLoop::loop()
 		for(auto channel : activeChannels) {
 			channel->handleEvent();			// check events and call the callback function
 		}
+		doPendingFunctors();
 	}
 
 	_looping = false;
@@ -66,7 +81,7 @@ void EventLoop::stop()
 
 void EventLoop::updateChannel(Channel *channel)
 {
-	LOG_TRACE(__FUNCTION__);
+	// LOG_TRACE(__FUNCTION__);
 	_poller->updateChannel(channel);
 }
 
@@ -75,14 +90,65 @@ void EventLoop::removeChannel(Channel *channel)
 	_poller->removeChannel(channel);
 }
 
+void EventLoop::runInLoop(const Functor& cb)
+{
+	if(isInLoopThread()) {
+		cb();
+	} else {
+		queueInLoop(cb);
+	}
+}
+
+void EventLoop::queueInLoop(const Functor& cb)
+{
+	{
+		std::lock_guard<std::mutex> lk(_mutex);
+		_pendingFunctors.push_back(cb);
+	}
+	if(!isInLoopThread() || _callingPendingFunctors) {
+		wakeUp();
+	}
+}
+
 void EventLoop::wakeUp()
 {
 	uint64_t one = 1;
 	sockets::Write(_wakeupChannel->fd(), &one, sizeof(one));
 }
 
+void EventLoop::assertInLoopThread()
+{
+	if(!isInLoopThread()) {
+		abortNotInLoopThread();
+	}
+}
+
+void EventLoop::abortNotInLoopThread()
+{
+	LOG_FATAL(__FUNCTION__ << " EventLoop " << this
+			<< " was created in thread id = " << _threadId
+			<< ", current thread id = " << std::this_thread::get_id());
+	abort();
+}
+
 void EventLoop::onWakeupChannelReading()
 {
 	uint64_t one = 1;
 	sockets::Read(_wakeupChannel->fd(), &one, sizeof(one));
+}
+
+void EventLoop::doPendingFunctors()
+{
+	std::vector<Functor> functors;
+	_callingPendingFunctors = true;
+
+	{
+		std::lock_guard<std::mutex> lk(_mutex);
+		functors.swap(_pendingFunctors);
+	}
+
+	for(auto func : functors) {
+		func();
+	}
+	_callingPendingFunctors = false;
 }

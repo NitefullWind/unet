@@ -25,11 +25,15 @@ Channel::~Channel()
 
 void Channel::update()
 {
+	_loop->assertInLoopThread();
+
 	_loop->updateChannel(this);
 }
 
 void Channel::handleEvent()
 {
+	_loop->assertInLoopThread();
+
 	if(_revents & POLLNVAL) {
 		LOG_WARN(__FUNCTION__ << " POLLNVAL");
 	}

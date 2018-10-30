@@ -19,12 +19,27 @@ TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 	_channel->setCloseCallback(std::bind(&TcpConnection::onClose, this));
 	_channel->setReadCallback(std::bind(&TcpConnection::onReading, this));
 	_channel->setWriteCallback(std::bind(&TcpConnection::onWriting, this));
-	_channel->enableReading();
 }
 
 TcpConnection::~TcpConnection()
 {
 	LOG_TRACE(__FUNCTION__ << " index: " << _index);
+	sockets::Close(_channel->fd());
+}
+
+void TcpConnection::connectionEstablished()
+{
+	_loop->assertInLoopThread();
+
+	_channel->enableReading();	// this must be called in this loop thread
+}
+
+void TcpConnection::connectionDestroyed()
+{
+	_loop->assertInLoopThread();
+
+	_channel->disableAll();
+	_loop->removeChannel(_channel.get());
 }
 
 void TcpConnection::send(Buffer *buffer)
@@ -45,22 +60,26 @@ void TcpConnection::send(const char *data, size_t len)
 
 void TcpConnection::send(const void *data, size_t len)
 {
-	sockets::Writen(_channel->fd(), data, len);
+	if(_loop->isInLoopThread()) {
+		sendInLoop(data, len);
+	} else {
+		_loop->runInLoop(std::bind(&TcpConnection::sendInLoop, this, data, len));
+	}
 }
 
 void TcpConnection::onClose()
 {
+	_loop->assertInLoopThread();
 	LOG_TRACE("close connection: " << _channel->fd());
-	sockets::ShutdownWrite(_channel->fd());
-	_loop->removeChannel(_channel.get());
 	//! FIXME: Should check the state of channel, cann't be writting.
 	if(_closeCallback) {
-		_closeCallback(shared_from_this());
+		_closeCallback(shared_from_this());		// it call TcpConnection::connectionDestroyed in TcpServer
 	}
 }
 
 void TcpConnection::onReading()
 {
+	LOG_TRACE(__FUNCTION__);
 	size_t n = _inputBuffer.readFd(_channel->fd());
 	if(n > 0) {
 		if(_messageCallback) {
@@ -76,7 +95,29 @@ void TcpConnection::onReading()
 
 void TcpConnection::onWriting()
 {
+	LOG_TRACE(__FUNCTION__);
 	char buf[] = "welcome!"; 
 	sockets::Write(_channel->fd(), buf, sizeof(buf));
 	LOG_TRACE(__FUNCTION__);
+}
+
+void TcpConnection::sendInLoop(const void *data, size_t len)
+{
+	_loop->assertInLoopThread();
+	sockets::Writen(_channel->fd(), data, len);
+}
+
+void TcpConnection::shutdown()
+{
+	if(_loop->isInLoopThread()) {
+		shutdownInLoop();
+	} else {
+		_loop->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+	}
+}
+
+void TcpConnection::shutdownInLoop()
+{
+	_loop->assertInLoopThread();
+	sockets::ShutdownWrite(_channel->fd());
 }

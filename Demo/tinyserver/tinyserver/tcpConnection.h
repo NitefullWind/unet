@@ -20,6 +20,8 @@ public:
 	size_t index() const { return _index; }
 	void setIndex(size_t index) { _index = index; }
 
+	EventLoop *ownerLoop() const { return _loop; }
+
 	const InetAddress& localAddress() const { return _localAddress; }
 	const InetAddress& peerAddress() const { return _peerAddress; }
 
@@ -31,10 +33,14 @@ public:
 		_messageCallback = cb;
 	}
 
+	void connectionEstablished();
+	void connectionDestroyed();
+
 	void send(Buffer *buffer);
 	void send(const std::string& str);
 	void send(const char *data, size_t len);
 	void send(const void *data, size_t len);
+	void shutdown();
 private:
 	EventLoop *_loop;
 	std::unique_ptr<Channel> _channel;
@@ -51,6 +57,9 @@ private:
 	void onClose();
 	void onReading();
 	void onWriting();
+
+	void sendInLoop(const void *data, size_t len);
+	void shutdownInLoop();
 };
 
 }
