@@ -33,7 +33,7 @@ TEST(TestEventLoop, loop)
 	EventLoop loop;
 	TcpServer server(&loop, address);
 	server.setConnectionCallback(onNewConnection);
-	server.setIOThreadNum(1);
+	server.setIOThreadNum(2);
 	server.start();
 	loop.loop();
 }
