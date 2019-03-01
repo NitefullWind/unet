@@ -5,11 +5,13 @@
 #include <tinyserver/sockets.h>
 
 #include <functional>
+#include <assert.h>
 
 using namespace tinyserver;
 
 TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 	_loop(loop),
+	_state(kConnecting),
 	_channel(new Channel(loop, sockfd)),
 	_index(-1),
 	_localAddress(sockets::GetLocalAddr(sockfd)),
@@ -30,6 +32,8 @@ TcpConnection::~TcpConnection()
 void TcpConnection::connectionEstablished()
 {
 	_loop->assertInLoopThread();
+	assert(_state == kConnecting);
+	setState(kConnected);
 
 	_channel->enableReading();	// this must be called in this loop thread
 }
@@ -37,8 +41,10 @@ void TcpConnection::connectionEstablished()
 void TcpConnection::connectionDestroyed()
 {
 	_loop->assertInLoopThread();
-
-	_channel->disableAll();
+	if(_state == kConnected) {
+		setState(kDisconnected);
+		_channel->disableAll();
+	}
 	_loop->removeChannel(_channel.get());
 }
 
@@ -60,10 +66,12 @@ void TcpConnection::send(const char *data, size_t len)
 
 void TcpConnection::send(const void *data, size_t len)
 {
-	if(_loop->isInLoopThread()) {
-		sendInLoop(data, len);
-	} else {
-		_loop->runInLoop(std::bind(&TcpConnection::sendInLoop, this, data, len));
+	if(_state == kConnected) {
+		if(_loop->isInLoopThread()) {
+			sendInLoop(data, len);
+		} else {
+			_loop->runInLoop(std::bind(&TcpConnection::sendInLoop, this, data, len));
+		}
 	}
 }
 
@@ -71,7 +79,8 @@ void TcpConnection::onClose()
 {
 	_loop->assertInLoopThread();
 	LOG_TRACE("close connection: " << _channel->fd());
-	//! FIXME: Should check the state of channel, cann't be writting.
+	assert(_state == kConnected || _state == kDisconnecting);
+	_channel->disableAll();
 	if(_closeCallback) {
 		_closeCallback(shared_from_this());		// it call TcpConnection::connectionDestroyed in TcpServer
 	}
@@ -96,23 +105,26 @@ void TcpConnection::onReading()
 void TcpConnection::onWriting()
 {
 	LOG_TRACE(__FUNCTION__);
-	char buf[] = "welcome!"; 
-	sockets::Write(_channel->fd(), buf, sizeof(buf));
-	LOG_TRACE(__FUNCTION__);
 }
 
 void TcpConnection::sendInLoop(const void *data, size_t len)
 {
-	_loop->assertInLoopThread();
-	sockets::Writen(_channel->fd(), data, len);
+	if(_state == kConnected) {
+		_loop->assertInLoopThread();
+		sockets::Writen(_channel->fd(), data, len);
+	}
 }
 
 void TcpConnection::shutdown()
 {
-	if(_loop->isInLoopThread()) {
-		shutdownInLoop();
-	} else {
-		_loop->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+	if(_state == kConnected) {
+		setState(kDisconnected);
+
+		if(_loop->isInLoopThread()) {
+			shutdownInLoop();
+		} else {
+			_loop->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+		}
 	}
 }
 
