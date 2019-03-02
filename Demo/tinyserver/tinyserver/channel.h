@@ -29,10 +29,10 @@ public:
 
 	void handleEvent();
 
-	void enableReading() { _events |= kReadEvent; update(); }
-	void enableWriting() { _events |= kWriteEvent; update(); }
-	void disableWriting() { _events &= (short)~kWriteEvent; update(); }
-	void disableAll() { _events &= kNoneEvent; update(); }
+	void enableReading() { if((_events & kReadEvent) != kReadEvent) {_events |= kReadEvent; update();} }
+	void enableWriting() { if((_events & kWriteEvent) != kWriteEvent) {_events |= kWriteEvent; update();} }
+	void disableWriting() { if((_events & kWriteEvent) == kWriteEvent) {_events &= (short)~kWriteEvent; update();} }
+	void disableAll() { if(_events != kNoneEvent) {_events &= kNoneEvent; update();} }
 	bool isNoneEvent() { return (_events == kNoneEvent); }
 
 	void setCloseCallback(const EventCallback& cb) { _closeCallback = cb; }
