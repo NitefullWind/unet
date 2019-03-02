@@ -67,7 +67,10 @@ void TcpServer::removeConnection(const TcpConnectionPtr& tcpConnPtr)
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& tcpConnPtr)
 {
 	_loop->assertInLoopThread();
-	_connectionMap.erase(_connectionMap.find(tcpConnPtr->index()));
+	std::map<size_t, TcpConnectionPtr>::iterator it = _connectionMap.find(tcpConnPtr->index());
+	if(it != _connectionMap.end()) {
+		_connectionMap.erase(it);
+	}
 	EventLoop *ioLoop = tcpConnPtr->ownerLoop();
 	ioLoop->queueInLoop(std::bind(&TcpConnection::connectionDestroyed, tcpConnPtr));
 }

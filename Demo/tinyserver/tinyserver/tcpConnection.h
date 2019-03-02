@@ -42,7 +42,10 @@ public:
 	void send(const void *data, size_t len);
 	void shutdown();
 private:
+	enum StateEnum { kConnecting, kConnected, kDisconnecting, kDisconnected };
+
 	EventLoop *_loop;
+	StateEnum _state;
 	std::unique_ptr<Channel> _channel;
 	size_t _index;
 	InetAddress _localAddress;
@@ -60,6 +63,8 @@ private:
 
 	void sendInLoop(const void *data, size_t len);
 	void shutdownInLoop();
+
+	void setState(StateEnum state) { this->_state = state; }
 };
 
 }
