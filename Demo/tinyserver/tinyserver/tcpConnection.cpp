@@ -4,8 +4,9 @@
 #include <tinyserver/logger.h>
 #include <tinyserver/sockets.h>
 
-#include <functional>
 #include <assert.h>
+#include <functional>
+#include <unistd.h>
 
 using namespace tinyserver;
 
@@ -75,6 +76,32 @@ void TcpConnection::send(const void *data, size_t len)
 	}
 }
 
+void TcpConnection::sendInLoop(const void *data, size_t len)
+{
+	_loop->assertInLoopThread();
+	if(_state == kConnected) {
+		ssize_t nwrote;
+		if(!_channel->isWriting() && _outputBuffer.readableBytes() == 0) {
+			nwrote = ::write(_channel->fd(), data, len);
+			if(nwrote < 0) {
+				nwrote = 0;
+				if(errno != EWOULDBLOCK) {
+					LOG_ERROR(__FUNCTION__ << " error");
+				}
+			}
+		}
+		LOG_TRACE("Connection fd = " << _channel->fd() << " send data, size: " << nwrote);
+
+		if((size_t)nwrote < len) {						// there are more data neet to write
+			LOG_TRACE("sendInLoop there are more data neet to write")
+			_outputBuffer.append((const char *)data + nwrote, len - nwrote);
+			if(!_channel->isWriting()) {
+				_channel->enableWriting();
+			}
+		}
+	}
+}
+
 void TcpConnection::onClose()
 {
 	_loop->assertInLoopThread();
@@ -105,20 +132,32 @@ void TcpConnection::onReading()
 void TcpConnection::onWriting()
 {
 	LOG_TRACE(__FUNCTION__);
-}
-
-void TcpConnection::sendInLoop(const void *data, size_t len)
-{
-	if(_state == kConnected) {
-		_loop->assertInLoopThread();
-		sockets::Writen(_channel->fd(), data, len);
+	_loop->assertInLoopThread();
+	if(_channel->isWriting()) {							// write
+		ssize_t nwrote = sockets::Writen(_channel->fd(), _outputBuffer.peek(), _outputBuffer.readableBytes());
+		if(nwrote < 0) {
+			nwrote = 0;
+			if(errno != EWOULDBLOCK) {
+				LOG_ERROR(__FUNCTION__ << " error");
+			}
+		}
+		_outputBuffer.retrieve(nwrote);
+		if(_outputBuffer.readableBytes() == 0) {		// no more data to write
+			_channel->disableWriting();					// disable writing
+			if(_state == kDisconnecting) {				// need to shutdown the connection
+				shutdownInLoop();
+			}
+		}
+	} else {
+		//!TODO: what's this?
+		LOG_TRACE("Connection fd = " << _channel->fd() << " is down, no more writing.");
 	}
 }
 
 void TcpConnection::shutdown()
 {
 	if(_state == kConnected) {
-		setState(kDisconnected);
+		setState(kDisconnecting);
 
 		if(_loop->isInLoopThread()) {
 			shutdownInLoop();

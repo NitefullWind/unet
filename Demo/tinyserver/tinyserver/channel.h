@@ -29,11 +29,13 @@ public:
 
 	void handleEvent();
 
-	void enableReading() { if((_events & kReadEvent) != kReadEvent) {_events |= kReadEvent; update();} }
-	void enableWriting() { if((_events & kWriteEvent) != kWriteEvent) {_events |= kWriteEvent; update();} }
-	void disableWriting() { if((_events & kWriteEvent) == kWriteEvent) {_events &= (short)~kWriteEvent; update();} }
-	void disableAll() { if(_events != kNoneEvent) {_events &= kNoneEvent; update();} }
-	bool isNoneEvent() { return (_events == kNoneEvent); }
+	void enableReading() { if(!isReading()) {_events |= kReadEvent; update();} }
+	void enableWriting() { if(!isWriting()) {_events |= kWriteEvent; update();} }
+	void disableWriting() { if(isWriting()) {_events &= (short)~kWriteEvent; update();} }
+	void disableAll() { if(!isNoneEvent()) {_events &= kNoneEvent; update();} }
+	bool isReading() const { return _events & kReadEvent; }
+	bool isWriting() const { return _events & kWriteEvent; }
+	bool isNoneEvent() const { return (_events == kNoneEvent); }
 
 	void setCloseCallback(const EventCallback& cb) { _closeCallback = cb; }
 	void setErrorCallback(const EventCallback& cb) { _errorCallback = cb; }

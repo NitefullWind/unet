@@ -1,6 +1,7 @@
 #include <tinyserver/buffer.h>
 #include <tinyserver/logger.h>
 
+#include <assert.h>
 #include <sys/uio.h>
 
 using namespace tinyserver;
@@ -52,10 +53,33 @@ ssize_t Buffer::readFd(int fd)
 	return n;
 }
 
+std::string Buffer::read(size_t len)
+{
+	assert(len <= readableBytes());
+	std::string str(peek(), len);
+	retrieve(len);
+	return str;
+}
+
 std::string Buffer::readAll()
 {
 	std::string str(peek(), readableBytes());
+	retrieveAll();
+	return str;
+}
+
+void Buffer::retrieve(size_t len)
+{
+	assert(len <= readableBytes());
+	if(len < readableBytes()) {
+		_readerIndex += len;
+	} else {
+		retrieveAll();
+	}
+}
+
+void Buffer::retrieveAll()
+{
 	_readerIndex = 0;
 	_writerIndex = 0;
-	return str;
 }

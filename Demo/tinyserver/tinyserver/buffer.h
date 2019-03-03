@@ -14,7 +14,7 @@ public:
 	Buffer();
 	~Buffer();
 
-	size_t size() const { return _buffer.size(); }
+	// size_t size() const { return _buffer.size(); }	// useless
 	size_t readableBytes() const { return _writerIndex - _readerIndex; }
 	size_t writeableBytes() const { return _buffer.size() - _writerIndex; }
 
@@ -22,8 +22,18 @@ public:
 	void append(const std::string& str);
 	ssize_t readFd(int fd);
 
+	// read data to string
+	std::string read(size_t len);
+	// read all data to string
 	std::string readAll();
 
+	// first char of the buffer that can read
+	char *peek() { return begin() + _readerIndex; }
+
+	// retrieve the buffer
+	void retrieve(size_t len);
+	// retrieve all the buffer space
+	void retrieveAll();
 private:
 	std::vector<char> _buffer;
 	size_t _writerIndex;
@@ -36,9 +46,6 @@ private:
 	// first char of the buffer that can write
 	char *beginWrite() { return begin() + _writerIndex; }
 	const char *beginWrite() const { return begin() + _writerIndex; }
-
-	// first char of the buffer that can read
-	char *peek() { return begin() + _readerIndex; }
 };
 
 }
