@@ -20,7 +20,7 @@ public:
 
 	void append(const char *buf, size_t len);
 	void append(const std::string& str);
-	ssize_t readFd(int fd);
+	ssize_t readFd(int fd, int *savedErrno);
 
 	// read data to string
 	std::string read(size_t len);

@@ -22,6 +22,7 @@ TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 	_channel->setCloseCallback(std::bind(&TcpConnection::onClose, this));
 	_channel->setReadCallback(std::bind(&TcpConnection::onReading, this));
 	_channel->setWriteCallback(std::bind(&TcpConnection::onWriting, this));
+	_channel->setErrorCallback(std::bind(&TcpConnection::onError, this));
 }
 
 TcpConnection::~TcpConnection()
@@ -116,7 +117,8 @@ void TcpConnection::onClose()
 void TcpConnection::onReading()
 {
 	LOG_TRACE(__FUNCTION__);
-	size_t n = _inputBuffer.readFd(_channel->fd());
+	int savedError = 0;
+	size_t n = _inputBuffer.readFd(_channel->fd(), &savedError);
 	if(n > 0) {
 		if(_messageCallback) {
 			_messageCallback(shared_from_this(), &_inputBuffer);
@@ -124,8 +126,8 @@ void TcpConnection::onReading()
 	} else if (n == 0) {
 		onClose();
 	} else {
-		onClose();
 		LOG_ERROR(__FUNCTION__ << " error");
+		onError();
 	}
 }
 
@@ -152,6 +154,14 @@ void TcpConnection::onWriting()
 		//!TODO: what's this?
 		LOG_TRACE("Connection fd = " << _channel->fd() << " is down, no more writing.");
 	}
+}
+
+void TcpConnection::onError()
+{
+	int err = sockets::getSocketError(_channel->fd());
+	LOG_ERROR(__FUNCTION__ << " Index:" << _index << ". localAddress:"
+	 << _localAddress.toHostPort() << " peerAddress:" << _peerAddress.toHostPort()
+	 << ", errno:" << err << " errmsg:" << strerror(err));
 }
 
 void TcpConnection::shutdown()

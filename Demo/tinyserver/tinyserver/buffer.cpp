@@ -30,7 +30,7 @@ void Buffer::append(const std::string& str)
 	append(str.data(), str.length());
 }
 
-ssize_t Buffer::readFd(int fd)
+ssize_t Buffer::readFd(int fd, int *savedErrno)
 {
 	struct iovec vec[2];
 	const size_t writeable = writeableBytes();
@@ -44,6 +44,7 @@ ssize_t Buffer::readFd(int fd)
 	ssize_t n = ::readv(fd, vec, 2);
 	if(n < 0) {
 		LOG_ERROR("readv errno = " << errno);
+		*savedErrno = errno;
 	} else if ((size_t)n < writeable) {
 		_writerIndex += n;
 	} else {
