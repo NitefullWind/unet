@@ -80,7 +80,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
 {
 	_loop->assertInLoopThread();
 	if(_state == kConnected) {
-		ssize_t nwrote;
+		ssize_t nwrote = 0;
 		if(!_channel->isWriting() && _outputBuffer.readableBytes() == 0) {
 			nwrote = ::write(_channel->fd(), data, len);
 			if(nwrote < 0) {
