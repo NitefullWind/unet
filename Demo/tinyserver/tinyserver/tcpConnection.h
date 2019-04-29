@@ -60,6 +60,7 @@ private:
 	void onClose();
 	void onReading();
 	void onWriting();
+	void onError();
 
 	void sendInLoop(const void *data, size_t len);
 	void shutdownInLoop();

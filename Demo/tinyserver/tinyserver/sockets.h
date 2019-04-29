@@ -72,6 +72,8 @@ void ToHostPort(char *buf, size_t size, const struct sockaddr_in& addr);
 
 struct sockaddr_in GetLocalAddr(int sockfd);
 struct sockaddr_in GetPeerAddr(int sockfd);
+
+int getSocketError(int sockfd);
 }
 }
 

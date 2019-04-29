@@ -1,6 +1,7 @@
 #include <tinyserver/buffer.h>
 #include <tinyserver/logger.h>
 
+#include <assert.h>
 #include <sys/uio.h>
 
 using namespace tinyserver;
@@ -29,7 +30,7 @@ void Buffer::append(const std::string& str)
 	append(str.data(), str.length());
 }
 
-ssize_t Buffer::readFd(int fd)
+ssize_t Buffer::readFd(int fd, int *savedErrno)
 {
 	struct iovec vec[2];
 	const size_t writeable = writeableBytes();
@@ -43,6 +44,7 @@ ssize_t Buffer::readFd(int fd)
 	ssize_t n = ::readv(fd, vec, 2);
 	if(n < 0) {
 		LOG_ERROR("readv errno = " << errno);
+		*savedErrno = errno;
 	} else if ((size_t)n < writeable) {
 		_writerIndex += n;
 	} else {
@@ -52,10 +54,33 @@ ssize_t Buffer::readFd(int fd)
 	return n;
 }
 
+std::string Buffer::read(size_t len)
+{
+	assert(len <= readableBytes());
+	std::string str(peek(), len);
+	retrieve(len);
+	return str;
+}
+
 std::string Buffer::readAll()
 {
 	std::string str(peek(), readableBytes());
+	retrieveAll();
+	return str;
+}
+
+void Buffer::retrieve(size_t len)
+{
+	assert(len <= readableBytes());
+	if(len < readableBytes()) {
+		_readerIndex += len;
+	} else {
+		retrieveAll();
+	}
+}
+
+void Buffer::retrieveAll()
+{
 	_readerIndex = 0;
 	_writerIndex = 0;
-	return str;
 }
