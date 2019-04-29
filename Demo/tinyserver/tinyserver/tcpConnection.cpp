@@ -93,8 +93,8 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
 		}
 		LOG_TRACE("Connection fd = " << _channel->fd() << " send data, size: " << nwrote);
 
-		if((size_t)nwrote < len) {						// there are more data neet to write
-			LOG_TRACE("sendInLoop there are more data neet to write")
+		if((size_t)nwrote < len) {						// there are more data need to write
+			LOG_TRACE("sendInLoop there are more data need to write")
 			_outputBuffer.append((const char *)data + nwrote, len - nwrote);
 			if(!_channel->isWriting()) {
 				_channel->enableWriting();
