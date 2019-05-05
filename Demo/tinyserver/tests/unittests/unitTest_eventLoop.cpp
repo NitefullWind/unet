@@ -5,8 +5,8 @@
 #include <tinyserver/eventLoopThreadPool.h>
 #include <tinyserver/inetAddress.h>
 #include <tinyserver/logger.h>
-#include <tinyserver/tcpConnection.h>
-#include <tinyserver/tcpServer.h>
+#include <tinyserver/tcp/tcpConnection.h>
+#include <tinyserver/tcp/tcpServer.h>
 #include <tinyserver/types.h>
 
 using namespace tinyserver;
