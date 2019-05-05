@@ -1,7 +1,6 @@
 set(SRCS
 	buffer.cpp
 	channel.cpp
-	tcpConnection.cpp
 	eventLoop.cpp
 	eventLoopThread.cpp
 	eventLoopThreadPool.cpp
@@ -9,7 +8,8 @@ set(SRCS
 	logger.cpp
 	poller.cpp
 	sockets.cpp
-	tcpServer.cpp
+	tcp/tcpServer.cpp
+	tcp/tcpConnection.cpp
 	)
 
 add_library(tinyserver ${SRCS})

@@ -1,9 +1,9 @@
-#include <tinyserver/tcpServer.h>
+#include <tinyserver/tcp/tcpServer.h>
 #include <tinyserver/channel.h>
-#include <tinyserver/tcpConnection.h>
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/eventLoopThreadPool.h>
 #include <tinyserver/sockets.h>
+#include <tinyserver/tcp/tcpConnection.h>
 
 #include <iostream>
 
