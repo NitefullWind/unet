@@ -46,18 +46,20 @@ void Poller::updateChannel(Channel *channel)
 		struct pollfd pfd;
 		pfd.fd = fd;
 		pfd.events = channel->events();
+		pfd.revents = 0;
 		channel->setIndex(_pollfds.size());
 		_pollfds.push_back(pfd);
 		_channelMap[fd] = channel;
-	} else {										// update an existed channel
+	} else {	
 		assert(channel->index() < _pollfds.size());
 		auto& pfd = _pollfds.at(channel->index());
 		assert(channel->fd() == pfd.fd);
 		if(channel->isNoneEvent()) {
-			pfd.events = -1;						// ignore the pollfd
+			pfd.fd = -pfd.fd-1;						// ignore the pollfd
 		} else {
 			pfd.events = channel->events();
 		}
+		pfd.revents = 0;
 	}
 
 	LOG_TRACE("========update pollfds=======");
