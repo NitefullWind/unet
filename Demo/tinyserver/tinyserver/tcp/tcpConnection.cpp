@@ -46,8 +46,8 @@ void TcpConnection::connectionDestroyed()
 	if(_state == kConnected) {
 		setState(kDisconnected);
 		_channel->disableAll();
-		_loop->removeChannel(_channel.get());
 	}
+	_loop->removeChannel(_channel.get());
 }
 
 void TcpConnection::send(Buffer *buffer)
