@@ -12,7 +12,11 @@ set(tinyserver_SRCS
 	 ${PROJECT_SOURCE_DIR}/tinyserver/sockets.cpp
 	 ${PROJECT_SOURCE_DIR}/tinyserver/tcp/tcpConnection.cpp
 	 ${PROJECT_SOURCE_DIR}/tinyserver/tcp/tcpServer.cpp
+	 ${PROJECT_SOURCE_DIR}/tinyserver/http/HttpRequest.cpp
+	 ${PROJECT_SOURCE_DIR}/tinyserver/http/HttpResponse.cpp
+	 ${PROJECT_SOURCE_DIR}/tinyserver/http/HttpServer.cpp
 	)
 
 add_subdirectory(unittests)
 add_subdirectory(echo)
+add_subdirectory(http)

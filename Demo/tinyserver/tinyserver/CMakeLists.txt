@@ -10,6 +10,9 @@ set(SRCS
 	sockets.cpp
 	tcp/tcpServer.cpp
 	tcp/tcpConnection.cpp
+	http/HttpRequest.cpp
+	http/HttpResponse.cpp
+	http/HttpServer.cpp
 	)
 
 add_library(tinyserver ${SRCS})

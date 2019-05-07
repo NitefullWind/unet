@@ -16,6 +16,14 @@ typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
 typedef std::function<void(const TcpConnectionPtr&, Buffer *buf)> MessageCallback;
 typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
 
+namespace http
+{
+class HttpRequest;
+class HttpResponse;
+
+typedef std::function<void(const HttpRequest&, const HttpResponse&)> HttpCallback;
+}
+
 }
 
 #endif // TINYSERVER_TYPES_H
