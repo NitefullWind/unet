@@ -6,7 +6,16 @@
 
 namespace tinyserver
 {
-
+/**
+ * begin()				peek()			beginWrite()
+ * |					|					|
+ * +--------------------+-------------------+---------------+
+ * |	read bytes		|	readable bytes	|writable bytes	|
+ * |					|	  (CONTENT)  	|				|
+ * +--------------------+-------------------+---------------+
+ * |					|					|				|
+ * _buffer.data()	 _readIndex			_writerIndex	_buffer.size()
+ */
 class Buffer
 {
 public:
@@ -26,9 +35,19 @@ public:
 	std::string read(size_t len);
 	// read all data to string
 	std::string readAll();
+	// read a line to string
+	std::string readLine();
+
+	// return the string starting with \n or \r\n
+	const char* findCRLF() const;
+	const char* findCRLF(const char* start) const;
+
+	// return the string starting with \n
+	const char* findEOL() const;
+	const char* findEOL(const char* start) const;
 
 	// first char of the buffer that can read
-	char *peek() { return begin() + _readerIndex; }
+	const char *peek() const { return begin() + _readerIndex; }
 
 	// retrieve the buffer
 	void retrieve(size_t len);

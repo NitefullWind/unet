@@ -1,5 +1,5 @@
 set(unittest_SRCS
-	unitTest_eventLoop
+	unitTest_buffer
 	)
 
 add_executable(unitTest

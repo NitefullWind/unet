@@ -23,6 +23,7 @@ void Buffer::append(const char *buf, size_t len)
 		_buffer.resize(_writerIndex + len);
 	}
 	std::copy(buf, buf+len, beginWrite());
+	_writerIndex += len;
 }
 
 void Buffer::append(const std::string& str)
@@ -67,6 +68,47 @@ std::string Buffer::readAll()
 	std::string str(peek(), readableBytes());
 	retrieveAll();
 	return str;
+}
+
+std::string Buffer::readLine()
+{
+	const char* eol = findEOL();
+	if(eol) {
+		return read(eol - peek() + 1);
+	}
+	// 没有换行符，读取所有
+	return readAll();
+}
+
+const char* Buffer::findCRLF() const
+{
+	return findCRLF(peek());
+}
+
+const char* Buffer::findCRLF(const char* start) const
+{
+	assert(peek() <= start);
+	assert(start <= beginWrite());
+	// 从指定位置开始查找\n
+	const char* crlf = (const char*)memchr(start, '\n', beginWrite() - start);
+	if(crlf && start < crlf && memcmp(crlf-1, "\r", 1) == 0) { // 查找\n前是否有\r
+		return crlf - 1;
+	}
+	return crlf;
+}
+
+const char* Buffer::findEOL() const
+{
+	return findEOL(peek());
+}
+
+const char* Buffer::findEOL(const char* start) const
+{
+	assert(peek() <= start);
+	assert(start <= beginWrite());
+	// 从指定位置开始查找\n
+	const char* crlf = (const char*)memchr(start, '\n', beginWrite() - start);
+	return crlf;
 }
 
 void Buffer::retrieve(size_t len)
