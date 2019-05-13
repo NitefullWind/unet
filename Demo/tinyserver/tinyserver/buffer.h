@@ -35,8 +35,11 @@ public:
 	std::string read(size_t len);
 	// read all data to string
 	std::string readAll();
-	// read a line to string
-	std::string readLine();
+	/**
+	 * read a line to string
+	 * @withCRLF if true return whith CRLF, default false.
+	 */
+	std::string readLine(bool withCRLF=true);
 
 	// return the string starting with \n or \r\n
 	const char* findCRLF() const;

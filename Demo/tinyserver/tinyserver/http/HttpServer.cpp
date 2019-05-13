@@ -1,6 +1,8 @@
 #include <tinyserver/http/HttpServer.h>
 #include <tinyserver/logger.h>
 #include <tinyserver/tcp/tcpConnection.h>
+#include <tinyserver/http/HttpRequest.h>
+#include <tinyserver/http/HttpResponse.h>
 #include <functional>
 
 using namespace tinyserver;
@@ -24,6 +26,11 @@ void HttpServer::onConnection(const TcpConnectionPtr &tcpConnPtr)
 
 void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
 {
-	LOG_DEBUG(__FUNCTION__ << tcpConnPtr->peerAddress().toHostPort() << " : " << buffer->readAll());
+	HttpRequest request;
+	request.parserRequest(buffer);
+	HttpResponse response;
+	if(_httpCallback) {
+		_httpCallback(request, response);
+	}
 	tcpConnPtr->shutdown();
 }

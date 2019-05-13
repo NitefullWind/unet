@@ -70,11 +70,18 @@ std::string Buffer::readAll()
 	return str;
 }
 
-std::string Buffer::readLine()
+std::string Buffer::readLine(bool withCRLF)
 {
 	const char* eol = findEOL();
 	if(eol) {
-		return read(eol - peek() + 1);
+		std::string line = read(eol - peek() + 1);
+		if(!withCRLF) {
+			line.erase(line.length() - 1);
+			if(line[line.length() - 1] == '\r') {
+				line.erase(line.length() - 1);
+			}
+		}
+		return line;
 	}
 	// 没有换行符，读取所有
 	return readAll();

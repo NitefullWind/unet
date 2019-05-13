@@ -14,6 +14,7 @@ void onHttpRequest(const HttpRequest &req, const HttpResponse &rsp)
 
 int main(int argc, char** argv)
 {
+	Logger::InitByFile("log.props");
 	EventLoop loop;
 	InetAddress address(8080);
 	HttpServer httpServer(&loop, address);

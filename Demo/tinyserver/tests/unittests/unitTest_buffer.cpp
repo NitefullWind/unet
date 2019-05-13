@@ -21,11 +21,11 @@ TEST(Buffer, retrieve)
 	Buffer buf;
 	buf.append("abc");
 	buf.retrieve(1);
-	ASSERT_EQ(buf.readAll(), "bc");
+	EXPECT_EQ(buf.readAll(), "bc");
 
 	buf.append("abc");
 	buf.retrieveAll();
-	ASSERT_EQ(buf.readAll(), "");
+	EXPECT_EQ(buf.readAll(), "");
 }
 
 TEST(Buffer, findCRLF)
@@ -34,22 +34,22 @@ TEST(Buffer, findCRLF)
 	
 	Buffer buf;
 	buf.append("abc");
-	ASSERT_EQ(buf.findCRLF(), nullptr);
+	EXPECT_EQ(buf.findCRLF(), nullptr);
 
 	buf.retrieveAll();
 	buf.append("\n");
-	ASSERT_TRUE(memcmp(buf.findCRLF(), crlf+1, 1) == 0);
+	EXPECT_TRUE(memcmp(buf.findCRLF(), crlf+1, 1) == 0);
 
 	buf.retrieveAll();
 	buf.append("abc\r\n");
-	ASSERT_TRUE(memcmp(buf.findCRLF(), crlf, 2) == 0);
+	EXPECT_TRUE(memcmp(buf.findCRLF(), crlf, 2) == 0);
 }
 
 TEST(Buffer, findEOL)
 {	
 	Buffer buf;
 	buf.append("abc");
-	ASSERT_EQ(buf.findEOL(), nullptr);
+	EXPECT_EQ(buf.findEOL(), nullptr);
 
 	buf.retrieveAll();
 	buf.append("\n");
@@ -65,32 +65,39 @@ TEST(Buffer, readLine)
 	std::string str = "";
 	Buffer buf;
 	buf.append(str);
-	ASSERT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(), str);
 
 	buf.retrieveAll();
 	str = "abc";
 	buf.append(str);
-	ASSERT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(), str);
 
 	buf.retrieveAll();
 	str = "\n";
 	buf.append(str);
-	ASSERT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(), str);
+
+	buf.retrieveAll();
+	str = "\n";
+	buf.append(str);
+	EXPECT_EQ(buf.readLine(false), "");
 
 	buf.retrieveAll();
 	str = "abc\n";
 	buf.append(str);
-	ASSERT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(false), "abc");
 	
 	buf.retrieveAll();
 	str = "abc\n";
 	buf.append(str);
 	buf.append("def");
-	ASSERT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(), "def");
 
 	buf.retrieveAll();
 	str = "abc\r\n";
 	buf.append(str);
 	buf.append("def");
-	ASSERT_EQ(buf.readLine(), str);
+	EXPECT_EQ(buf.readLine(false), "abc");
+	EXPECT_EQ(buf.readLine(), "def");
 }
