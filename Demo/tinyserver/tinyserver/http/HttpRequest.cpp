@@ -79,10 +79,38 @@ void HttpRequest::parserRequest(Buffer* buffer)
 		setMethod(line.substr(0, n1).c_str());
 		std::string::size_type n2 = line.find(' ', n1+1);
 		if(n2 != std::string::npos) {
-			setPath(line.substr(n1+1, n2-n1-1).c_str());
+			std::string url = line.substr(n1+1, n2-n1-1);
+			parserURL(std::move(url));
 			setVersion(line.substr(n2+1).c_str());
-			return;
+
+			// parse headers
+			while((line = buffer->readLine(false)) != "") {
+				n1 = line.find(':');
+				if(n1 != std::string::npos) {
+					_headers[line.substr(0, n1)] = line.substr(n1+2);
+				}
+			}
+			_body = buffer->readAll();
 		}
 	}
 	// TODO: invalid request
+}
+
+void HttpRequest::parserURL(std::string &&url)
+{
+	std::string::size_type n1 = url.find('?');
+	if(n1 == std::string::npos) {	// 没有url参数
+		setPath(url);
+	} else {
+		setPath(url.substr(0, n1));
+		std::string queryStr = url.substr(n1+1);
+		
+		std::string::size_type n2 =std::string::npos;
+		do {
+			n1 = queryStr.find('=');
+			n2 = queryStr.find('&');
+			_queries[queryStr.substr(0, n1)] = queryStr.substr(n1+1, n2-n1-1);
+			queryStr.erase(0, (n2 == std::string::npos) ? n2 : n2+1); //删除已解析的参数
+		} while(n2 != std::string::npos);
+	}
 }

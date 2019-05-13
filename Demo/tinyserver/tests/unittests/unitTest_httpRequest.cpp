@@ -50,17 +50,48 @@ TEST(HttpRequest, setVersion)
 TEST(HttpRequest, parserRequest)
 {
 	Buffer buf;
-	buf.append("GET / HTTP/1.0\n");
+	buf.append("GET / HTTP/1.0\r\n");
 	HttpRequest request;
 	request.parserRequest(&buf);
-	EXPECT_EQ(request.methodString(), "GET");
-	EXPECT_EQ(request.path(), "/");
-	EXPECT_EQ(request.versionString(), "HTTP/1.0");
+	ASSERT_EQ(request.methodString(), "GET");
+	ASSERT_EQ(request.path(), "/");
+	ASSERT_EQ(request.versionString(), "HTTP/1.0");
 	
 	buf.retrieveAll();
-	buf.append("POST /test HTTP/1.1\n");
+	buf.append("POST /test HTTP/1.1\r\n");
 	request.parserRequest(&buf);
-	EXPECT_EQ(request.methodString(), "POST");
-	EXPECT_EQ(request.path(), "/test");
-	EXPECT_EQ(request.versionString(), "HTTP/1.1");
+	ASSERT_EQ(request.methodString(), "POST");
+	ASSERT_EQ(request.path(), "/test");
+	ASSERT_EQ(request.versionString(), "HTTP/1.1");
+	
+	// 完整的Get请求
+	buf.retrieveAll();
+	buf.append("GET /test?arg1=&arg2=v2&arg3= HTTP/1.1\r\n"
+				"Host: www.tinyserver.com\r\n"
+				"Connection: Keep-Alive\r\n"
+				"\r\n");
+	request.parserRequest(&buf);
+	ASSERT_EQ(request.methodString(), "GET");
+	ASSERT_EQ(request.path(), "/test");
+	ASSERT_EQ(request.versionString(), "HTTP/1.1");
+	ASSERT_EQ(request.queries().size(), 3);
+	EXPECT_EQ(request.query("arg1"), "");
+	EXPECT_EQ(request.query("arg2"), "v2");
+	EXPECT_EQ(request.query("arg3"), "");
+	EXPECT_EQ(request.query("invalidArg"), "");
+	ASSERT_EQ(request.headers().size(), 2);
+	EXPECT_EQ(request.header("Host"), "www.tinyserver.com");
+	EXPECT_EQ(request.header("Connection"), "Keep-Alive");
+	EXPECT_EQ(request.header("invalidHeader"), "");
+	
+	buf.retrieveAll();
+	buf.append("POST /test HTTP/1.1\r\n"
+				"Host: www.tinyserver.com\r\n"
+				"Content-Type: text/plain;charset=UTF-8\r\n"
+				"\r\n"
+				"arg1:v1,arg2:v2");
+	request.parserRequest(&buf);
+	ASSERT_EQ(request.methodString(), "POST");
+	EXPECT_EQ(request.header("Content-Type"), "text/plain;charset=UTF-8");
+	EXPECT_EQ(request.body(), "arg1:v1,arg2:v2");
 }
