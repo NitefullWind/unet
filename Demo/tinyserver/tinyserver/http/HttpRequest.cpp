@@ -5,7 +5,11 @@
 using namespace tinyserver;
 using namespace tinyserver::http;
 
-HttpRequest::HttpRequest()
+HttpRequest::HttpRequest():
+	_method(Invalid),
+	_version(Unknown),
+	_path(),
+	_body()
 {
 
 }

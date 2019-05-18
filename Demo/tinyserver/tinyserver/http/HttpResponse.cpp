@@ -3,7 +3,8 @@
 using namespace tinyserver;
 using namespace tinyserver::http;
 
-HttpResponse::HttpResponse()
+HttpResponse::HttpResponse():
+	_keeyAlive(false)
 {
 
 }

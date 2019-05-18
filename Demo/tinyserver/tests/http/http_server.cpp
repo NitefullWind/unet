@@ -7,9 +7,25 @@
 using namespace tinyserver;
 using namespace tinyserver::http;
 
+#include <iostream>
+
 void onHttpRequest(const HttpRequest &req, const HttpResponse &rsp)
 {
-	LOG_DEBUG(__FUNCTION__);
+	std::string reqInfo;
+	reqInfo.append("\n=====" + req.versionString() + " " + req.methodString() + "=====\n");
+	reqInfo.append("=====HEADERS=====\n");
+	for (auto &&v : req.headers())
+	{
+		reqInfo.append("===" + v.first + ": " + v.second + "\n");
+	}
+	reqInfo.append("=====PATH: " + req.path() + " =====\n");
+	reqInfo.append("=====QUERIES=====\n");
+	for (auto &&v : req.queries())
+	{
+		reqInfo.append("===" + v.first + ": " + v.second + "\n");
+	}
+	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
+	LOG_DEBUG(reqInfo);
 }
 
 int main(int argc, char** argv)

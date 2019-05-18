@@ -11,6 +11,12 @@ class HttpResponse
 public:
 	explicit HttpResponse();
 	~HttpResponse();
+
+	void setKeeyAlive(bool KA) { _keeyAlive = KA; }
+	bool keeyAlive() const { return _keeyAlive; }
+
+private:
+	bool _keeyAlive;
 };
 
 }
