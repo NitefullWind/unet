@@ -21,7 +21,7 @@ namespace http
 class HttpRequest;
 class HttpResponse;
 
-typedef std::function<void(const HttpRequest&, const HttpResponse&)> HttpCallback;
+typedef std::function<void(const HttpRequest&, HttpResponse*)> HttpCallback;
 }
 
 }

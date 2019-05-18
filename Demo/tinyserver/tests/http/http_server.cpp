@@ -9,7 +9,7 @@ using namespace tinyserver::http;
 
 #include <iostream>
 
-void onHttpRequest(const HttpRequest &req, const HttpResponse &rsp)
+void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 {
 	std::string reqInfo;
 	reqInfo.append("\n=====" + req.versionString() + " " + req.methodString() + "=====\n");
@@ -26,6 +26,11 @@ void onHttpRequest(const HttpRequest &req, const HttpResponse &rsp)
 	}
 	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
 	LOG_DEBUG(reqInfo);
+
+	rsp->setStatusCode(200);
+	rsp->setHeader("Content-Length", "0");
+	rsp->setContentType("text/html");
+
 }
 
 int main(int argc, char** argv)

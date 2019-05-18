@@ -35,8 +35,13 @@ void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
 		response.setKeeyAlive(true);
 	}
 	if(_httpCallback) {
-		_httpCallback(request, response);
+		_httpCallback(request, &response);
 	}
+	
+	Buffer responseBuffer;
+	response.getResponseBuffer(&responseBuffer);
+	tcpConnPtr->send(&responseBuffer);
+
 	if(!response.keeyAlive()) {
 		tcpConnPtr->shutdown();
 	}
