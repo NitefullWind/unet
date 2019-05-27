@@ -7,7 +7,7 @@ using namespace tinyserver::http;
 HttpResponse::HttpResponse():
 	_statusCode(0),
 	_statusMessage(),
-	_keeyAlive(false),
+	_keepAlive(false),
 	_textBody()
 {
 }

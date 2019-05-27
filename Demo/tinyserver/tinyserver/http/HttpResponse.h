@@ -24,11 +24,11 @@ public:
 
 	void setHeader(const std::string &key, const std::string &value) { _headers[key] = value; }
 	void setContentType(const std::string &contentType) { setHeader("Content-Type", contentType); }
-	void setKeeyAlive(bool keep) {
-		_keeyAlive = keep;
+	void setKeepAlive(bool keep) {
+		_keepAlive = keep;
 		keep ? setHeader("Connection", "Keep-Alive") : setHeader("Connection", "close");
 	}
-	bool keeyAlive() const { return _keeyAlive; }
+	bool keepAlive() const { return _keepAlive; }
 
 	void setTextBody(const std::string &text) { _textBody = text; }
 	void setTextBody(std::string &&text) { _textBody = std::move(text); }
@@ -38,7 +38,7 @@ private:
 	unsigned short _statusCode;
 	std::string _statusMessage;
 	std::map<std::string, std::string> _headers;
-	bool _keeyAlive;
+	bool _keepAlive;
 
 	std::string _textBody;
 };

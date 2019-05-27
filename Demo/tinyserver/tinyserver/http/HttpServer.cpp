@@ -32,7 +32,7 @@ void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
 	HttpResponse response;
 	// 根据Connection请求头的值判断是否是长连接，其值为keep-alive时，或者Http1.1中其值不为close则该请求是长连接
 	if(connection == "keep-alive" || (request.version() == HttpRequest::Version::Http11 && connection != "close")) {
-		response.setKeeyAlive(true);
+		response.setKeepAlive(true);
 	}
 	if(_httpCallback) {
 		_httpCallback(request, &response);
@@ -42,7 +42,7 @@ void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
 	response.getResponseBuffer(&responseBuffer);
 	tcpConnPtr->send(&responseBuffer);
 
-	if(!response.keeyAlive()) {
+	if(!response.keepAlive()) {
 		tcpConnPtr->shutdown();
 	}
 }
