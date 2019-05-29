@@ -27,10 +27,15 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
 	LOG_DEBUG(reqInfo);
 
-	rsp->setStatusCode(200);
-	rsp->setHeader("Content-Length", "0");
-	rsp->setContentType("text/html");
-
+	if(req.path() == "" or req.path() == "/" or req.path() == "/index.html") {
+		rsp->setStatusCode(200);
+		rsp->setTextBody("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\"content=\"width=device-width, initial-scale=1.0\"><title>Welcome</title></head><body><h1>Hi, this is the home page.</h1></body></html>");
+	} else {
+		rsp->setStatusCode(404);
+		rsp->setStatusMessage("Not Found");
+		rsp->setTextBody("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\"content=\"width=device-width, initial-scale=1.0\"><title>404</title></head><body><h1>404 Not Found</h1></body></html>");
+		rsp->setKeepAlive(false);
+	}
 }
 
 int main(int argc, char** argv)

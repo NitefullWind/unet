@@ -12,6 +12,48 @@ HttpResponse::HttpResponse():
 {
 }
 
+HttpResponse::HttpResponse(HttpResponse &rhs)
+{
+	_statusCode = rhs._statusCode;
+	_statusMessage = rhs._statusMessage;
+	_headers = rhs._headers;
+	_keepAlive = rhs._keepAlive;
+	_textBody = rhs._textBody;
+}
+
+HttpResponse::HttpResponse(HttpResponse &&rhs)
+{
+	_statusCode = rhs._statusCode;
+	_statusMessage = std::move(rhs._statusMessage);
+	_headers = std::move(rhs._headers);
+	_keepAlive = rhs._keepAlive;
+	_textBody = std::move(rhs._textBody);
+}
+
+HttpResponse &HttpResponse::operator=(const HttpResponse &rhs)
+{
+	if(this != &rhs) {
+		_statusCode = rhs._statusCode;
+		_statusMessage = rhs._statusMessage;
+		_headers = rhs._headers;
+		_keepAlive = rhs._keepAlive;
+		_textBody = rhs._textBody;
+	}
+	return *this;
+}
+
+HttpResponse &HttpResponse::operator=(const HttpResponse &&rhs)
+{
+	if(this != &rhs) {
+		_statusCode = rhs._statusCode;
+		_statusMessage = std::move(rhs._statusMessage);
+		_headers = std::move(rhs._headers);
+		_keepAlive = rhs._keepAlive;
+		_textBody = std::move(rhs._textBody);
+	}
+	return *this;
+}
+
 HttpResponse::~HttpResponse()
 {
 

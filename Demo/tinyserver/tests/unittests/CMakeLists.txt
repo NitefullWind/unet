@@ -1,6 +1,7 @@
 set(unittest_SRCS
 	unitTest_buffer
 	unitTest_httpRequest
+	unitTest_httpResponse
 	)
 
 add_executable(unitTest

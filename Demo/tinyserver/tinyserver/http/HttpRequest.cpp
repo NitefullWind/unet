@@ -75,7 +75,7 @@ std::string HttpRequest::versionString() const
 	}
 }
 
-void HttpRequest::parserRequest(Buffer* buffer)
+bool HttpRequest::parserRequest(Buffer* buffer)
 {
 	std::string line = buffer->readLine(false);
 	std::string::size_type n1 = line.find(' ');
@@ -95,9 +95,10 @@ void HttpRequest::parserRequest(Buffer* buffer)
 				}
 			}
 			_body = buffer->readAll();
+			return true;
 		}
 	}
-	// TODO: invalid request
+	return false;
 }
 
 void HttpRequest::parserURL(std::string &&url)

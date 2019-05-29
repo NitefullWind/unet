@@ -27,13 +27,20 @@ void HttpServer::onConnection(const TcpConnectionPtr &tcpConnPtr)
 void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
 {
 	HttpRequest request;
-	request.parserRequest(buffer);
-	std::string connection = request.header("Connection");
 	HttpResponse response;
-	// 根据Connection请求头的值判断是否是长连接，其值为keep-alive时，或者Http1.1中其值不为close则该请求是长连接
-	if(connection == "keep-alive" || (request.version() == HttpRequest::Version::Http11 && connection != "close")) {
-		response.setKeepAlive(true);
+	if(request.parserRequest(buffer)) {
+		std::string connection = request.header("Connection");
+		// 根据Connection请求头的值判断是否是长连接，其值为keep-alive时，或者Http1.1中其值不为close则该请求是长连接
+		if(connection == "keep-alive" || (request.version() == HttpRequest::Version::Http11 && connection != "close")) {
+			response.setKeepAlive(true);
+		}
+	} else {
+		response.setStatusCode(400);
+		response.setStatusMessage("Bad Request");
+		response.setTextBody("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\"content=\"width=device-width, initial-scale=1.0\"><title>400</title></head><body><h1>400 Bad Request</h1></body></html>");
+		response.setKeepAlive(false);
 	}
+
 	if(_httpCallback) {
 		_httpCallback(request, &response);
 	}

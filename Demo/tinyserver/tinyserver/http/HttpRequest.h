@@ -92,7 +92,7 @@ public:
 	/**
 	 * 解析请求数据
 	 */
-	void parserRequest(Buffer* buffer);
+	bool parserRequest(Buffer* buffer);
 
 private:
 	Method _method;
