@@ -25,7 +25,7 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 		reqInfo.append("===" + v.first + ": " + v.second + "\n");
 	}
 	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
-	LOG_DEBUG(reqInfo);
+	LOG_TRACE(reqInfo);
 
 	if(req.path() == "" or req.path() == "/" or req.path() == "/index.html") {
 		rsp->setStatusCode(200);
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 	EventLoop loop;
 	InetAddress address(8080);
 	HttpServer httpServer(&loop, address);
-	httpServer.setIOThreadNum(0);
+	httpServer.setIOThreadNum(2);
 	httpServer.setHttpCallback(onHttpRequest);
 	httpServer.start();
 	loop.loop();

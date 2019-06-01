@@ -4,9 +4,9 @@
 using namespace tinyserver;
 using namespace tinyserver::http;
 
-HttpResponse::HttpResponse():
-	_statusCode(0),
-	_statusMessage(),
+HttpResponse::HttpResponse(unsigned short statusCode, const std::string &statusMessage):
+	_statusCode(statusCode),
+	_statusMessage(statusMessage),
 	_keepAlive(false),
 	_textBody()
 {

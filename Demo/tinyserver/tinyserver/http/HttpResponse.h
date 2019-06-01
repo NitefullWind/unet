@@ -15,7 +15,7 @@ namespace http
 class HttpResponse
 {
 public:
-	explicit HttpResponse();
+	explicit HttpResponse(unsigned short statusCode=200, const std::string &statusMessage="OK");
 	HttpResponse(HttpResponse &rhs);
 	HttpResponse(HttpResponse &&rhs);
 	HttpResponse &operator=(const HttpResponse &rhs);
@@ -57,8 +57,8 @@ public:
 	}
 	bool keepAlive() const { return _keepAlive; }
 
-	void setTextBody(const std::string &text) { _textBody = text; }
-	void setTextBody(std::string &&text) { _textBody = std::move(text); }
+	void setTextBody(const std::string &text) { _textBody = text; setHeader("Content-Length", std::to_string(_textBody.length())); }
+	void setTextBody(std::string &&text) { _textBody = std::move(text); setHeader("Content-Length", std::to_string(_textBody.length())); }
 	const std::string &textBody() const { return _textBody; }
 
 	void getResponseBuffer(Buffer* buffer);
