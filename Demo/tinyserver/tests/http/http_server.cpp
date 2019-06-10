@@ -8,6 +8,7 @@ using namespace tinyserver;
 using namespace tinyserver::http;
 
 #include <iostream>
+#include <fstream>
 
 void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 {
@@ -27,9 +28,24 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
 	LOG_TRACE(reqInfo);
 
-	if(req.path() == "" or req.path() == "/" or req.path() == "/index.html") {
-		rsp->setStatusCode(200);
-		rsp->setTextBody("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\"content=\"width=device-width, initial-scale=1.0\"><title>Welcome</title></head><body><h1>Hi, this is the home page.</h1></body></html>");
+	std::string filePath = req.path();
+	if(filePath.back() == '/') {
+		filePath += "index.html";
+	}
+	filePath = "html"+filePath;
+	if(filePath.length() > 5 && filePath.substr(filePath.length() - 5) == ".html") {
+		std::ifstream infile(filePath);
+		if(infile.is_open()) {
+			std::string data((std::istreambuf_iterator<char>(infile)), std::istreambuf_iterator<char>());
+			rsp->setStatusCode(200);
+			rsp->setTextBody(data);
+		} else {
+			rsp->setStatusCode(404);
+			rsp->setStatusMessage("Not Found");
+			rsp->setTextBody("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\"content=\"width=device-width, initial-scale=1.0\"><title>404</title></head><body><h1>404 Not Found</h1></body></html>");
+			rsp->setKeepAlive(false);
+		}
+		infile.close();
 	} else {
 		rsp->setStatusCode(404);
 		rsp->setStatusMessage("Not Found");
