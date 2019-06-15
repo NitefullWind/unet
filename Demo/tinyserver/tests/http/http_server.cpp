@@ -28,13 +28,14 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
 	LOG_TRACE(reqInfo);
 
-	std::string filePath = req.path();
-	if(filePath.back() == '/') {
-		filePath += "index.html";
+	std::string reqPath = req.path();
+	if(reqPath.back() == '/') {
+		reqPath += "index.html";
 	}
-	filePath = "html"+filePath;
-	if(filePath.length() > 5 && filePath.substr(filePath.length() - 5) == ".html") {
-		std::ifstream infile(filePath);
+	if((reqPath.length() > 5 && reqPath.substr(reqPath.length() - 5) == ".html")
+	 || (reqPath.length() > 4 && reqPath.substr(reqPath.length() - 4) == ".txt")) {
+		reqPath = "html"+reqPath;
+		std::ifstream infile(reqPath);
 		if(infile.is_open()) {
 			std::string data((std::istreambuf_iterator<char>(infile)), std::istreambuf_iterator<char>());
 			rsp->setStatusCode(200);
@@ -46,6 +47,13 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 			rsp->setKeepAlive(false);
 		}
 		infile.close();
+	} else if(reqPath == "/echo") {
+		std::string content = req.query("content");
+		if(content == "") {
+			rsp->setTextBody("Please use: echo?content=echoContent");
+		} else {
+			rsp->setTextBody(content);
+		}
 	} else {
 		rsp->setStatusCode(404);
 		rsp->setStatusMessage("Not Found");
