@@ -1,18 +1,23 @@
 #ifndef TINYSERVER_LOGGER_H
 #define TINYSERVER_LOGGER_H
 
-#include <log4cxx/logger.h>
-#include <cstdlib>		// abort()
 #include <atomic>		// atomic_bool
+#include <cstdlib>		// abort()
 #include <string.h>
+
+#ifdef LOGLIB_LOG4CXX
+#include <log4cxx/logger.h>
+#else
+#include <sstream>
+#endif	// LOGLIB_LOG4CXX
 
 namespace tinyserver
 {
-/**
- * 封装log4cxx的日志类
- * 可以直接使用下面的宏，将使用默认配置将日志打印在控制台
- * 也可以调用InitByFile()函数指定log4cxx的配置文件
- */
+	/**
+	 * 封装log4cxx的日志类
+	 * 可以直接使用下面的宏，将使用默认配置将日志打印在控制台
+	 * 也可以调用InitByFile()函数指定log4cxx的配置文件
+	 */
 	class Logger
 	{
 	public:
@@ -20,12 +25,18 @@ namespace tinyserver
 		~Logger();
 
 		static void InitByFile(const char *filePath);
+#ifdef LOGLIB_LOG4CXX
 		static log4cxx::LoggerPtr GetLogger();
+#endif	// LOGLIB_LOG4CXX
 	private:
+#ifdef LOGLIB_LOG4CXX
 		static log4cxx::LoggerPtr logger;
+#endif	// LOGLIB_LOG4CXX
 		static std::atomic_bool isInit;
 	};
 }
+
+#ifdef LOGLIB_LOG4CXX
 
 #define LOG_TRACE(message) do {											\
 			LOG4CXX_TRACE(tinyserver::Logger::GetLogger(), message);	\
@@ -51,4 +62,26 @@ namespace tinyserver
 			LOG4CXX_FATAL(tinyserver::Logger::GetLogger(), message		\
 					<< "[errno = " << errno << ", error string: " << strerror(errno) << "]");		\
 		} while(0);
+
+#else // else LOGLIB
+
+#define LOG_TRACE(message) do {											\
+		} while(0);
+
+#define LOG_DEBUG(message) do {											\
+		} while(0);
+
+#define LOG_INFO(message) do {											\
+		} while(0);
+
+#define LOG_WARN(message) do {											\
+		} while(0);
+
+#define LOG_ERROR(message) do {											\
+		} while(0);
+
+#define LOG_FATAL(message) do {											\
+		} while(0);
+#endif	// LOGLIB_LOG4CXX
+
 #endif	// TINYSERVER_LOGGER_H

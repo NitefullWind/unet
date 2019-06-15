@@ -17,6 +17,9 @@ set(tinyserver_SRCS
 	 ${PROJECT_SOURCE_DIR}/tinyserver/http/HttpServer.cpp
 	)
 
-add_subdirectory(unittests)
+if(${BUILD_UNITTEST} MATCHES "ON")
+	add_subdirectory(unittests)
+endif()
+
 add_subdirectory(echo)
 add_subdirectory(http)

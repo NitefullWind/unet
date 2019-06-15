@@ -6,5 +6,10 @@ add_executable(http_server
 
 target_link_libraries(http_server
 	pthread
-	log4cxx
 	)
+
+if(${LOGLIB} MATCHES "log4cxx")
+	target_link_libraries(http_server
+		log4cxx
+		)
+endif()

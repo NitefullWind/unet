@@ -8,11 +8,9 @@ endif()
 
 set(CXX_FLAGS
 	-g
-	-Wall
 	-Wextra
 	-Werror
 	-Wconversion
-	-Wno-unused-parameter
 	-Wpointer-arith
 	-march=native
 	-std=c++11
@@ -26,17 +24,24 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -finline-limit=1000 -DNDEBUG")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/lib)
 
-set(log4cxx_INCLUDE_DIR "/usr/local/log4cxx/include")
-find_path(log4cxx_LIBRARY_DIR liblog4cxx.a "/usr/local/log4cxx/lib")
-# set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${log4cxx_LIBRARY_DIR})
-include_directories(${log4cxx_INCLUDE_DIR})
-link_directories(${log4cxx_LIBRARY_DIR})
-# find_library(log4cxx log4cxx)
-message(STATUS ${log4cxx_INCLUDE_DIR})
-message(STATUS ${log4cxx_LIBRARY_DIR})
-# message(STATUS ${log4cxx})
+message(STATUS LOGLIB=${LOGLIB})
+if(${LOGLIB} MATCHES "log4cxx")
+	set(log4cxx_INCLUDE_DIR "/usr/local/log4cxx/include")
+	find_path(log4cxx_LIBRARY_DIR liblog4cxx.a "/usr/local/log4cxx/lib")
+	# set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${log4cxx_LIBRARY_DIR})
+	include_directories(${log4cxx_INCLUDE_DIR})
+	link_directories(${log4cxx_LIBRARY_DIR})
+	# find_library(log4cxx log4cxx)
+	message(STATUS ${log4cxx_INCLUDE_DIR})
+	message(STATUS ${log4cxx_LIBRARY_DIR})
+	# message(STATUS ${log4cxx})
+	add_definitions(-D LOGLIB_LOG4CXX)
+endif()
 
 include_directories(${PROJECT_SOURCE_DIR})
 
 add_subdirectory(tinyserver)
-add_subdirectory(tests)
+
+if(${BUILD_TEST} MATCHES "ON")
+	add_subdirectory(tests)
+endif()

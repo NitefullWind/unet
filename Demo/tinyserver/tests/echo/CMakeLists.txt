@@ -6,5 +6,10 @@ add_executable(echo_server
 
 target_link_libraries(echo_server
 	pthread
-	log4cxx
 	)
+
+if(${LOGLIB} MATCHES "log4cxx")
+	target_link_libraries(echo_server
+		log4cxx
+		)
+endif()

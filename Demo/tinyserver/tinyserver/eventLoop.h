@@ -1,6 +1,7 @@
 #ifndef TINYSERVER_EVENTLOOP_H
 #define TINYSERVER_EVENTLOOP_H
 
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <thread>

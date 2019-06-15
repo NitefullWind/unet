@@ -1,14 +1,19 @@
 #include <tinyserver/logger.h>
+#include <assert.h>
+
+#ifdef LOGLIB_LOG4CXX
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/consoleappender.h>
 #include <log4cxx/patternlayout.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/helpers/exception.h>
-#include <assert.h>
+#endif	// LOGLIB_LOG4CXX
 
 using namespace tinyserver;
 
+#ifdef LOGLIB_LOG4CXX
 log4cxx::LoggerPtr Logger::logger = log4cxx::Logger::getRootLogger();
+#endif	// LOGLIB_LOG4CXX
 std::atomic_bool Logger::isInit;
 
 Logger::Logger()
@@ -19,6 +24,7 @@ Logger::~Logger()
 {
 }
 
+#ifdef LOGLIB_LOG4CXX
 log4cxx::LoggerPtr Logger::GetLogger()
 {
 	if(!Logger::isInit.load()) {					// 未进行初始化
@@ -37,10 +43,14 @@ log4cxx::LoggerPtr Logger::GetLogger()
 	}
 	return Logger::logger;
 }
+#endif	// LOGLIB_LOG4CXX
 
 void Logger::InitByFile(const char *filePath)
 {
+#ifdef LOGLIB_LOG4CXX
 	assert(Logger::isInit.load() == false);
 	Logger::isInit.exchange(true);
 	log4cxx::PropertyConfigurator::configure(filePath);
+#endif	// LOGLIB_LOG4CXX
+
 }

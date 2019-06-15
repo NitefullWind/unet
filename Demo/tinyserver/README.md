@@ -1,6 +1,19 @@
-### 问题记录：
 
 [TOC]
+
+### 构建方式:
+`BUILD_TYPE=debug LOGLIB=log4cxx BUILD_TEST=ON ./build.sh`
+构建参数：
+| 参数名 | 可选值 | 默认值 | 说明 |
+|--|--|--|--|
+| BUILD_DIR | 任意路径 | ./build | 构建生产临时文件路径 |
+| BUILD_TYPE | debug,release | debug | debug或release版本 |
+| INSTALL_DIR | 任意路径 | ${BUILD_DIR}/${BUILD_TYPE}-install | 安装版本生成目录 |
+| LOGLIB | log4cxx | 空 | 使用的日志库 |
+| BUILD_TEST | ON,OFF | ON | 构建测试项目 |
+| BUILD_UNITTEST | ON,OFF | OFF | 构建单元测试项目 |
+
+### 问题记录：
 
 #### 多线程时IO线程阻塞在poll()函数中而无法处理新连接
 2018年10月27日14:32:50
