@@ -8,7 +8,7 @@
 #ifdef LOGLIB_LOG4CXX
 #include <log4cxx/logger.h>
 #else
-#include <sstream>
+#include <iostream>
 #endif	// LOGLIB_LOG4CXX
 
 namespace tinyserver
@@ -65,22 +65,28 @@ namespace tinyserver
 
 #else // else LOGLIB
 
-#define LOG_TRACE(message) do {											\
+#define LOG_TRACE(message) do {																									\
+			std::cout << "[TRACE][" << __FILE__ << "](" << __LINE__  << ")] " << message << std::endl;							\
 		} while(0);
 
-#define LOG_DEBUG(message) do {											\
+#define LOG_DEBUG(message) do {																									\
+			std::cout << "[DEBUG][" << __FILE__ << "](" << __LINE__  << ")] " << message << std::endl;							\
 		} while(0);
 
-#define LOG_INFO(message) do {											\
+#define LOG_INFO(message) do {																									\
+			std::cout << "[INFO][" << __FILE__ << "](" << __LINE__  << ")] " << message << std::endl;							\
 		} while(0);
 
-#define LOG_WARN(message) do {											\
+#define LOG_WARN(message) do {																									\
+			std::cout << "[WARN][" << __FILE__ << "](" << __LINE__  << ")] " << message << std::endl;							\
 		} while(0);
 
-#define LOG_ERROR(message) do {											\
+#define LOG_ERROR(message) do {																									\
+			std::cout << "[ERROR][" << __FILE__ << "](" << __LINE__  << ")] " << message << std::endl;							\
 		} while(0);
 
-#define LOG_FATAL(message) do {											\
+#define LOG_FATAL(message) do {																									\
+			std::cout << "[FATAL][" << __FILE__ << "](" << __LINE__  << ")] " << message << std::endl;							\
 		} while(0);
 #endif	// LOGLIB_LOG4CXX
 

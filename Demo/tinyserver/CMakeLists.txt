@@ -8,9 +8,11 @@ endif()
 
 set(CXX_FLAGS
 	-g
+	-Wall
 	-Wextra
 	-Werror
 	-Wconversion
+	-Wno-unused-parameter
 	-Wpointer-arith
 	-march=native
 	-std=c++11
