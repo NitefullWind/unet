@@ -21,7 +21,7 @@ HttpServer::~HttpServer()
 }
 void HttpServer::onConnection(const TcpConnectionPtr &tcpConnPtr)
 {
-	LOG_TRACE("A new http connection from "<< tcpConnPtr->peerAddress().toHostPort());
+	TLOG_TRACE("A new http connection from "<< tcpConnPtr->peerAddress().toHostPort());
 }
 
 void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
@@ -45,7 +45,7 @@ void HttpServer::onMessage(const TcpConnectionPtr &tcpConnPtr, Buffer* buffer)
 		_httpCallback(request, &response);
 	}
 
-	LOG_DEBUG(tcpConnPtr->peerAddress().toHostPort() << " " << request.methodString() << " " << request.path() << " " << request.versionString() << " " << response.statusCode());
+	TLOG_DEBUG(tcpConnPtr->peerAddress().toHostPort() << " " << request.methodString() << " " << request.path() << " " << request.versionString() << " " << response.statusCode());
 	
 	Buffer responseBuffer;
 	response.getResponseBuffer(&responseBuffer);

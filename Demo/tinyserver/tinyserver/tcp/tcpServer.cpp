@@ -20,7 +20,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress& inetAddress) :
 
 TcpServer::~TcpServer()
 {
-	LOG_TRACE(__FUNCTION__);
+	TLOG_TRACE(__FUNCTION__);
 	sockets::Close(_channel->fd());
 }
 
@@ -41,7 +41,7 @@ void TcpServer::setIOThreadNum(size_t numThreads)
 
 void TcpServer::onNewConnection()
 {
-	LOG_TRACE(__FUNCTION__);
+	TLOG_TRACE(__FUNCTION__);
 	struct sockaddr_in clientSockaddr;
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd >= 0) {

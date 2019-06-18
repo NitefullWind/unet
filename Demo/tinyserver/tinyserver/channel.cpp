@@ -20,7 +20,7 @@ Channel::Channel(EventLoop *loop, int fd):
 
 Channel::~Channel()
 {
-	LOG_TRACE(__FUNCTION__ << " index:" << _index);
+	TLOG_TRACE(__FUNCTION__ << " index:" << _index);
 }
 
 void Channel::update()
@@ -35,12 +35,12 @@ void Channel::handleEvent()
 	_loop->assertInLoopThread();
 
 	if(_revents & POLLNVAL) {
-		LOG_WARN(__FUNCTION__ << " POLLNVAL");
+		TLOG_WARN(__FUNCTION__ << " POLLNVAL");
 	}
 
 	// Stream socket peer closed connection, or shut down writing half of connection.
 	if((_revents & POLLRDHUP) && !(_revents & POLLIN)) {
-		LOG_WARN(__FUNCTION__ << " POLLHUP");
+		TLOG_WARN(__FUNCTION__ << " POLLHUP");
 		if(_closeCallback) {
 			_closeCallback();
 		}

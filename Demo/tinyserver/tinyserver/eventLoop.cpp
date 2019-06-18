@@ -17,7 +17,7 @@ int createEventFd()
 {
 	int fd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
 	if(fd < 0) {
-		LOG_FATAL(__FUNCTION__);
+		TLOG_FATAL(__FUNCTION__);
 		abort();
 	}
 	return fd;
@@ -51,7 +51,7 @@ EventLoop::EventLoop() :
 
 EventLoop::~EventLoop()
 {
-	LOG_TRACE(__FUNCTION__);
+	TLOG_TRACE(__FUNCTION__);
 	_wakeupChannel->disableAll();
 	sockets::Close(_wakeupChannel->fd());
 	removeChannel(_wakeupChannel.get());
@@ -81,7 +81,7 @@ void EventLoop::stop()
 
 void EventLoop::updateChannel(Channel *channel)
 {
-	// LOG_TRACE(__FUNCTION__);
+	// TLOG_TRACE(__FUNCTION__);
 	_poller->updateChannel(channel);
 }
 
@@ -125,7 +125,7 @@ void EventLoop::assertInLoopThread()
 
 void EventLoop::abortNotInLoopThread()
 {
-	LOG_FATAL(__FUNCTION__ << " EventLoop " << this
+	TLOG_FATAL(__FUNCTION__ << " EventLoop " << this
 			<< " was created in thread id = " << _threadId
 			<< ", current thread id = " << std::this_thread::get_id());
 	abort();

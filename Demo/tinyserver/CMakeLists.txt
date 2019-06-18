@@ -38,6 +38,8 @@ if(${LOGLIB} MATCHES "log4cxx")
 	message(STATUS ${log4cxx_LIBRARY_DIR})
 	# message(STATUS ${log4cxx})
 	add_definitions(-D LOGLIB_LOG4CXX)
+elseif(${LOGLIB} MATCHES "spdlog")
+	add_definitions(-D LOGLIB_SPDLOG)
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR})

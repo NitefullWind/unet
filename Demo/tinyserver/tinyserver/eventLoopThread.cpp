@@ -19,7 +19,7 @@ EventLoopThread::~EventLoopThread()
 
 EventLoop *EventLoopThread::startLoop()
 {
-	LOG_TRACE(__FUNCTION__);
+	TLOG_TRACE(__FUNCTION__);
 	assert(_started == false);
 	_started = true;
 	_thread = std::thread(std::bind(&EventLoopThread::threadFunc, this));
@@ -32,7 +32,7 @@ EventLoop *EventLoopThread::startLoop()
 
 void EventLoopThread::threadFunc()
 {
-	LOG_TRACE(__FUNCTION__ << " looping");
+	TLOG_TRACE(__FUNCTION__ << " looping");
 	EventLoop loop;
 	{
 		std::lock_guard<std::mutex> lk(_mutex);

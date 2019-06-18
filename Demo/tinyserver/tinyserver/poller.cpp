@@ -30,9 +30,9 @@ void Poller::poll(ChannelVector *activeChannels, int timeoutMs)
 			}
 		}
 	} else if (n == 0) {
-		LOG_TRACE("poll nothing happend");
+		TLOG_TRACE("poll nothing happend");
 	} else {
-		LOG_ERROR("poll return error: " << n);
+		TLOG_ERROR("poll return error: " << n);
 	}
 }
 
@@ -62,9 +62,9 @@ void Poller::updateChannel(Channel *channel)
 		pfd.revents = 0;
 	}
 
-	LOG_TRACE("========update pollfds=======");
+	TLOG_TRACE("========update pollfds=======");
 	for(auto pfd : _pollfds) {
-		LOG_TRACE("**[fd]=" << pfd.fd << "[events]=" << pfd.events << "[revents]=" << pfd.revents);
+		TLOG_TRACE("**[fd]=" << pfd.fd << "[events]=" << pfd.events << "[revents]=" << pfd.revents);
 	}
 }
 
@@ -92,8 +92,8 @@ void Poller::removeChannel(Channel *channel)
 	}
 	_channelMap.erase(chit);										// remove from map
 
-	LOG_TRACE("========remove pollfds=======");
+	TLOG_TRACE("========remove pollfds=======");
 	for(auto pfd : _pollfds) {
-		LOG_TRACE("**[fd]=" << pfd.fd << "[events]=" << pfd.events << "[revents]=" << pfd.revents);
+		TLOG_TRACE("**[fd]=" << pfd.fd << "[events]=" << pfd.events << "[revents]=" << pfd.revents);
 	}
 }

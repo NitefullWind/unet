@@ -27,7 +27,7 @@ TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 
 TcpConnection::~TcpConnection()
 {
-	LOG_TRACE(__FUNCTION__ << " index: " << _index);
+	TLOG_TRACE(__FUNCTION__ << " index: " << _index);
 	sockets::Close(_channel->fd());
 }
 
@@ -87,14 +87,14 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
 			if(nwrote < 0) {
 				nwrote = 0;
 				if(errno != EWOULDBLOCK) {
-					LOG_ERROR(__FUNCTION__ << " error");
+					TLOG_ERROR(__FUNCTION__ << " error");
 				}
 			}
 		}
-		LOG_TRACE("Connection fd = " << _channel->fd() << " send data, size: " << nwrote);
+		TLOG_TRACE("Connection fd = " << _channel->fd() << " send data, size: " << nwrote);
 
 		if((size_t)nwrote < len) {						// there are more data need to write
-			LOG_TRACE("sendInLoop there are more data need to write")
+			TLOG_TRACE("sendInLoop there are more data need to write")
 			_outputBuffer.append((const char *)data + nwrote, len - nwrote);
 			if(!_channel->isWriting()) {
 				_channel->enableWriting();
@@ -106,7 +106,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
 void TcpConnection::onClose()
 {
 	_loop->assertInLoopThread();
-	LOG_TRACE("close connection: " << _channel->fd());
+	TLOG_TRACE("close connection: " << _channel->fd());
 	assert(_state == kConnected || _state == kDisconnecting);
 	_channel->disableAll();
 	if(_closeCallback) {
@@ -116,7 +116,7 @@ void TcpConnection::onClose()
 
 void TcpConnection::onReading()
 {
-	LOG_TRACE(__FUNCTION__);
+	TLOG_TRACE(__FUNCTION__);
 	int savedError = 0;
 	size_t n = _inputBuffer.readFd(_channel->fd(), &savedError);
 	if(n > 0) {
@@ -126,21 +126,21 @@ void TcpConnection::onReading()
 	} else if (n == 0) {
 		onClose();
 	} else {
-		LOG_ERROR(__FUNCTION__ << " error");
+		TLOG_ERROR(__FUNCTION__ << " error");
 		onError();
 	}
 }
 
 void TcpConnection::onWriting()
 {
-	LOG_TRACE(__FUNCTION__);
+	TLOG_TRACE(__FUNCTION__);
 	_loop->assertInLoopThread();
 	if(_channel->isWriting()) {							// write
 		ssize_t nwrote = sockets::Writen(_channel->fd(), _outputBuffer.peek(), _outputBuffer.readableBytes());
 		if(nwrote < 0) {
 			nwrote = 0;
 			if(errno != EWOULDBLOCK) {
-				LOG_ERROR(__FUNCTION__ << " error");
+				TLOG_ERROR(__FUNCTION__ << " error");
 			}
 		}
 		_outputBuffer.retrieve(nwrote);
@@ -152,14 +152,14 @@ void TcpConnection::onWriting()
 		}
 	} else {
 		//!TODO: what's this?
-		LOG_TRACE("Connection fd = " << _channel->fd() << " is down, no more writing.");
+		TLOG_TRACE("Connection fd = " << _channel->fd() << " is down, no more writing.");
 	}
 }
 
 void TcpConnection::onError()
 {
 	int err = sockets::getSocketError(_channel->fd());
-	LOG_ERROR(__FUNCTION__ << " Index:" << _index << ". localAddress:"
+	TLOG_ERROR(__FUNCTION__ << " Index:" << _index << ". localAddress:"
 	 << _localAddress.toHostPort() << " peerAddress:" << _peerAddress.toHostPort()
 	 << ", errno:" << err << " errmsg:" << strerror(err));
 }

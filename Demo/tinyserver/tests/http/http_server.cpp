@@ -9,6 +9,8 @@ using namespace tinyserver::http;
 
 #include <iostream>
 #include <fstream>
+#include <sys/resource.h>
+#define CORE_SIZE   1024 * 1024 * 500
 
 void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 {
@@ -26,7 +28,7 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 		reqInfo.append("===" + v.first + ": " + v.second + "\n");
 	}
 	reqInfo.append("=====BODY=====\n" + req.body() + "\n================================\n");
-	LOG_TRACE(reqInfo);
+	TLOG_TRACE(reqInfo);
 
 	std::string reqPath = req.path();
 	if(reqPath.back() == '/') {
@@ -64,7 +66,13 @@ void onHttpRequest(const HttpRequest &req, HttpResponse* rsp)
 
 int main(int argc, char** argv)
 {
-	Logger::InitByFile("log.props");
+	Logger::Init("log.props");
+    struct rlimit rlmt;
+    rlmt.rlim_cur = (rlim_t)CORE_SIZE;
+    rlmt.rlim_max  = (rlim_t)CORE_SIZE;
+	if (setrlimit(RLIMIT_CORE, &rlmt) == -1) {
+		return -1; 
+	} 
 	EventLoop loop;
 	InetAddress address(8080);
 	HttpServer httpServer(&loop, address);

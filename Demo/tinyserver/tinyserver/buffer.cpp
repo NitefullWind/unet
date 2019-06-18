@@ -44,7 +44,7 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
 
 	ssize_t n = ::readv(fd, vec, 2);
 	if(n < 0) {
-		LOG_ERROR("readv errno = " << errno);
+		TLOG_ERROR("readv errno = " << errno);
 		*savedErrno = errno;
 	} else if ((size_t)n < writeable) {
 		_writerIndex += n;

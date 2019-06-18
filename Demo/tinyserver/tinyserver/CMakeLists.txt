@@ -17,5 +17,8 @@ set(SRCS
 
 add_library(tinyserver ${SRCS})
 
-target_link_libraries(tinyserver
-	log4cxx)
+if(${LOGLIB} MATCHES "log4cxx")
+	target_link_libraries(tinyserver
+		log4cxx
+		)
+endif()
