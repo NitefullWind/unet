@@ -88,6 +88,9 @@ void Poller::removeChannel(Channel *channel)
 		int lastPollfd = _pollfds.back().fd;
 		std::iter_swap(_pollfds.begin()+index, _pollfds.end()-1);	// swap with the last item to avoid reset other channel's index
 		_pollfds.pop_back();										// remove new last channel
+		if(lastPollfd < 0) {										// when pfd is none event, pfd.fd = -pfd.fd-1 < 0
+			lastPollfd = -lastPollfd-1;
+		}
 		_channelMap[lastPollfd]->setIndex(index);					// update old last channel's index
 	}
 	_channelMap.erase(chit);										// remove from map
