@@ -22,3 +22,29 @@ if(${LOGLIB} MATCHES "log4cxx")
 		log4cxx
 		)
 endif()
+
+install(TARGETS tinyserver DESTINATION lib)
+set(HEADERS
+	buffer.h
+	channel.h
+	eventLoop.h
+	eventLoopThread.h
+	eventLoopThreadPool.h
+	inetAddress.h
+	logger.h
+	types.h
+)
+install(FILES ${HEADERS} DESTINATION include/tinyserver)
+
+set(HEADERS_TCP
+	tcp/tcpConnection.h
+	tcp/tcpServer.h
+)
+install(FILES ${HEADERS_TCP} DESTINATION include/tinyserver/tcp)
+
+set(HEADERS_HTTP
+	http/HttpRequest.h
+	http/HttpResponse.h
+	http/HttpServer.h
+)
+install(FILES ${HEADERS_HTTP} DESTINATION include/tinyserver/http)
