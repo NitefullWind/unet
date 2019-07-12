@@ -82,6 +82,6 @@ TEST(HttpResponse, getResponseBuffer)
 	Buffer buffer;
 	rsp.getResponseBuffer(&buffer);
 
-	std::string rspText = "HTTP/1.1 200 ok\r\nConnection: close\r\nContent-Type: text/html\r\nheader: test\r\n\r\nhi";
+	std::string rspText = "HTTP/1.1 200 ok\r\nConnection: close\r\nContent-Length: 2\r\nContent-Type: text/html\r\nheader: test\r\n\r\nhi";
 	EXPECT_EQ(buffer.readAll(), rspText);
 }

@@ -13,5 +13,10 @@ add_executable(unitTest
 target_link_libraries(unitTest
 	gtest
 	pthread
-	log4cxx
 	)
+
+if(${LOGLIB} MATCHES "log4cxx")
+	target_link_libraries(http_server
+		log4cxx
+		)
+endif()
