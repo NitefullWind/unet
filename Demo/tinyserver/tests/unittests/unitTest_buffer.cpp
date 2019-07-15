@@ -101,3 +101,41 @@ TEST(Buffer, readLine)
 	EXPECT_EQ(buf.readLine(false), "abc");
 	EXPECT_EQ(buf.readLine(), "def");
 }
+
+TEST(Buffer, Int64)
+{
+	Buffer buf;
+	int64_t num = 999999999999999;
+	buf.appendInt64(num);
+
+	EXPECT_EQ(buf.readInt64(), num);
+}
+
+TEST(Buffer, Int8)
+{
+	Buffer buf;
+	int8_t num = static_cast<int8_t>(255);
+	buf.appendInt8(num);
+
+	EXPECT_EQ(buf.readInt8(), num);
+}
+
+TEST(Buffer, prepend)
+{
+	Buffer buf(0);
+	EXPECT_EQ(buf.writeableBytes(), 0);
+
+	buf.append("abc");
+
+	buf.prepend("zzz");
+	buf.append("def");
+	EXPECT_EQ(buf.readAll(), "zzzabcdef");
+
+	buf.prepend("abc");
+	EXPECT_EQ(buf.readAll(), "abc");
+
+	buf.append("abcdef");
+	buf.retrieve(4);
+	buf.prepend("zzz");
+	EXPECT_EQ(buf.readAll(), "zzzef");
+}
