@@ -49,12 +49,11 @@ void TcpServer::onNewConnection()
 		TcpConnectionPtr tcpConnPtr(new TcpConnection(ioLoop, clientfd));
 		tcpConnPtr->setIndex(_connectionCounter);
 		++_connectionCounter;
+		tcpConnPtr->setConnectionCallback(_newConnectionCallback);
+		tcpConnPtr->setDisonnectionCallback(_disconnectionCallback);
 		tcpConnPtr->setMessageCallback(_messageCallback);
 		tcpConnPtr->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
 		_connectionMap[tcpConnPtr->index()] = tcpConnPtr;
- 		if(_newConnectionCallback) {
-			_newConnectionCallback(tcpConnPtr);
-		}
 		ioLoop->runInLoop(std::bind(&TcpConnection::connectionEstablished, tcpConnPtr));
 	}
 }

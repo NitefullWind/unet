@@ -33,6 +33,14 @@ public:
 		_messageCallback = cb;
 	}
 
+	void setConnectionCallback(const ConnectionCallback& cb) {
+		_connectionCallback = cb;
+	}
+
+	void setDisonnectionCallback(const DisconnectionCallback& cb) {
+		_disconnectionCallback = cb;
+	}
+
 	void connectionEstablished();
 	void connectionDestroyed();
 
@@ -56,6 +64,8 @@ private:
 
 	CloseCallback _closeCallback;
 	MessageCallback _messageCallback;
+	ConnectionCallback _connectionCallback;
+	DisconnectionCallback _disconnectionCallback;
 
 	void onClose();
 	void onReading();

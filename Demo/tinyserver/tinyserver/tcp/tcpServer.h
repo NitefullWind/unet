@@ -25,6 +25,9 @@ public:
 	void setConnectionCallback(const ConnectionCallback& cb) {
 		_newConnectionCallback = cb;
 	}
+	void setDisconnectionCallback(const DisconnectionCallback& cb) {
+		_disconnectionCallback = cb;
+	}
 	void setMessageCallback(const MessageCallback& cb) {
 		_messageCallback = cb;
 	}
@@ -37,6 +40,7 @@ private:
 	std::unique_ptr<Channel> _channel;
 	uint64_t _connectionCounter;
 	ConnectionCallback _newConnectionCallback;
+	DisconnectionCallback _disconnectionCallback;
 	MessageCallback _messageCallback;
 	std::map<size_t, TcpConnectionPtr> _connectionMap;
 	std::shared_ptr<EventLoopThreadPool> _IOThreadPool;

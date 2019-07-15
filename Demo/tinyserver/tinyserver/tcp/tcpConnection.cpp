@@ -38,6 +38,9 @@ void TcpConnection::connectionEstablished()
 	setState(kConnected);
 
 	_channel->enableReading();	// this must be called in this loop thread
+	if(_connectionCallback) {
+		_connectionCallback(shared_from_this());
+	}
 }
 
 void TcpConnection::connectionDestroyed()
@@ -48,6 +51,9 @@ void TcpConnection::connectionDestroyed()
 		_channel->disableAll();
 	}
 	_loop->removeChannel(_channel.get());
+	if(_disconnectionCallback) {
+		_disconnectionCallback(shared_from_this());
+	}
 }
 
 void TcpConnection::send(Buffer *buffer)
