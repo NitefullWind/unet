@@ -10,11 +10,11 @@
 
 using namespace tinyserver;
 
-TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
+TcpConnection::TcpConnection(EventLoop *loop, const std::string id, int sockfd) :
 	_loop(loop),
 	_state(kConnecting),
 	_channel(new Channel(loop, sockfd)),
-	_index(-1),
+	_id(id),
 	_localAddress(sockets::GetLocalAddr(sockfd)),
 	_peerAddress(sockets::GetPeerAddr(sockfd))
 {
@@ -27,7 +27,7 @@ TcpConnection::TcpConnection(EventLoop *loop, int sockfd) :
 
 TcpConnection::~TcpConnection()
 {
-	TLOG_TRACE(__FUNCTION__ << " index: " << _index);
+	TLOG_TRACE(__FUNCTION__ << " id: " << _id);
 	sockets::Close(_channel->fd());
 }
 
@@ -165,7 +165,7 @@ void TcpConnection::onWriting()
 void TcpConnection::onError()
 {
 	int err = sockets::getSocketError(_channel->fd());
-	TLOG_ERROR(__FUNCTION__ << " Index:" << _index << ". localAddress:"
+	TLOG_ERROR(__FUNCTION__ << " Id:" << _id << ". localAddress:"
 	 << _localAddress.toHostPort() << " peerAddress:" << _peerAddress.toHostPort()
 	 << ", errno:" << err << " errmsg:" << strerror(err));
 }

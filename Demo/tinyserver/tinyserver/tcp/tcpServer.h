@@ -38,11 +38,11 @@ private:
 	EventLoop *_loop;
 	InetAddress _inetAddress;
 	std::unique_ptr<Channel> _channel;
-	uint64_t _connectionCounter;
+	uint32_t _nextConnId;
 	ConnectionCallback _newConnectionCallback;
 	DisconnectionCallback _disconnectionCallback;
 	MessageCallback _messageCallback;
-	std::map<size_t, TcpConnectionPtr> _connectionMap;
+	std::map<std::string, TcpConnectionPtr> _connectionMap;
 	std::shared_ptr<EventLoopThreadPool> _IOThreadPool;
 
 	void onNewConnection();

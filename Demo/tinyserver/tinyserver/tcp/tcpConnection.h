@@ -14,11 +14,10 @@ class EventLoop;
 class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 public:
-	explicit TcpConnection(EventLoop *loop, int sockfd);
+	explicit TcpConnection(EventLoop *loop, const std::string id, int sockfd);
 	~TcpConnection();
 
-	size_t index() const { return _index; }
-	void setIndex(size_t index) { _index = index; }
+	std::string id() const { return _id; }
 
 	EventLoop *ownerLoop() const { return _loop; }
 
@@ -55,7 +54,7 @@ private:
 	EventLoop *_loop;
 	StateEnum _state;
 	std::unique_ptr<Channel> _channel;
-	size_t _index;
+	const std::string _id;
 	InetAddress _localAddress;
 	InetAddress _peerAddress;
 

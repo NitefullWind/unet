@@ -141,22 +141,22 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
 	return n;
 }
 
-std::string Buffer::read(size_t len)
+std::string Buffer::read(size_t len, bool needRetrieve)
 {
 	assert(len <= readableBytes());
 	std::string str(peek(), len);
-	retrieve(len);
+	if(needRetrieve) { retrieve(len); }
 	return str;
 }
 
-std::string Buffer::readAll()
+std::string Buffer::readAll(bool needRetrieve)
 {
 	std::string str(peek(), readableBytes());
-	retrieveAll();
+	if(needRetrieve) { retrieveAll(); }
 	return str;
 }
 
-std::string Buffer::readLine(bool withCRLF)
+std::string Buffer::readLine(bool withCRLF, bool needRetrieve)
 {
 	const char* eol = findEOL();
 	if(eol) {
@@ -170,43 +170,43 @@ std::string Buffer::readLine(bool withCRLF)
 		return line;
 	}
 	// 没有换行符，读取所有
-	return readAll();
+	return readAll(needRetrieve);
 }
 
 
-int64_t Buffer::readInt64()
+int64_t Buffer::readInt64(bool needRetrieve)
 {
 	assert(readableBytes() >= sizeof(int64_t));
 	int64_t be64 = 0;
 	::memcpy(&be64, peek(), sizeof(be64));
 	be64 = sockets::NetworkToHost64(be64);
-	retrieve(sizeof(be64));
+	if(needRetrieve) { retrieve(sizeof(be64)); }
 	return be64;
 }
-int32_t Buffer::readInt32()
+int32_t Buffer::readInt32(bool needRetrieve)
 {
 	assert(readableBytes() >= sizeof(int32_t));
 	int32_t be32 = 0;
 	::memcpy(&be32, peek(), sizeof(be32));
 	be32 = sockets::NetworkToHost32(be32);
-	retrieve(sizeof(be32));
+	if(needRetrieve) { retrieve(sizeof(be32)); }
 	return be32;
 }
-int16_t Buffer::readInt16()
+int16_t Buffer::readInt16(bool needRetrieve)
 {
 	assert(readableBytes() >= sizeof(int16_t));
 	int16_t be16 = 0;
 	::memcpy(&be16, peek(), sizeof(be16));
 	be16 = sockets::NetworkToHost16(be16);
-	retrieve(sizeof(be16));
+	if(needRetrieve) { retrieve(sizeof(be16)); }
 	return be16;
 }
-int8_t Buffer::readInt8()
+int8_t Buffer::readInt8(bool needRetrieve)
 {
 	assert(readableBytes() >= sizeof(int8_t));
 	int8_t be8 = 0;
 	::memcpy(&be8, peek(), sizeof(be8));
-	retrieve(sizeof(be8));
+	if(needRetrieve) { retrieve(sizeof(be8)); }
 	return be8;
 }
 

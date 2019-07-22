@@ -24,8 +24,8 @@ public:
 	short revents() const { return _revents; }
 	void setRevents(short revents) { _revents = revents; }
 
-	size_t index() const { return _index; }
-	void setIndex(size_t index) { _index = index; }
+	int index() const { return _index; }
+	void setIndex(int index) { _index = index; }
 
 	void handleEvent();
 
@@ -46,7 +46,7 @@ private:
 	const int _fd;
 	short _events;		// struct pollfd.events
 	short _revents;		// struct pollfd.revents
-	size_t _index;		// for pollfds in poller
+	int _index;		// for pollfds in poller
 
 	static const short kNoneEvent;
 	static const short kReadEvent;

@@ -13,7 +13,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress& inetAddress) :
 	_loop(loop),
 	_inetAddress(inetAddress),
 	_channel(new Channel(loop, sockets::CreateNonblockingSocket())),
-	_connectionCounter(0),
+	_nextConnId(1),
 	_IOThreadPool(new EventLoopThreadPool(loop))
 {
 }
@@ -46,14 +46,15 @@ void TcpServer::onNewConnection()
 	int clientfd = sockets::Accept(_channel->fd(), &clientSockaddr);
 	if(clientfd >= 0) {
 		EventLoop *ioLoop = _IOThreadPool->getNextLoop();
-		TcpConnectionPtr tcpConnPtr(new TcpConnection(ioLoop, clientfd));
-		tcpConnPtr->setIndex(_connectionCounter);
-		++_connectionCounter;
+		char buf[64];
+		snprintf(buf, sizeof buf, "%d_%d", sockets::NetworkToHost16(clientSockaddr.sin_port), _nextConnId);
+		++_nextConnId;
+		TcpConnectionPtr tcpConnPtr(new TcpConnection(ioLoop, buf, clientfd));
 		tcpConnPtr->setConnectionCallback(_newConnectionCallback);
 		tcpConnPtr->setDisonnectionCallback(_disconnectionCallback);
 		tcpConnPtr->setMessageCallback(_messageCallback);
 		tcpConnPtr->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
-		_connectionMap[tcpConnPtr->index()] = tcpConnPtr;
+		_connectionMap[tcpConnPtr->id()] = tcpConnPtr;
 		ioLoop->runInLoop(std::bind(&TcpConnection::connectionEstablished, tcpConnPtr));
 	}
 }
@@ -66,7 +67,7 @@ void TcpServer::removeConnection(const TcpConnectionPtr& tcpConnPtr)
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& tcpConnPtr)
 {
 	_loop->assertInLoopThread();
-	std::map<size_t, TcpConnectionPtr>::iterator it = _connectionMap.find(tcpConnPtr->index());
+	std::map<std::string, TcpConnectionPtr>::iterator it = _connectionMap.find(tcpConnPtr->id());
 	if(it != _connectionMap.end()) {
 		_connectionMap.erase(it);
 	}

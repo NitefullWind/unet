@@ -46,18 +46,18 @@ public:
 	void prependInt8(int8_t num);
 
 	// read data to string
-	std::string read(size_t len);
+	std::string read(size_t len, bool needRetrieve=true);
 	// read all data to string
-	std::string readAll();
+	std::string readAll(bool needRetrieve=true);
 	/**
 	 * read a line to string
 	 * @withCRLF if true return whith CRLF, default false.
 	 */
-	std::string readLine(bool withCRLF=true);
-	int64_t readInt64();
-	int32_t readInt32();
-	int16_t readInt16();
-	int8_t readInt8();
+	std::string readLine(bool withCRLF=true, bool needRetrieve=true);
+	int64_t readInt64(bool needRetrieve=true);
+	int32_t readInt32(bool needRetrieve=true);
+	int16_t readInt16(bool needRetrieve=true);
+	int8_t readInt8(bool needRetrieve=true);
 
 	// return the string starting with \n or \r\n
 	const char* findCRLF() const;

@@ -47,11 +47,11 @@ void Poller::updateChannel(Channel *channel)
 		pfd.fd = fd;
 		pfd.events = channel->events();
 		pfd.revents = 0;
-		channel->setIndex(_pollfds.size());
+		channel->setIndex(static_cast<int>(_pollfds.size()));
 		_pollfds.push_back(pfd);
 		_channelMap[fd] = channel;
 	} else {	
-		assert(channel->index() < _pollfds.size());
+		assert(channel->index() < static_cast<int>(_pollfds.size()));
 		auto& pfd = _pollfds.at(channel->index());
 		assert(channel->fd() == pfd.fd);
 		if(channel->isNoneEvent()) {
@@ -74,15 +74,15 @@ void Poller::removeChannel(Channel *channel)
 	assert(channel != nullptr);
 	channel->disableAll();
 
-	size_t index = channel->index();
+	int index = channel->index();
 	auto chit = _channelMap.find(channel->fd());
 	
-	assert(_pollfds.size() > index);
+	assert(static_cast<int>(_pollfds.size()) > index);
 	assert(chit != _channelMap.end());
 
 
 	// remove from pollfds
-	if(_pollfds.size()-1 == index) {
+	if(static_cast<int>(_pollfds.size())-1 == index) {
 		_pollfds.pop_back();
 	} else {
 		int lastPollfd = _pollfds.back().fd;
