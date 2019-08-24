@@ -24,6 +24,8 @@ public:
 	Buffer(size_t size);
 	~Buffer();
 
+	Buffer& operator=(const Buffer& rhs);
+
 	// size_t size() const { return _buffer.size(); }	// useless
 	size_t readableBytes() const { return _writerIndex - _readerIndex; }
 	size_t writeableBytes() const { return _buffer.size() - _writerIndex; }

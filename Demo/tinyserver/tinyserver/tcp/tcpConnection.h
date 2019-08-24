@@ -43,9 +43,9 @@ public:
 	void connectionEstablished();
 	void connectionDestroyed();
 
-	void send(Buffer *buffer);
 	void send(const std::string& str);
 	void send(const char *data, size_t len);
+	void send(Buffer *buffer);
 	void send(const void *data, size_t len);
 	void shutdown();
 private:
@@ -71,6 +71,7 @@ private:
 	void onWriting();
 	void onError();
 
+	void sendInLoop(const Buffer& buffer);
 	void sendInLoop(const void *data, size_t len);
 	void shutdownInLoop();
 

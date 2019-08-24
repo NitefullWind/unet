@@ -25,6 +25,16 @@ Buffer::~Buffer()
 {
 }
 
+Buffer& Buffer::operator=(const Buffer& rhs)
+{
+	if(this != &rhs) {
+		_buffer = rhs._buffer;
+		_writerIndex = rhs._writerIndex;
+		_readerIndex = rhs._readerIndex;
+	}
+	return *this;
+}
+
 void Buffer::append(const char *buf, size_t len)
 {
 	if(writeableBytes() < len) {

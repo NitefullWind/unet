@@ -56,12 +56,6 @@ void TcpConnection::connectionDestroyed()
 	}
 }
 
-void TcpConnection::send(Buffer *buffer)
-{
-	std::string str = buffer->readAll();
-	send(str);
-}
-
 void TcpConnection::send(const std::string& str)
 {
 	send(str.data(), str.length());
@@ -72,15 +66,39 @@ void TcpConnection::send(const char *data, size_t len)
 	send((void*)data, len);
 }
 
+void TcpConnection::send(Buffer *buffer)
+{
+	if(_state == kConnected) {
+		if(_loop->isInLoopThread()) {
+			sendInLoop(*buffer);
+		} else {
+			_loop->runInLoop([&](){
+				sendInLoop(*buffer);
+			});
+		}
+	}
+}
+
 void TcpConnection::send(const void *data, size_t len)
 {
 	if(_state == kConnected) {
 		if(_loop->isInLoopThread()) {
 			sendInLoop(data, len);
 		} else {
-			_loop->runInLoop(std::bind(&TcpConnection::sendInLoop, this, data, len));
+			// Fix: runInLoop中的函数，参数时必须按值传递，否则再另一个线程中取地址无效
+			Buffer buf(len);
+			buf.append(data, len);
+			// _loop->runInLoop(std::bind(&TcpConnection::sendInLoop, this, buf));
+			_loop->runInLoop([this, buf](){
+				sendInLoop(buf);
+			});
 		}
 	}
+}
+
+void TcpConnection::sendInLoop(const Buffer& buffer)
+{
+	sendInLoop(buffer.data(), buffer.readableBytes());
 }
 
 void TcpConnection::sendInLoop(const void *data, size_t len)
