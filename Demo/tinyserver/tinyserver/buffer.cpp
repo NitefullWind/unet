@@ -9,15 +9,17 @@ using namespace tinyserver;
 
 Buffer::Buffer() :
 	_buffer(kInitialSize),
-	_writerIndex(0),
-	_readerIndex(0)
+	_prependSize(0),
+	_writerIndex(_prependSize),
+	_readerIndex(_prependSize)
 {
 }
 
-Buffer::Buffer(size_t size) :
+Buffer::Buffer(size_t size, size_t prependSize) :
 	_buffer(size),
-	_writerIndex(0),
-	_readerIndex(0)
+	_prependSize(prependSize),
+	_writerIndex(_prependSize),
+	_readerIndex(_prependSize)
 {
 }
 
@@ -88,7 +90,9 @@ void Buffer::prepend(const char *buf, size_t len)
 			_buffer.resize(_writerIndex + len);
 		}
 
-		::memcpy(data()+len, data(), readableBytes()+len);
+		// ::memcpy(data()+len, data(), readableBytes());
+		//!NOTE 可能出现内存重叠，但dst > src，std::copy从低地址开始复制，函数行为正常。
+		std::copy(peek(), peek()+readableBytes(), data()+len);
 		_writerIndex += len;
 		std::copy(buf, buf+len, data());
 	}
@@ -263,6 +267,5 @@ void Buffer::retrieve(size_t len)
 
 void Buffer::retrieveAll()
 {
-	_readerIndex = 0;
-	_writerIndex = 0;
+	_readerIndex = _writerIndex = _prependSize;
 }

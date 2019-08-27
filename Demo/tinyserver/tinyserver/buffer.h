@@ -7,7 +7,7 @@
 namespace tinyserver
 {
 /**
- * begin()				peek()			beginWrite()
+ * begin()			peek(),data()		beginWrite()
  * |					|					|
  * +--------------------+-------------------+---------------+
  * |	read bytes		|	readable bytes	|writable bytes	|
@@ -21,7 +21,7 @@ class Buffer
 public:
 	static const size_t kInitialSize = 1024;
 	Buffer();
-	Buffer(size_t size);
+	Buffer(size_t size, size_t prependSize = 0);
 	~Buffer();
 
 	Buffer& operator=(const Buffer& rhs);
@@ -29,6 +29,10 @@ public:
 	// size_t size() const { return _buffer.size(); }	// useless
 	size_t readableBytes() const { return _writerIndex - _readerIndex; }
 	size_t writeableBytes() const { return _buffer.size() - _writerIndex; }
+	size_t capacity() const { return _buffer.capacity(); }
+
+	void setPrependSize(size_t prependSize) { _prependSize = prependSize; }
+	size_t prependSize() const { return _prependSize; }
 
 	void append(const char *buf, size_t len);
 	void append(const void *buf, size_t len);
@@ -80,6 +84,7 @@ public:
 	void retrieveAll();
 private:
 	std::vector<char> _buffer;
+	size_t _prependSize;
 	size_t _writerIndex;
 	size_t _readerIndex;
 

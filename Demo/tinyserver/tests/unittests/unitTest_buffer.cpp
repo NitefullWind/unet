@@ -127,9 +127,9 @@ TEST(Buffer, prepend)
 
 	buf.append("abc");
 
-	buf.prepend("zzz");
+	buf.prepend("zz"); // dst>src, dst<src+len
 	buf.append("def");
-	EXPECT_EQ(buf.readAll(), "zzzabcdef");
+	EXPECT_EQ(buf.readAll(), "zzabcdef");
 
 	buf.prepend("abc");
 	EXPECT_EQ(buf.readAll(), "abc");
@@ -138,4 +138,8 @@ TEST(Buffer, prepend)
 	buf.retrieve(4);
 	buf.prepend("zzz");
 	EXPECT_EQ(buf.readAll(), "zzzef");
+
+	buf.append("abc");
+	buf.prepend("zxcv"); // dst>src, dst>src+len
+	EXPECT_EQ(buf.readAll(), "zxcvabc");
 }
