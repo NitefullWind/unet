@@ -50,6 +50,8 @@ void Bind(int sockfd, const struct sockaddr_in& addr);
 
 void Close(int sockfd);
 
+int Connect(int sockfd, const struct sockaddr_in& addr);
+
 int CreateNonblockingSocket();
 
 const char *Inet_ntop(int family, const void *addrptr, char *strptr, size_t len);
@@ -74,6 +76,7 @@ struct sockaddr_in GetLocalAddr(int sockfd);
 struct sockaddr_in GetPeerAddr(int sockfd);
 
 int getSocketError(int sockfd);
+bool IsSelfConnect(int sockfd);
 }
 }
 

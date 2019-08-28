@@ -8,6 +8,8 @@ set(SRCS
 	logger.cpp
 	poller.cpp
 	sockets.cpp
+	tcp/Connector.cpp
+	tcp/TcpClient.cpp
 	tcp/tcpServer.cpp
 	tcp/tcpConnection.cpp
 	http/HttpRequest.cpp
@@ -37,6 +39,7 @@ set(HEADERS
 install(FILES ${HEADERS} DESTINATION include/tinyserver)
 
 set(HEADERS_TCP
+	tcp/TcpClient.h
 	tcp/tcpConnection.h
 	tcp/tcpServer.h
 )

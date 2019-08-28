@@ -97,6 +97,11 @@ void sockets::Close(int sockfd)
 	}
 }
 
+int sockets::Connect(int sockfd, const struct sockaddr_in& addr)
+{
+	return ::connect(sockfd, SockaddrCast(&addr), sizeof(addr));
+}
+
 int sockets::CreateNonblockingSocket()
 {
 	// socket
@@ -247,5 +252,23 @@ int sockets::getSocketError(int sockfd)
 		return errno;
 	} else {
 		return optval;
+	}
+}
+
+#if !(__GNUC_PREREQ (4,6))
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+bool sockets::IsSelfConnect(int sockfd)
+{
+	struct sockaddr_in localaddr = GetLocalAddr(sockfd);
+	struct sockaddr_in peeraddr = GetPeerAddr(sockfd);
+	if (localaddr.sin_family == AF_INET)
+	{
+		return localaddr.sin_port == peeraddr.sin_port
+			&& localaddr.sin_addr.s_addr == peeraddr.sin_addr.s_addr;
+	}
+	else
+	{
+		return false;
 	}
 }

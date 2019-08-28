@@ -92,7 +92,10 @@ void Buffer::prepend(const char *buf, size_t len)
 
 		// ::memcpy(data()+len, data(), readableBytes());
 		//!NOTE 可能出现内存重叠，但dst > src，std::copy从低地址开始复制，函数行为正常。
-		std::copy(peek(), peek()+readableBytes(), data()+len);
+		auto bufLen = readableBytes();
+		if(bufLen > 0) {
+			std::copy(peek(), peek()+bufLen, data()+len);
+		}
 		_writerIndex += len;
 		std::copy(buf, buf+len, data());
 	}
