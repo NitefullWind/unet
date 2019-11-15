@@ -72,8 +72,9 @@ void TcpConnection::send(Buffer *buffer)
 		if(_loop->isInLoopThread()) {
 			sendInLoop(*buffer);
 		} else {
-			_loop->runInLoop([&](){
-				sendInLoop(*buffer);
+			Buffer buf(*buffer);
+			_loop->runInLoop([this, buf](){
+				sendInLoop(buf);
 			});
 		}
 	}
