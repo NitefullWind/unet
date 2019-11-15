@@ -115,32 +115,32 @@ namespace tinyserver
 
 #define TLOG_TRACE(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			Logger::ConsoleLog(Logger::Trace, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Trace, std::move(ss));		\
 		} while(0);
 
 #define TLOG_DEBUG(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			Logger::ConsoleLog(Logger::Debug, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Debug, std::move(ss));		\
 		} while(0);
 
 #define TLOG_INFO(message) do {										\
 			std::stringstream ss; ss << message << '\n';			\
-			Logger::ConsoleLog(Logger::Info, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Info, std::move(ss));		\
 		} while(0);
 
 #define TLOG_WARN(message) do {										\
 			std::stringstream ss; ss << message << '\n';			\
-			Logger::ConsoleLog(Logger::Warn, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Warn, std::move(ss));		\
 		} while(0);
 
 #define TLOG_ERROR(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			Logger::ConsoleLog(Logger::Error, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Error, std::move(ss));		\
 		} while(0);
 
 #define TLOG_FATAL(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			Logger::ConsoleLog(Logger::Critial, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Critial, std::move(ss));		\
 		} while(0);
 #endif	// LOGLIB
 
