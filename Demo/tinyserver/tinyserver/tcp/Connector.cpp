@@ -123,6 +123,7 @@ void Connector::retry(int sockfd)
 	if(_connect) { // 没有被调用stop停止连接
 		TLOG_INFO(__FUNCTION__ << " Retry connecting to " << _serverAddress.toHostPort());
 		//! FIXME: should be call runAfter()
+		std::this_thread::sleep_for(std::chrono::seconds(30));
 		_loop->queueInLoop(std::bind(&Connector::startInLoop, this));
 	}
 }
@@ -130,7 +131,7 @@ void Connector::retry(int sockfd)
 void Connector::onWrite()
 {
 	TLOG_DEBUG(__FUNCTION__ << " state: " << _state);
-	if(_state == kDisconnecting) {
+	if(_state == kConnecting) {
 		int sockfd = removeAndResetChannel();
 		int err = sockets::getSocketError(sockfd);
 		if(err) {
@@ -141,7 +142,7 @@ void Connector::onWrite()
 			retry(sockfd);
 		} else {
 			setState(kConnected);
-			if(_connect) {
+			if(_connect && _newConnectionCallback) {
 				_newConnectionCallback(sockfd);
 			} else { // 已调用stop停止连接
 				sockets::Close(sockfd);
@@ -149,6 +150,18 @@ void Connector::onWrite()
 		}
 	} else {
 		assert(_state == kDisconnected);
+	}
+}
+
+void Connector::onError()
+{
+	TLOG_ERROR(__FUNCTION__ << " state: " << _state);
+	if (_state == kConnecting)
+	{
+		int sockfd = removeAndResetChannel();
+		int err = sockets::getSocketError(sockfd);
+		TLOG_ERROR(__FUNCTION__ << " SO_ERROR = " << err << " " << strerror(err));
+		retry(sockfd);
 	}
 }
 

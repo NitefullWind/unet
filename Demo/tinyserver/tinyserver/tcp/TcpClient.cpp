@@ -56,6 +56,11 @@ void TcpClient::stop()
 	_connector->stop();
 }
 
+std::shared_ptr<TcpConnection> TcpClient::tcpConnection() const
+{
+	return _tcpConnection;
+}
+
 void TcpClient::onNewConnection(int sockfd)
 {
 	_loop->assertInLoopThread();
@@ -68,6 +73,11 @@ void TcpClient::onNewConnection(int sockfd)
 	tcpConnPtr->setConnectionCallback(_connectionCallback);
 	tcpConnPtr->setMessageCallback(_messageCallback);
 	tcpConnPtr->setCloseCallback(std::bind(&TcpClient::removeConnection, this, std::placeholders::_1));
+	{
+		std::lock_guard<std::mutex> lk(_mutex);
+		_tcpConnection = tcpConnPtr;
+	}
+	tcpConnPtr->connectionEstablished();
 }
 
 void TcpClient::removeConnection(const std::shared_ptr<TcpConnection>& conn)
