@@ -1,7 +1,7 @@
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/channel.h>
 #include <tinyserver/logger.h>
-#include <tinyserver/poller/PollPoller.h>
+#include <tinyserver/poller/EPollPoller.h>
 #include <tinyserver/sockets.h>
 
 #include <assert.h>
@@ -40,7 +40,7 @@ EventLoop::EventLoop() :
 	_looping(false),
 	_stop(false),
 	_threadId(std::this_thread::get_id()),
-	_poller(new PollPoller(this)),
+	_poller(new EPollPoller(this)),
 	_wakeupChannel(new Channel(this, createEventFd())),
 	_callingPendingFunctors(false)
 {
@@ -63,7 +63,7 @@ void EventLoop::loop()
 	_looping = true;
 
 	while(!_stop) {
-		ChannelVector activeChannels;
+		std::vector<Channel*> activeChannels;
 		_poller->poll(&activeChannels, 60 * 1000);
 		for(auto channel : activeChannels) {
 			channel->handleEvent();			// check events and call the callback function

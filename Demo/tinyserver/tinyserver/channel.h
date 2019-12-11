@@ -2,8 +2,6 @@
 #define TINYSERVER_CHANNEL_H
 
 #include <functional>
-#include <list>
-#include <vector>
 
 namespace tinyserver
 {
@@ -59,9 +57,6 @@ private:
 	EventCallback _readCallback;
 	EventCallback _writeCallback;
 };
-
-typedef std::list<Channel *> ChannelList;
-typedef std::vector<Channel *> ChannelVector;
 
 }
 

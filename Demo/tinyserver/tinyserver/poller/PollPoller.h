@@ -20,7 +20,7 @@ public:
     /*
      * @override
      */
-    virtual void poll(std::vector<Channel *> *activeChannels, int timeoutMs);
+    virtual void poll(ChannelList *activeChannels, int timeoutMs);
     
     /*
      * @override

@@ -7,8 +7,8 @@
 
 using namespace tinyserver;
 
-PollPoller::PollPoller(EventLoop *loop) :
-	Poller(loop)
+PollPoller::PollPoller(EventLoop *loop)
+	: Poller(loop)
 {
 }
 
@@ -16,7 +16,7 @@ PollPoller::~PollPoller()
 {
 }
 
-void PollPoller::poll(ChannelVector *activeChannels, int timeoutMs)
+void PollPoller::poll(ChannelList *activeChannels, int timeoutMs)
 {
 	assert(activeChannels != nullptr);
 
@@ -38,7 +38,7 @@ void PollPoller::poll(ChannelVector *activeChannels, int timeoutMs)
 
 void PollPoller::updateChannel(Channel *channel)
 {
-	assertInLoopThread();
+	Poller::assertInLoopThread();
 	assert(channel != nullptr);
 
 	int fd = channel->fd();
@@ -70,7 +70,7 @@ void PollPoller::updateChannel(Channel *channel)
 
 void PollPoller::removeChannel(Channel *channel)
 {
-	assertInLoopThread();
+	Poller::assertInLoopThread();
 	assert(channel != nullptr);
 	channel->disableAll();
 

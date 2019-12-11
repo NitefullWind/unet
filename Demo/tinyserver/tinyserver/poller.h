@@ -15,6 +15,8 @@ class EventLoop;
 class Poller
 {
 public:
+    typedef std::vector<Channel *> ChannelList;
+
     explicit Poller(EventLoop *loop);
     virtual ~Poller();
 
@@ -24,7 +26,7 @@ public:
      * @param activeChannels 轮询的Channel列表
      * @param timeoutMs 超时时间
      */
-    virtual void poll(std::vector<Channel *> *activeChannels, int timeoutMs) = 0;
+    virtual void poll(ChannelList *activeChannels, int timeoutMs) = 0;
     
     /**
      * @brief 添加或更新一个Channel
@@ -45,7 +47,7 @@ public:
      * 
      * @param channel 要检查的Channel
      * @return true 在轮询中
-     * @return false 不走轮询中
+     * @return false 不在轮询中
      */
     bool hasChannel(Channel *channel) const;
 
