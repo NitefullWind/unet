@@ -11,16 +11,16 @@ set(CXX_FLAGS
 	-Wall
 	-Wextra
 	-Werror
-	-Wconversion
+	#-Wconversion
 	-Wno-unused-parameter
 	-Wpointer-arith
 	-march=native
 	-std=c++11
-	-rdynamic
+	#-rdynamic
 	)
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -finline-limit=1000 -DNDEBUG")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/bin)

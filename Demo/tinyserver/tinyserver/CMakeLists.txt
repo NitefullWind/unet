@@ -8,6 +8,7 @@ set(SRCS
 	logger.cpp
 	poller.cpp
 	sockets.cpp
+	poller/PollPoller.cpp
 	tcp/Connector.cpp
 	tcp/TcpClient.cpp
 	tcp/tcpServer.cpp

@@ -1,7 +1,7 @@
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/channel.h>
 #include <tinyserver/logger.h>
-#include <tinyserver/poller.h>
+#include <tinyserver/poller/PollPoller.h>
 #include <tinyserver/sockets.h>
 
 #include <assert.h>
@@ -40,7 +40,7 @@ EventLoop::EventLoop() :
 	_looping(false),
 	_stop(false),
 	_threadId(std::this_thread::get_id()),
-	_poller(new Poller(this)),
+	_poller(new PollPoller(this)),
 	_wakeupChannel(new Channel(this, createEventFd())),
 	_callingPendingFunctors(false)
 {
