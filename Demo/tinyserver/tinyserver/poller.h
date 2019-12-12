@@ -2,6 +2,7 @@
 #define TINYSERVER_POLLER_H
 
 #include <map>
+#include <memory>
 #include <vector>
 
 struct pollfd;
@@ -55,6 +56,18 @@ public:
      * @brief 确保在当前线程执行的断言
      */
     void assertInLoopThread() const;
+
+    /**
+     * @brief Create a New Poller object
+     * 
+     * 如果环境变量中设置了TINYSERVER_USE_POLL的值,
+     * 则返回PollPoller对象(使用poll)，
+     * 否则返回默认的EPollPoller对象(使用epoll)。
+     * 
+     * @param loop Poller's EventLoop
+     * @return std::unique_ptr<Poller> 
+     */
+    static std::unique_ptr<Poller> getNewPoller(EventLoop* loop);
 
 private:
     EventLoop *_loop;
