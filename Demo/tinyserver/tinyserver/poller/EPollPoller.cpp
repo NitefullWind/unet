@@ -56,7 +56,7 @@ void EPollPoller::poll(ChannelList *activeChannels, int timeoutMs)
 void EPollPoller::fillActiveChannels(int numEvents, ChannelList* activeChannels) const
 {
     assert(static_cast<size_t>(numEvents) <= _events.size());
-    for(int i=0; i<numEvents; ++i) {
+    for(size_t i=0; i<(size_t)numEvents; ++i) {
         Channel* channel = static_cast<Channel*>(_events[i].data.ptr);
 #ifndef NDEBUG
         int fd = channel->fd();

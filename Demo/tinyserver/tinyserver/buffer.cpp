@@ -57,25 +57,25 @@ void Buffer::append(const std::string& str)
 }
 
 
-void Buffer::appendInt64(int64_t num)
+void Buffer::appendUInt64(uint64_t num)
 {
 	auto be64 = sockets::HostToNetwork64(num);
 	append(&be64, sizeof(be64));
 }
 
-void Buffer::appendInt32(int32_t num)
+void Buffer::appendUInt32(uint32_t num)
 {
 	auto be32 = sockets::HostToNetwork32(num);
 	append(&be32, sizeof(be32));
 }
 
-void Buffer::appendInt16(int16_t num)
+void Buffer::appendUInt16(uint16_t num)
 {
 	auto be16 = sockets::HostToNetwork16(num);
 	append(&be16, sizeof(be16));
 }
 
-void Buffer::appendInt8(int8_t num)
+void Buffer::appendUInt8(uint8_t num)
 {
 	append(&num, sizeof(num));
 }
@@ -111,25 +111,25 @@ void Buffer::prepend(const std::string& str)
 	prepend(str.c_str(), str.length());
 }
 
-void Buffer::prependInt64(int64_t num)
+void Buffer::prependUInt64(uint64_t num)
 {
-	int64_t be64 = sockets::HostToNetwork64(num);
+	uint64_t be64 = sockets::HostToNetwork64(num);
 	prepend(&be64, sizeof be64);
 }
 
-void Buffer::prependInt32(int32_t num)
+void Buffer::prependUInt32(uint32_t num)
 {
-	int32_t be32 = sockets::HostToNetwork32(num);
+	uint32_t be32 = sockets::HostToNetwork32(num);
 	prepend(&be32, sizeof be32);
 }
 
-void Buffer::prependInt16(int16_t num)
+void Buffer::prependUInt16(uint16_t num)
 {
-	int16_t be16 = sockets::HostToNetwork16(num);
+	uint16_t be16 = sockets::HostToNetwork16(num);
 	prepend(&be16, sizeof be16);
 }
 
-void Buffer::prependInt8(int8_t num)
+void Buffer::prependUInt8(uint8_t num)
 {
 	prepend(&num, sizeof num);
 }
@@ -150,10 +150,10 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
 		TLOG_ERROR("readv errno = " << errno);
 		*savedErrno = errno;
 	} else if ((size_t)n < writeable) {
-		_writerIndex += n;
+		_writerIndex += (size_t)n;
 	} else {
 		_writerIndex = _buffer.size();
-		append(extrabuf, n - writeable);
+		append(extrabuf, (size_t)n - writeable);
 	}
 	return n;
 }
@@ -177,7 +177,8 @@ std::string Buffer::readLine(bool withCRLF, bool needRetrieve)
 {
 	const char* eol = findEOL();
 	if(eol) {
-		std::string line = read(eol - peek() + 1);
+		assert(eol - peek() + 1 > 0);
+		std::string line = read((size_t)(eol - peek() + 1));
 		if(!withCRLF) {
 			line.erase(line.length() - 1);
 			if(line[line.length() - 1] == '\r') {
@@ -191,37 +192,37 @@ std::string Buffer::readLine(bool withCRLF, bool needRetrieve)
 }
 
 
-int64_t Buffer::readInt64(bool needRetrieve)
+uint64_t Buffer::readUInt64(bool needRetrieve)
 {
-	assert(readableBytes() >= sizeof(int64_t));
-	int64_t be64 = 0;
+	assert(readableBytes() >= sizeof(uint64_t));
+	uint64_t be64 = 0;
 	::memcpy(&be64, peek(), sizeof(be64));
 	be64 = sockets::NetworkToHost64(be64);
 	if(needRetrieve) { retrieve(sizeof(be64)); }
 	return be64;
 }
-int32_t Buffer::readInt32(bool needRetrieve)
+uint32_t Buffer::readUInt32(bool needRetrieve)
 {
-	assert(readableBytes() >= sizeof(int32_t));
-	int32_t be32 = 0;
+	assert(readableBytes() >= sizeof(uint32_t));
+	uint32_t be32 = 0;
 	::memcpy(&be32, peek(), sizeof(be32));
 	be32 = sockets::NetworkToHost32(be32);
 	if(needRetrieve) { retrieve(sizeof(be32)); }
 	return be32;
 }
-int16_t Buffer::readInt16(bool needRetrieve)
+uint16_t Buffer::readUInt16(bool needRetrieve)
 {
-	assert(readableBytes() >= sizeof(int16_t));
-	int16_t be16 = 0;
+	assert(readableBytes() >= sizeof(uint16_t));
+	uint16_t be16 = 0;
 	::memcpy(&be16, peek(), sizeof(be16));
 	be16 = sockets::NetworkToHost16(be16);
 	if(needRetrieve) { retrieve(sizeof(be16)); }
 	return be16;
 }
-int8_t Buffer::readInt8(bool needRetrieve)
+uint8_t Buffer::readUInt8(bool needRetrieve)
 {
-	assert(readableBytes() >= sizeof(int8_t));
-	int8_t be8 = 0;
+	assert(readableBytes() >= sizeof(uint8_t));
+	uint8_t be8 = 0;
 	::memcpy(&be8, peek(), sizeof(be8));
 	if(needRetrieve) { retrieve(sizeof(be8)); }
 	return be8;
@@ -237,7 +238,7 @@ const char* Buffer::findCRLF(const char* start) const
 	assert(peek() <= start);
 	assert(start <= beginWrite());
 	// 从指定位置开始查找\n
-	const char* crlf = (const char*)memchr(start, '\n', beginWrite() - start);
+	const char* crlf = (const char*)memchr(start, '\n', (size_t)(beginWrite() - start));
 	if(crlf && start < crlf && memcmp(crlf-1, "\r", 1) == 0) { // 查找\n前是否有\r
 		return crlf - 1;
 	}
@@ -254,7 +255,7 @@ const char* Buffer::findEOL(const char* start) const
 	assert(peek() <= start);
 	assert(start <= beginWrite());
 	// 从指定位置开始查找\n
-	const char* crlf = (const char*)memchr(start, '\n', beginWrite() - start);
+	const char* crlf = (const char*)memchr(start, '\n', (size_t)(beginWrite() - start));
 	return crlf;
 }
 

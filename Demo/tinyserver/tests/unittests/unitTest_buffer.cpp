@@ -102,22 +102,22 @@ TEST(Buffer, readLine)
 	EXPECT_EQ(buf.readLine(), "def");
 }
 
-TEST(Buffer, Int64)
+TEST(Buffer, UInt64)
 {
 	Buffer buf;
-	int64_t num = 999999999999999;
-	buf.appendInt64(num);
+	uint64_t num = 999999999999999;
+	buf.appendUInt64(num);
 
-	EXPECT_EQ(buf.readInt64(), num);
+	EXPECT_EQ(buf.readUInt64(), num);
 }
 
-TEST(Buffer, Int8)
+TEST(Buffer, UInt8)
 {
 	Buffer buf;
-	int8_t num = static_cast<int8_t>(255);
-	buf.appendInt8(num);
+	uint8_t num = static_cast<int8_t>(255);
+	buf.appendUInt8(num);
 
-	EXPECT_EQ(buf.readInt8(), num);
+	EXPECT_EQ(buf.readUInt8(), num);
 }
 
 TEST(Buffer, prepend)

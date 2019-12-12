@@ -37,19 +37,19 @@ public:
 	void append(const char *buf, size_t len);
 	void append(const void *buf, size_t len);
 	void append(const std::string& str);
-	void appendInt64(int64_t num);
-	void appendInt32(int32_t num);
-	void appendInt16(int16_t num);
-	void appendInt8(int8_t num);
+	void appendUInt64(uint64_t num);
+	void appendUInt32(uint32_t num);
+	void appendUInt16(uint16_t num);
+	void appendUInt8(uint8_t num);
 	ssize_t readFd(int fd, int *savedErrno);
 
 	void prepend(const char *buf, size_t len);
 	void prepend(const void *buf, size_t len);
 	void prepend(const std::string& str);
-	void prependInt64(int64_t num);
-	void prependInt32(int32_t num);
-	void prependInt16(int16_t num);
-	void prependInt8(int8_t num);
+	void prependUInt64(uint64_t num);
+	void prependUInt32(uint32_t num);
+	void prependUInt16(uint16_t num);
+	void prependUInt8(uint8_t num);
 
 	// read data to string
 	std::string read(size_t len, bool needRetrieve=true);
@@ -60,10 +60,10 @@ public:
 	 * @withCRLF if true return whith CRLF, default false.
 	 */
 	std::string readLine(bool withCRLF=true, bool needRetrieve=true);
-	int64_t readInt64(bool needRetrieve=true);
-	int32_t readInt32(bool needRetrieve=true);
-	int16_t readInt16(bool needRetrieve=true);
-	int8_t readInt8(bool needRetrieve=true);
+	uint64_t readUInt64(bool needRetrieve=true);
+	uint32_t readUInt32(bool needRetrieve=true);
+	uint16_t readUInt16(bool needRetrieve=true);
+	uint8_t readUInt8(bool needRetrieve=true);
 
 	// return the string starting with \n or \r\n
 	const char* findCRLF() const;

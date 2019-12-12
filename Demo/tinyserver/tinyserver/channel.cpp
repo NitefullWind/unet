@@ -5,9 +5,9 @@
 
 using namespace tinyserver;
 
-const short Channel::kNoneEvent = 0;
-const short Channel::kReadEvent = POLLIN | POLLPRI;
-const short Channel::kWriteEvent = POLLOUT;
+const uint32_t Channel::kNoneEvent = 0;
+const uint32_t Channel::kReadEvent = POLLIN | POLLPRI;
+const uint32_t Channel::kWriteEvent = POLLOUT;
 
 Channel::Channel(EventLoop *loop, int fd):
 	_loop(loop),

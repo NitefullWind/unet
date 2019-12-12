@@ -120,7 +120,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
 
 		if((size_t)nwrote < len) {						// there are more data need to write
 			TLOG_TRACE("sendInLoop there are more data need to write")
-			_outputBuffer.append((const char *)data + nwrote, len - nwrote);
+			_outputBuffer.append((const char *)data + nwrote, len - (size_t)nwrote);
 			if(!_channel->isWriting()) {
 				_channel->enableWriting();
 			}
@@ -143,7 +143,7 @@ void TcpConnection::onReading()
 {
 	TLOG_TRACE(__FUNCTION__);
 	int savedError = 0;
-	size_t n = _inputBuffer.readFd(_channel->fd(), &savedError);
+	ssize_t n = _inputBuffer.readFd(_channel->fd(), &savedError);
 	if(n > 0) {
 		if(_messageCallback) {
 			_messageCallback(shared_from_this(), &_inputBuffer);
@@ -167,8 +167,10 @@ void TcpConnection::onWriting()
 			if(errno != EWOULDBLOCK) {
 				TLOG_ERROR(__FUNCTION__ << " error");
 			}
+		} else {
+			_outputBuffer.retrieve((size_t)nwrote);
 		}
-		_outputBuffer.retrieve(nwrote);
+		
 		if(_outputBuffer.readableBytes() == 0) {		// no more data to write
 			_channel->disableWriting();					// disable writing
 			if(_state == kDisconnecting) {				// need to shutdown the connection

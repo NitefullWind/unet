@@ -25,7 +25,7 @@ void PollPoller::poll(ChannelList *activeChannels, int timeoutMs)
 		for(auto pfd : _pollfds) {
 			if(pfd.revents > 0) {
 				auto channel = _channelMap[pfd.fd];
-				channel->setRevents(pfd.revents);
+				channel->setRevents((uint32_t)pfd.revents);
 				activeChannels->push_back(channel);
 			}
 		}
@@ -45,19 +45,19 @@ void PollPoller::updateChannel(Channel *channel)
 	if(_channelMap.find(fd) == _channelMap.end()) {	// add a new channel
 		struct pollfd pfd;
 		pfd.fd = fd;
-		pfd.events = channel->events();
+		pfd.events = (short)channel->events();
 		pfd.revents = 0;
 		channel->setIndex(static_cast<int>(_pollfds.size()));
 		_pollfds.push_back(pfd);
 		_channelMap[fd] = channel;
 	} else {	
 		assert(channel->index() < static_cast<int>(_pollfds.size()));
-		auto& pfd = _pollfds.at(channel->index());
+		auto& pfd = _pollfds.at((size_t)channel->index());
 		assert(channel->fd() == pfd.fd);
 		if(channel->isNoneEvent()) {
 			pfd.fd = -pfd.fd-1;						// ignore the pollfd
 		} else {
-			pfd.events = channel->events();
+			pfd.events = (short)channel->events();
 		}
 		pfd.revents = 0;
 	}

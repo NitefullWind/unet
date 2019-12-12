@@ -18,9 +18,9 @@ public:
 
 	int fd() const { return _fd; }
 
-	short events() const { return  _events; }
-	short revents() const { return _revents; }
-	void setRevents(short revents) { _revents = revents; }
+	uint32_t events() const { return  _events; }
+	uint32_t revents() const { return _revents; }
+	void setRevents(uint32_t revents) { _revents = revents; }
 
 	int index() const { return _index; }
 	void setIndex(int index) { _index = index; }
@@ -29,7 +29,7 @@ public:
 
 	void enableReading() { if(!isReading()) {_events |= kReadEvent; update();} }
 	void enableWriting() { if(!isWriting()) {_events |= kWriteEvent; update();} }
-	void disableWriting() { if(isWriting()) {_events &= (short)~kWriteEvent; update();} }
+	void disableWriting() { if(isWriting()) {_events &= (uint32_t)~kWriteEvent; update();} }
 	void disableAll() { if(!isNoneEvent()) {_events &= kNoneEvent; update();} }
 	bool isReading() const { return _events & kReadEvent; }
 	bool isWriting() const { return _events & kWriteEvent; }
@@ -42,13 +42,13 @@ public:
 private:
 	EventLoop *_loop;
 	const int _fd;
-	short _events;		// struct pollfd.events
-	short _revents;		// struct pollfd.revents
+	uint32_t _events;		// struct pollfd.events
+	uint32_t _revents;		// struct pollfd.revents
 	int _index;		// for pollfds in poller
 
-	static const short kNoneEvent;
-	static const short kReadEvent;
-	static const short kWriteEvent;
+	static const uint32_t kNoneEvent;
+	static const uint32_t kReadEvent;
+	static const uint32_t kWriteEvent;
 
 	void update();
 
