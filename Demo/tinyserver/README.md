@@ -13,6 +13,10 @@
 | BUILD_TEST | ON,OFF | ON | 构建测试项目 |
 | BUILD_UNITTEST | ON,OFF | OFF | 构建单元测试项目 |
 
+### 切换使用poll或者epoll
+
+在环境变量中设置TINYSERVER_USE_POLL=poll则使用poll, 否则默认使用epoll
+
 ### 问题记录：
 
 #### 多线程时IO线程阻塞在poll()函数中而无法处理新连接
