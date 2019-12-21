@@ -3,6 +3,7 @@
 #include <tinyserver/logger.h>
 #include <tinyserver/poller.h>
 #include <tinyserver/sockets.h>
+#include <tinyserver/TimerManager.h>
 
 #include <assert.h>
 // #include <signal.h>
@@ -42,7 +43,8 @@ EventLoop::EventLoop() :
 	_threadId(std::this_thread::get_id()),
 	_poller(std::move(Poller::getNewPoller(this))),
 	_wakeupChannel(new Channel(this, createEventFd())),
-	_callingPendingFunctors(false)
+	_callingPendingFunctors(false),
+	_timerManager(new TimerManager(this))
 {
 	_wakeupChannel->setReadCallback(std::bind(&EventLoop::onWakeupChannelReading, this));
 	_wakeupChannel->enableReading();
@@ -108,6 +110,30 @@ void EventLoop::queueInLoop(const Functor& cb)
 	if(!isInLoopThread() || _callingPendingFunctors) {
 		wakeUp();
 	}
+}
+
+uint32_t EventLoop::runAt(const TimerCallback& cb, std::chrono::system_clock::time_point time, double interval)
+{
+	auto now = std::chrono::system_clock::now();
+	auto duration = time - now;
+	auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+	double seconds = (double)nanoseconds/1000000000;
+	return _timerManager->addTimer(cb, seconds, interval);
+}
+
+uint32_t EventLoop::runAfter(const TimerCallback& cb, double delay, double interval)
+{
+	return _timerManager->addTimer(cb, delay, interval);
+}
+
+void EventLoop::removeTimer(uint32_t id)
+{
+	_timerManager->removeTimer(id);
+}
+
+void EventLoop::removeAllTimer()
+{
+	_timerManager->removeAll();
 }
 
 void EventLoop::wakeUp()

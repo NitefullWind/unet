@@ -8,6 +8,8 @@ set(SRCS
 	logger.cpp
 	poller.cpp
 	sockets.cpp
+	Timer.cpp
+	TimerManager.cpp
 	poller/EPollPoller.cpp
 	poller/PollPoller.cpp
 	tcp/Connector.cpp
