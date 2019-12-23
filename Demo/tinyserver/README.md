@@ -9,7 +9,7 @@
 | BUILD_DIR | 任意路径 | ./build | 构建生产临时文件路径 |
 | BUILD_TYPE | debug,release | debug | debug或release版本 |
 | INSTALL_DIR | 任意路径 | ${BUILD_DIR}/${BUILD_TYPE}-install | 安装版本生成目录 |
-| LOGLIB | log4cxx | 空 | 使用的日志库 |
+| LOGLIB | log4cxx,spdlog | 空 | 使用的日志库 |
 | BUILD_TEST | ON,OFF | ON | 构建测试项目 |
 | BUILD_UNITTEST | ON,OFF | OFF | 构建单元测试项目 |
 
