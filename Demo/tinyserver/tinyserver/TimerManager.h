@@ -21,6 +21,8 @@ public:
     explicit TimerManager(EventLoop* loop);
     ~TimerManager();
 
+    EventLoop* eventLoop() const { return _loop; }
+
     /**
      * @brief 增加定时器
      * 可以在其他线程调用

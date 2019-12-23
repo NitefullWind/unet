@@ -2,6 +2,7 @@
 #include <tinyserver/eventLoop.h>
 #include <tinyserver/logger.h>
 #include <tinyserver/sockets.h>
+#include <tinyserver/TimerManager.h>
 
 #include <assert.h>
 #include <chrono>
@@ -29,12 +30,13 @@ inline time_t seconds2Nanoseconds(double seconds)
 }
 }
 
-Timer::Timer(EventLoop* loop, 
+Timer::Timer(TimerManager* tm,
                 uint32_t id,
                 const TimerCallback& cb, 
                 double seconds, 
                 double interval)
-    : _loop(loop),
+    : _tm(tm),
+      _loop(tm->eventLoop()),
       _id(id),
       _fd(createTimerFd()),
       _timerChannel(_loop, _fd),
@@ -83,5 +85,8 @@ void Timer::onTimerChannelRead()
         if(_timerCallback) {
             _timerCallback();
         }
+    }
+    if (_interval <= 0.0) {
+        _tm->removeTimer(_id);
     }
 }

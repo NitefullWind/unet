@@ -41,7 +41,7 @@ void TimerManager::addTimerInLoop(uint32_t timerId, const TimerCallback& cb, dou
 {
     _loop->assertInLoopThread();
 
-    Timer* timer = new Timer(_loop, timerId, cb, sec, interval);    // 指针在移除定时器时delete
+    Timer* timer = new Timer(this, timerId, cb, sec, interval);    // 指针在移除定时器时delete
     _timerMap[timerId] = timer;
     _timerFdMap[timer->fd()] = timerId;
     TLOG_DEBUG("add timer id = " << timerId << " fd = " << timer->fd() << " sec = " << sec << " interval = " << interval);
@@ -53,12 +53,15 @@ void TimerManager::removeTimerInLoop(uint32_t id)
 
     if (_timerMap.find(id) != _timerMap.end()) {
         auto timer = _timerMap[id];
-        if (_timerFdMap.find(timer->fd()) != _timerFdMap.end()) {
-            _timerFdMap.erase(timer->fd());
+        if (timer) {
+            if (_timerFdMap.find(timer->fd()) != _timerFdMap.end()) {
+                _timerFdMap.erase(timer->fd());
+            }
+            // 删除timer指针
+            delete timer;
+            timer = nullptr;
         }
         _timerMap.erase(id);
-        // 删除timer指针
-        delete timer;
         TLOG_DEBUG("remove timer id: " << id << " success.")
     }
 }

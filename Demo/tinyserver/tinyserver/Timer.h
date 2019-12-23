@@ -8,6 +8,7 @@ namespace tinyserver
 {
 
 class EventLoop;
+class TimerManager;
 
 /**
  * @brief 定时器类
@@ -16,7 +17,7 @@ class EventLoop;
 class Timer
 {
 public:
-    explicit Timer(EventLoop* loop, 
+    explicit Timer(TimerManager* tm, 
                     uint32_t id,
                     const TimerCallback& cb, 
                     double seconds, 
@@ -28,6 +29,7 @@ public:
     const TimerCallback& timerCallback() const { return _timerCallback; }
 
 private:
+    TimerManager* _tm;
     EventLoop* _loop;
     uint32_t _id;
     int _fd;
