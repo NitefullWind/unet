@@ -41,7 +41,7 @@ EventLoop::EventLoop() :
 	_looping(false),
 	_stop(false),
 	_threadId(std::this_thread::get_id()),
-	_poller(std::move(Poller::getNewPoller(this))),
+	_poller(Poller::getNewPoller(this)),	// 编译器会执行copy elision，不必使用move操作
 	_wakeupChannel(new Channel(this, createEventFd())),
 	_callingPendingFunctors(false),
 	_timerManager(new TimerManager(this))
