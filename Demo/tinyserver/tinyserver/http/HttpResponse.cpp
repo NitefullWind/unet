@@ -8,7 +8,7 @@ HttpResponse::HttpResponse(unsigned short statusCode, const std::string &statusM
 	_statusCode(statusCode),
 	_statusMessage(statusMessage),
 	_keepAlive(false),
-	_textBody()
+	_rspBuffer()
 {
 }
 
@@ -18,7 +18,7 @@ HttpResponse::HttpResponse(HttpResponse &rhs)
 	_statusMessage = rhs._statusMessage;
 	_headers = rhs._headers;
 	_keepAlive = rhs._keepAlive;
-	_textBody = rhs._textBody;
+	_rspBuffer = rhs._rspBuffer;
 }
 
 HttpResponse::HttpResponse(HttpResponse &&rhs)
@@ -27,7 +27,7 @@ HttpResponse::HttpResponse(HttpResponse &&rhs)
 	_statusMessage = std::move(rhs._statusMessage);
 	_headers = std::move(rhs._headers);
 	_keepAlive = rhs._keepAlive;
-	_textBody = std::move(rhs._textBody);
+	_rspBuffer = std::move(rhs._rspBuffer);
 }
 
 HttpResponse &HttpResponse::operator=(const HttpResponse &rhs)
@@ -37,7 +37,7 @@ HttpResponse &HttpResponse::operator=(const HttpResponse &rhs)
 		_statusMessage = rhs._statusMessage;
 		_headers = rhs._headers;
 		_keepAlive = rhs._keepAlive;
-		_textBody = rhs._textBody;
+		_rspBuffer = rhs._rspBuffer;
 	}
 	return *this;
 }
@@ -49,7 +49,7 @@ HttpResponse &HttpResponse::operator=(const HttpResponse &&rhs)
 		_statusMessage = std::move(rhs._statusMessage);
 		_headers = std::move(rhs._headers);
 		_keepAlive = rhs._keepAlive;
-		_textBody = std::move(rhs._textBody);
+		_rspBuffer = std::move(rhs._rspBuffer);
 	}
 	return *this;
 }
@@ -74,5 +74,5 @@ void HttpResponse::getResponseBuffer(Buffer* buffer)
 		buffer->append("\r\n");
 	}
 	buffer->append("\r\n");
-	buffer->append(_textBody);
+	buffer->append(_rspBuffer.data(), _rspBuffer.readableBytes());
 }

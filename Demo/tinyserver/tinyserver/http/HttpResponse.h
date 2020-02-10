@@ -1,13 +1,12 @@
 #ifndef TINYSERVER_HTTPRESPONSE_H
 #define TINYSERVER_HTTPRESPONSE_H
 
+#include <tinyserver/buffer.h>
 #include <map>
 #include <string>
 
 namespace tinyserver
 {
-
-class Buffer;
 
 namespace http
 {
@@ -57,10 +56,15 @@ public:
 	}
 	bool keepAlive() const { return _keepAlive; }
 
-	void setTextBody(const std::string &text) { _textBody = text; setHeader("Content-Length", std::to_string(_textBody.length())); }
-	void setTextBody(std::string &&text) { _textBody = std::move(text); setHeader("Content-Length", std::to_string(_textBody.length())); }
-	const std::string &textBody() const { return _textBody; }
+	void setTextBody(const std::string &text) { setResponseData(text.c_str(), text.length()); }
+	void setTextBody(std::string &&text) { setResponseData(text.c_str(), text.length()); }
+	std::string textBody() { return _rspBuffer.readAll(false); }
 
+	void setResponseData(const void* data, size_t len) {
+		_rspBuffer.retrieveAll();
+		_rspBuffer.append(data, len);
+		setHeader("Content-Length", std::to_string(len)); 
+	}
 	void getResponseBuffer(Buffer* buffer);
 private:
 	unsigned short _statusCode;
@@ -68,7 +72,7 @@ private:
 	std::map<std::string, std::string> _headers;
 	bool _keepAlive;
 
-	std::string _textBody;
+	Buffer _rspBuffer;
 };
 
 }

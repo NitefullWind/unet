@@ -51,9 +51,9 @@ Timer::Timer(TimerManager* tm,
     struct itimerspec newValue;
     bzero(&newValue, sizeof(newValue));
     newValue.it_value.tv_sec = (time_t)_seconds;
-    newValue.it_value.tv_nsec = seconds2Nanoseconds(_seconds - (time_t)_seconds);
+    newValue.it_value.tv_nsec = seconds2Nanoseconds(_seconds - _seconds);
     newValue.it_interval.tv_sec = (time_t)_interval;
-    newValue.it_interval.tv_nsec = seconds2Nanoseconds(_interval - (time_t)_interval);
+    newValue.it_interval.tv_nsec = seconds2Nanoseconds(_interval - _interval);
     int ret = ::timerfd_settime(_fd, 0, &newValue, nullptr);
     if (ret == -1) {
         TLOG_ERROR("addTimer() timerfd_settime error.");
