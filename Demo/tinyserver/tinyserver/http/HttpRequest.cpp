@@ -84,7 +84,7 @@ bool HttpRequest::parserRequest(Buffer* buffer)
 		std::string::size_type n2 = line.find(' ', n1+1);
 		if(n2 != std::string::npos) {
 			std::string url = line.substr(n1+1, n2-n1-1);
-			parserURL(std::move(url));
+			parserURL(url);
 			setVersion(line.substr(n2+1).c_str());
 
 			// parse headers
@@ -101,7 +101,7 @@ bool HttpRequest::parserRequest(Buffer* buffer)
 	return false;
 }
 
-void HttpRequest::parserURL(std::string &&url)
+void HttpRequest::parserURL(std::string &url)
 {
 	std::string::size_type n1 = url.find('?');
 	if(n1 == std::string::npos) {	// 没有url参数

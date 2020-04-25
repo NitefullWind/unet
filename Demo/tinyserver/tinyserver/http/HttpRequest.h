@@ -102,7 +102,7 @@ private:
 	std::map<std::string, std::string> _headers;
 	std::string _body;
 
-	void parserURL(std::string &&url);
+	void parserURL(std::string &url);
 	
 };
 

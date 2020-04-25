@@ -11,6 +11,7 @@
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "MimeTypes.h"
 
@@ -106,9 +107,27 @@ int main(int argc, char** argv)
     rlmt.rlim_max  = (rlim_t)CORE_SIZE;
     if (setrlimit(RLIMIT_CORE, &rlmt) == -1) {
         return -1; 
-    } 
+    }
+    uint16_t port = 8080;
+    int ch;
+    while ((ch = ::getopt(argc, argv, "l:d:")) != -1)
+    {
+        switch (ch)
+        {
+        case 'l':
+            port = static_cast<uint16_t>(std::stoi(optarg));
+            break;
+        case 'd':
+            Logger::SetLevel(static_cast<Logger::Level>(std::stoi(optarg)));
+            break;
+        
+        default:
+            break;
+        }
+    }
+    
     EventLoop loop;
-    InetAddress address(8080);
+    InetAddress address(port);
     HttpServer httpServer(&loop, address);
     httpServer.setIOThreadNum(2);
     httpServer.setHttpCallback(onHttpRequest);
