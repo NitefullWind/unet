@@ -43,7 +43,7 @@ namespace tinyserver
 #ifdef LOGLIB_LOG4CXX
 		static log4cxx::LoggerPtr GetLogger();
 #else
-		static void ConsoleLog(Level level, std::stringstream&& ss);
+		static void ConsoleLog(Level level, const std::stringstream& ss);
 #endif	// LOGLIB
 	private:
 #ifdef LOGLIB_LOG4CXX
@@ -115,32 +115,32 @@ namespace tinyserver
 
 #define TLOG_TRACE(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Trace, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Trace, ss);		\
 		} while(0);
 
 #define TLOG_DEBUG(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Debug, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Debug, ss);		\
 		} while(0);
 
 #define TLOG_INFO(message) do {										\
 			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Info, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Info, ss);		\
 		} while(0);
 
 #define TLOG_WARN(message) do {										\
 			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Warn, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Warn, ss);		\
 		} while(0);
 
 #define TLOG_ERROR(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Error, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Error, ss);		\
 		} while(0);
 
 #define TLOG_FATAL(message) do {									\
 			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Critial, std::move(ss));		\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Critial, ss);		\
 		} while(0);
 #endif	// LOGLIB
 

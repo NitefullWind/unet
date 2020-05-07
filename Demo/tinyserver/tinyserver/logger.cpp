@@ -58,7 +58,7 @@ log4cxx::LoggerPtr Logger::GetLogger()
 }
 #else
 
-void Logger::ConsoleLog(Level level, std::stringstream&& ss)
+void Logger::ConsoleLog(Level level, const std::stringstream& ss)
 {
 	if(level >= Logger::GetLevel()) {
 		std::cout << ss.str();
