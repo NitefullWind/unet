@@ -66,7 +66,7 @@ void TcpConnection::send(const char *data, size_t len)
 	send((void*)data, len);
 }
 
-void TcpConnection::send(Buffer *buffer)
+void TcpConnection::send(const Buffer *buffer)
 {
 	if(_state == kConnected) {
 		if(_loop->isInLoopThread()) {

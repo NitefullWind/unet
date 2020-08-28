@@ -16,6 +16,8 @@ EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseLoop, size_t numThreads)
 
 EventLoopThreadPool::~EventLoopThreadPool()
 {
+	_loopVector.clear();
+	_threadPool.clear();
 }
 
 void EventLoopThreadPool::start()

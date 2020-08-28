@@ -22,6 +22,7 @@ public:
 	static const size_t kInitialSize = 1024;
 	Buffer();
 	Buffer(size_t size, size_t prependSize = 0);
+	Buffer(const Buffer& rhs);
 	~Buffer();
 
 	Buffer& operator=(const Buffer& rhs);

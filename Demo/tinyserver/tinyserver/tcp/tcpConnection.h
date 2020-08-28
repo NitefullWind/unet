@@ -45,7 +45,7 @@ public:
 
 	void send(const std::string& str);
 	void send(const char *data, size_t len);
-	void send(Buffer *buffer);
+	void send(const Buffer *buffer);
 	void send(const void *data, size_t len);
 	void shutdown();
 private:

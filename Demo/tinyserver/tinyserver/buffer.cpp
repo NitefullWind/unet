@@ -23,6 +23,14 @@ Buffer::Buffer(size_t size, size_t prependSize) :
 {
 }
 
+Buffer::Buffer(const Buffer& rhs) :
+	_buffer(rhs._buffer),
+	_prependSize(rhs._prependSize),
+	_writerIndex(rhs._writerIndex),
+	_readerIndex(rhs._readerIndex)
+{
+}
+
 Buffer::~Buffer()
 {
 }
@@ -31,6 +39,7 @@ Buffer& Buffer::operator=(const Buffer& rhs)
 {
 	if(this != &rhs) {
 		_buffer = rhs._buffer;
+		_prependSize = rhs._prependSize;
 		_writerIndex = rhs._writerIndex;
 		_readerIndex = rhs._readerIndex;
 	}
