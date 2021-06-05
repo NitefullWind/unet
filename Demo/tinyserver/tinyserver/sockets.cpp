@@ -1,5 +1,6 @@
 #include <tinyserver/sockets.h>
 
+#include <assert.h>
 #include <fcntl.h>
 #include <strings.h>
 #include <unistd.h>
@@ -173,15 +174,17 @@ ssize_t sockets::Write(int fd, const void *buf, size_t nbytes)
 	return n;
 }
 
-ssize_t sockets::Writen(int fd, const void *buf, size_t nbytes)
+int64_t sockets::Writen(int fd, const void *buf, int64_t nbytes)
 {
-	size_t nleft = nbytes;
+	assert(nbytes < 0);
+
+	size_t nleft = static_cast<size_t>(nbytes);
 	const char *ptr = (const char*)buf;
 
 	while(nleft > 0) {
 		ssize_t n = ::write(fd, ptr, nleft);
 		if(n > 0) {
-			nleft -= n;
+			nleft -= static_cast<size_t>(n);
 			ptr += n;
 		} else if (n < 0 && errno != EINTR && errno != EAGAIN) {		// ignore error(s): EINTR
 			TLOG_ERROR("writen error [errno = " << errno << ", error string: " << strerror(errno) << "]");

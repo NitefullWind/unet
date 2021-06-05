@@ -161,7 +161,7 @@ void TcpConnection::onWriting()
 	TLOG_TRACE(__FUNCTION__);
 	_loop->assertInLoopThread();
 	if(_channel->isWriting()) {							// write
-		ssize_t nwrote = sockets::Writen(_channel->fd(), _outputBuffer.peek(), _outputBuffer.readableBytes());
+		ssize_t nwrote = sockets::Writen(_channel->fd(), _outputBuffer.peek(), static_cast<int64_t>(_outputBuffer.readableBytes()));
 		if(nwrote < 0) {
 			nwrote = 0;
 			if(errno != EWOULDBLOCK) {
