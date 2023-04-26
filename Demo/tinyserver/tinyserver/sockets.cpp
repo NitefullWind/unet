@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <fcntl.h>
+#include <netinet/tcp.h>
 #include <strings.h>
 #include <unistd.h>
 
@@ -277,4 +278,43 @@ bool sockets::IsSelfConnect(int sockfd)
 	{
 		return false;
 	}
+}
+
+int sockets::SetSockopt(int sockfd, int level, int optname, const void* optval, socklen_t optlen)
+{
+	int n;
+	if((n = ::setsockopt(sockfd, level, optname, optval, optlen)) < 0) {
+		TLOG_FATAL("setsockopt error [errno = " << errno << ", error string: " << strerror(errno) << "]")
+	}
+	return n;
+}
+
+void sockets::SetTcpNoDelay(int sockfd, bool on)
+{
+	int optval = on ? 1 : 0;
+	SetSockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof(optval)));
+}
+
+void sockets::SetReuseAddr(int sockfd, bool on)
+{
+	int optval = on ? 1 : 0;
+	SetSockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, static_cast<socklen_t>(sizeof(optval)));
+}
+
+void sockets::SetReusePort(int sockfd, bool on)
+{
+#ifdef SO_REUSEPORT
+	int optval = on ? 1 : 0;
+	SetSockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, static_cast<socklen_t>(sizeof(optval)));
+#else
+	if (on) {
+		TLOG_ERROR("SO_REUSEPORT is not supported");
+	}
+#endif
+}
+
+void sockets::SetKeepAlive(int sockfd, bool on)
+{
+	int optval = on ? 1 : 0;
+	SetSockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &optval, static_cast<socklen_t>(sizeof(optval)));
 }

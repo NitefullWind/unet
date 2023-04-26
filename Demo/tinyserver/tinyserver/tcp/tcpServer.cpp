@@ -32,6 +32,8 @@ void TcpServer::start()
 
 	sockets::Bind(_channel->fd(), _inetAddress.sockAddrInet());
 	sockets::Listen(_channel->fd());
+	sockets::SetReuseAddr(_channel->fd(), true);
+	sockets::SetReusePort(_channel->fd(), true);
 }
 
 void TcpServer::setIOThreadNum(size_t numThreads)

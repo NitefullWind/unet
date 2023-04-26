@@ -9,7 +9,7 @@
 #include <log4cxx/helpers/exception.h>
 #elif LOGLIB_SPDLOG
 #include <iostream>
-#include <spdlog/sinks/file_sinks.h>
+#include <spdlog/sinks/daily_file_sink.h>
 #include <sys/stat.h>
 #endif	// LOGLIB_LOG4CXX
 
@@ -27,6 +27,9 @@ Logger::Logger()
 
 Logger::~Logger()
 {
+#ifdef LOGLIB_SPDLOG
+	spdlog::get("file_logger")->flush();
+#endif
 }
 
 void Logger::SetLevel(Level level)
@@ -83,7 +86,10 @@ void Logger::Init(const char *filePath)
 		}
 		spdlog::drop_all();
 		spdlog::set_level(spdlog::level::debug);
-		spdlog::rotating_logger_mt("file_logger", "logs/tinyserver", 1024 * 1024 * 5, 10, true);
+		spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%L] : %v");
+		spdlog::flush_every(std::chrono::seconds(5));
+		spdlog::flush_on(spdlog::level::err);
+		spdlog::daily_logger_mt("file_logger", "logs/tinyserver.log", 0, 0, false);
 	}
 	catch(const spdlog::spdlog_ex& ex)
 	{

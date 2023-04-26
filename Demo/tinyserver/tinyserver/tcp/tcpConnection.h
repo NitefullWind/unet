@@ -48,6 +48,8 @@ public:
 	void send(const Buffer *buffer);
 	void send(const void *data, size_t len);
 	void shutdown();
+
+	void setTcpNoDelay(bool on);
 private:
 	enum StateEnum { kConnecting, kConnected, kDisconnecting, kDisconnected };
 

@@ -23,6 +23,7 @@ TcpConnection::TcpConnection(EventLoop *loop, const std::string id, int sockfd) 
 	_channel->setReadCallback(std::bind(&TcpConnection::onReading, this));
 	_channel->setWriteCallback(std::bind(&TcpConnection::onWriting, this));
 	_channel->setErrorCallback(std::bind(&TcpConnection::onError, this));
+	sockets::SetKeepAlive(sockfd, true);
 }
 
 TcpConnection::~TcpConnection()
@@ -208,4 +209,9 @@ void TcpConnection::shutdownInLoop()
 {
 	_loop->assertInLoopThread();
 	sockets::ShutdownWrite(_channel->fd());
+}
+
+void TcpConnection::setTcpNoDelay(bool on)
+{
+	sockets::SetTcpNoDelay(_channel->fd(), on);
 }

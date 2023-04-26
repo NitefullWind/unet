@@ -77,6 +77,12 @@ struct sockaddr_in GetPeerAddr(int sockfd);
 
 int getSocketError(int sockfd);
 bool IsSelfConnect(int sockfd);
+
+int SetSockopt(int sockfd, int level, int optname, const void* optval, socklen_t optlen);
+void SetTcpNoDelay(int sockfd, bool on);
+void SetReuseAddr(int sockfd, bool on);
+void SetReusePort(int sockfd, bool on);
+void SetKeepAlive(int sockfd, bool on);
 }
 }
 

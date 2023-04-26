@@ -82,65 +82,65 @@ namespace tinyserver
 		} while(0);
 #elif LOGLIB_SPDLOG
 #define TLOG_TRACE(message) do {							\
-			std::stringstream ss; ss << message;			\
-			spdlog::get("file_logger")->trace(ss.str());	\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message;			\
+			spdlog::get("file_logger")->trace(__tlog_ss__.str());	\
 		} while(0);
 
 #define TLOG_DEBUG(message) do {							\
-			std::stringstream ss; ss << message;			\
-			spdlog::get("file_logger")->debug(ss.str());	\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message;			\
+			spdlog::get("file_logger")->debug(__tlog_ss__.str());	\
 		} while(0);
 
 #define TLOG_INFO(message) do {								\
-			std::stringstream ss; ss << message;			\
-			spdlog::get("file_logger")->info(ss.str());		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message;			\
+			spdlog::get("file_logger")->info(__tlog_ss__.str());		\
 		} while(0);
 
 #define TLOG_WARN(message) do {								\
-			std::stringstream ss; ss << message;			\
-			spdlog::get("file_logger")->warn(ss.str());		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message;			\
+			spdlog::get("file_logger")->warn(__tlog_ss__.str());		\
 		} while(0);
 
 #define TLOG_ERROR(message) do {							\
-			std::stringstream ss; ss << message;			\
-			spdlog::get("file_logger")->error(ss.str());	\
+			std::stringstream __tlog_ss__; __tlog_ss__ << "[" << __FILE__ << ":" << __LINE__ << "] " << message;			\
+			spdlog::get("file_logger")->error(__tlog_ss__.str());	\
 		} while(0);
 
 #define TLOG_FATAL(message) do {							\
-			std::stringstream ss; ss << message;			\
-			spdlog::get("file_logger")->critical(ss.str());	\
+			std::stringstream __tlog_ss__; __tlog_ss__ << "[" << __FILE__ << ":" << __LINE__ << "] " << message;			\
+			spdlog::get("file_logger")->critical(__tlog_ss__.str());	\
 		} while(0);
 
 #else // else LOGLIB
 
 #define TLOG_TRACE(message) do {									\
-			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Trace, ss);		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message << '\n';			\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Trace, __tlog_ss__);		\
 		} while(0);
 
 #define TLOG_DEBUG(message) do {									\
-			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Debug, ss);		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message << '\n';			\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Debug, __tlog_ss__);		\
 		} while(0);
 
 #define TLOG_INFO(message) do {										\
-			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Info, ss);		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message << '\n';			\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Info, __tlog_ss__);		\
 		} while(0);
 
 #define TLOG_WARN(message) do {										\
-			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Warn, ss);		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << message << '\n';			\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Warn, __tlog_ss__);		\
 		} while(0);
 
 #define TLOG_ERROR(message) do {									\
-			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Error, ss);		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << "[" << __FILE__ << ":" << __LINE__ << "] " << message << '\n';			\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Error, __tlog_ss__);		\
 		} while(0);
 
 #define TLOG_FATAL(message) do {									\
-			std::stringstream ss; ss << message << '\n';			\
-			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Critial, ss);		\
+			std::stringstream __tlog_ss__; __tlog_ss__ << "[" << __FILE__ << ":" << __LINE__ << "] " << message << '\n';			\
+			tinyserver::Logger::ConsoleLog(tinyserver::Logger::Critial, __tlog_ss__);		\
 		} while(0);
 #endif	// LOGLIB
 
